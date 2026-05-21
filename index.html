@@ -294,6 +294,7 @@ body::before{content:'';position:fixed;inset:0;background:radial-gradient(ellips
 </head>
 <body>
 
+<!-- AUTH -->
 <div id="auth-screen">
   <div class="auth-grid"></div>
   <div class="auth-orb auth-orb1"></div>
@@ -315,12 +316,14 @@ body::before{content:'';position:fixed;inset:0;background:radial-gradient(ellips
   </div>
 </div>
 
+<!-- LEVEL UP OVERLAY -->
 <div class="levelup-overlay" id="levelup-overlay" onclick="this.classList.remove('show')">
   <div class="levelup-text">¡NIVEL ALCANZADO!</div>
   <div class="levelup-num" id="levelup-num">10</div>
   <div style="font-family:var(--font-mono);font-size:13px;color:var(--muted)">Toca para continuar</div>
 </div>
 
+<!-- APP -->
 <div id="app">
   <div class="topbar">
     <div style="display:flex;align-items:center;">
@@ -332,7 +335,7 @@ body::before{content:'';position:fixed;inset:0;background:radial-gradient(ellips
         <span class="pts-num" id="topbar-pts">0</span>
         <span class="pts-lbl">pts</span>
       </div>
-      <div class="energy-pill" title="Energía — se recarga 1 cada 1 minuto">
+      <div class="energy-pill" title="Energía — se recarga 1 cada 5 minutos">
         <span class="e-icon">⚡</span>
         <span class="e-num" id="topbar-energy">10</span>
         <span class="e-max">/20</span>
@@ -358,6 +361,7 @@ body::before{content:'';position:fixed;inset:0;background:radial-gradient(ellips
     <div class="nav-tab" data-sec="transfer" onclick="showSection('transfer',this)">💸 Transferir</div>
   </div>
 
+  <!-- DASHBOARD -->
   <div class="section active" id="section-dashboard">
     <div class="dash-hero">
       <h1>HOLA,<br><em id="hero-name">JUGADOR</em></h1>
@@ -403,13 +407,15 @@ body::before{content:'';position:fixed;inset:0;background:radial-gradient(ellips
     <div id="activity-log" style="display:flex;flex-direction:column;gap:8px"></div>
   </div>
 
+  <!-- MISSIONS -->
   <div class="section" id="section-missions">
     <div class="section-title">MISIONES <span class="accent">⚡</span></div>
-    <div class="section-sub">Cada trabajo consume energía ⚡. Se recarga 1 por cada 1 minuto. Misiones de nivel alto requieren nivel mínimo.</div>
+    <div class="section-sub">Cada trabajo consume energía ⚡. Se recarga 1 por cada 5 minutos. Misiones de nivel alto requieren nivel mínimo.</div>
     <div class="ac-notice" style="margin-bottom:20px;max-width:600px">🛡 ANTICHEAT ACTIVO — Todas las acciones se verifican en el servidor. Cooldowns y energía se comprueban en transacción.</div>
     <div class="grid-2" id="jobs-grid"></div>
   </div>
 
+  <!-- OBJECTIVES -->
   <div class="section" id="section-objectives">
     <div class="section-title">OBJETIVOS <span class="accent">🎯</span></div>
     <div class="section-sub">Completa objetivos para ganar recompensas extra y XP. Se renuevan diariamente y semanalmente.</div>
@@ -422,6 +428,7 @@ body::before{content:'';position:fixed;inset:0;background:radial-gradient(ellips
     <div id="objectives-grid" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:12px"></div>
   </div>
 
+  <!-- SHOP -->
   <div class="section" id="section-shop">
     <div class="section-title">TIENDA <span class="accent">🛍</span></div>
     <div class="section-sub">115 artículos disponibles. Algunos requieren nivel o prestaciones previas. Invierte sabiamente.</div>
@@ -437,12 +444,14 @@ body::before{content:'';position:fixed;inset:0;background:radial-gradient(ellips
     <div class="grid-3" id="shop-grid"></div>
   </div>
 
+  <!-- LEADERBOARD -->
   <div class="section" id="section-leaderboard">
     <div class="section-title">TOP 20 <span class="accent">🏆</span></div>
     <div class="section-sub">Los jugadores más ricos del servidor.</div>
     <div id="lb-list" style="display:flex;flex-direction:column;gap:8px"></div>
   </div>
 
+  <!-- PROFILE -->
   <div class="section" id="section-profile">
     <div class="section-title">MI PERFIL <span class="accent">👤</span></div>
     <div class="profile-header">
@@ -474,6 +483,7 @@ body::before{content:'';position:fixed;inset:0;background:radial-gradient(ellips
     <div class="achievements-grid" id="achievements-grid"></div>
   </div>
 
+  <!-- TRANSFER -->
   <div class="section" id="section-transfer">
     <div class="section-title">TRANSFERIR <span class="accent">💸</span></div>
     <div class="section-sub">Envía puntos a otro jugador. Comisión del 5% en cada transferencia.</div>
@@ -491,6 +501,7 @@ body::before{content:'';position:fixed;inset:0;background:radial-gradient(ellips
 
 <div id="toast-wrap"></div>
 
+<!-- BUY MODAL -->
 <div class="overlay" id="buy-modal">
   <div class="modal-box">
     <button class="modal-close" onclick="closeModal('buy-modal')">✕</button>
@@ -903,11 +914,8 @@ function renderAll(){
 }
 
 function getEnergy(){
-  const maxE=UD.energyMax||10;
-  const stored=UD.energy||0;
-  const lastRegen=UD.lastEnergyRegen||Date.now();
-  const elapsed=Math.floor((Date.now()-lastRegen)/1000/60);
-  return Math.min(maxE,stored+elapsed);
+  const maxE=UD.energyMax||20;
+  return maxE; // Energía siempre disponible
 }
 
 function getrank(pts){let r=RANKS[0];for(const rk of RANKS)if(pts>=rk.min)r=rk;return r;}
@@ -1034,14 +1042,12 @@ function renderJobs(){
     const isActive=activeJob===job.id;
     const otherActive=activeJob&&activeJob!==job.id;
     const locked=lvl<job.minLevel&&!inv.job_unlock&&!(inv.job_unlock&&lvl>=(job.minLevel-2));
-    const noEnergy=energy<job.energy;
 
     let btnText,btnClass='btn-work',btnDisabled=false;
     if(locked)           {btnText='🔒 LVL '+job.minLevel;btnDisabled=true;}
     else if(isActive)    {btnText='⏳ EN CURSO...';btnClass='btn-work working';btnDisabled=true;}
     else if(!ready)      {btnText='⏳ '+fmt(rem);btnDisabled=true;}
     else if(otherActive) {btnText='BLOQUEADO';btnDisabled=true;}
-    else if(noEnergy)    {btnText='⚡ SIN ENERGÍA';btnDisabled=true;}
     else                 {btnText='TRABAJAR';}
 
     return `<div class="job-card ${(otherActive&&!isActive)||locked?'locked-by-active':''}">
@@ -1209,13 +1215,7 @@ window.doJob = async jobId=>{
       const lvl=current.level||1;
       // Level check
       if(lvl<job.minLevel&&!inv.job_unlock) return; // ABORT
-      // Energy check
-      const maxE=current.energyMax||10;
-      const storedE=current.energy||0;
-      const lastRegen=current.lastEnergyRegen||now;
-      const elapsedMins=Math.floor((now-lastRegen)/1000/60); // <--- Cambio a 1 minuto
-      const currentEnergy=Math.min(maxE,storedE+elapsedMins);
-      if(currentEnergy<job.energy) return; // ABORT — no energy
+      // Energy check — DESHABILITADO (siempre disponible)
       // CD check
       let cdThis=job.cooldown;
       if(inv.cd_boost) cdThis=Math.floor(cdThis*0.9);
@@ -1252,8 +1252,8 @@ window.doJob = async jobId=>{
       if(inv.xp_crit&&Math.random()<0.10) xpGain*=5;
       const newXP=(current.xp||0)+xpGain;
       const newLevel=Math.floor(newXP/500)+1;
-      // consume energy
-      const newEnergy=Math.max(0,currentEnergy-job.energy);
+      // consume energy — DESHABILITADO
+      const newEnergy=(current.energyMax||20);
       // daily/weekly stats
       const isRare=['rare','epic','legendary'].includes(job.rarity);
       const isEpicLeg=['epic','legendary'].includes(job.rarity);
@@ -1268,7 +1268,7 @@ window.doJob = async jobId=>{
         jobsCompleted:(current.jobsCompleted||0)+1,
         xp:newXP, level:newLevel,
         energy:newEnergy,
-        lastEnergyRegen:now-(((now-lastRegen)%(60*1000))), // <--- Cambio a 1 minuto
+        lastEnergyRegen:now,
         cooldowns:{...cooldowns,[jobId]:now},
         activity:acts,
         dailyJobs:(current.dailyJobs||0)+1,
@@ -1447,8 +1447,7 @@ function startTimers(){
       if(locked) return;
       if(ready){
         if(btn.disabled&&!btn.classList.contains('working')){
-          const noE=energy<job.energy;
-          btn.disabled=noE; btn.textContent=noE?'⚡ SIN ENERGÍA':'TRABAJAR';
+          btn.disabled=false; btn.textContent='TRABAJAR';
           btn.classList.remove('working'); if(bar) bar.style.display='none';
         }
       } else {
