@@ -3,31 +3,32 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>ChampDrop — Gana. Sube. Domina.</title>
+<title>SkillRush — Trabaja. Sube. Domina.</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Barlow:wght@300;400;500;600;700&family=Barlow+Condensed:wght@400;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500;600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
 <style>
   :root {
-    --gold: #FFD93D;
-    --gold2: #FFC107;
+    --lime: #C8FF00;
+    --lime2: #A8E000;
+    --cyan: #00FFE0;
     --red: #FF3B3B;
-    --blue: #00C2FF;
-    --dark: #0A0A0F;
-    --dark2: #111118;
-    --dark3: #1A1A25;
-    --dark4: #22222F;
-    --card: #16161F;
-    --border: rgba(255,255,255,0.07);
-    --text: #E8E8F0;
-    --muted: #6B6B85;
-    --success: #00E676;
-    --font-head: 'Bebas Neue', sans-serif;
-    --font-body: 'Barlow', sans-serif;
-    --font-cond: 'Barlow Condensed', sans-serif;
+    --orange: #FF7A00;
+    --dark: #080810;
+    --dark2: #0E0E18;
+    --dark3: #14141E;
+    --dark4: #1C1C28;
+    --card: #111118;
+    --border: rgba(255,255,255,0.06);
+    --border-accent: rgba(200,255,0,0.15);
+    --text: #E8E8F4;
+    --muted: #565670;
+    --success: #00FFB2;
+    --font-head: 'Syne', sans-serif;
+    --font-body: 'DM Sans', sans-serif;
+    --font-mono: 'DM Mono', monospace;
   }
 
   * { margin:0; padding:0; box-sizing:border-box; }
-
   html { scroll-behavior: smooth; }
 
   body {
@@ -38,1168 +39,1348 @@
     overflow-x: hidden;
   }
 
-  /* ── NOISE OVERLAY ── */
+  /* GRAIN */
+  body::after {
+    content:'';
+    position:fixed; inset:0;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 512 512' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.03'/%3E%3C/svg%3E");
+    pointer-events:none; z-index:9998; mix-blend-mode: overlay;
+  }
+
+  /* AMBIENT GLOW */
   body::before {
     content:'';
     position:fixed; inset:0;
-    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.035'/%3E%3C/svg%3E");
-    pointer-events:none; z-index:999;
+    background:
+      radial-gradient(ellipse 600px 400px at 20% 10%, rgba(200,255,0,0.04) 0%, transparent 70%),
+      radial-gradient(ellipse 500px 500px at 80% 80%, rgba(0,255,224,0.03) 0%, transparent 70%);
+    pointer-events:none; z-index:0;
   }
 
-  /* ── SCROLLBAR ── */
-  ::-webkit-scrollbar { width:4px; }
-  ::-webkit-scrollbar-track { background: var(--dark2); }
-  ::-webkit-scrollbar-thumb { background: var(--gold); border-radius:2px; }
+  ::-webkit-scrollbar { width:3px; }
+  ::-webkit-scrollbar-track { background:var(--dark2); }
+  ::-webkit-scrollbar-thumb { background:var(--lime); border-radius:2px; }
 
-  /* ═══════════════════════════════
-     AUTH SCREEN
-  ═══════════════════════════════ */
+  /* ══════════════ AUTH ══════════════ */
   #auth-screen {
-    position: fixed; inset: 0;
-    display: flex; align-items: center; justify-content: center;
-    background: var(--dark);
-    z-index: 100;
-    transition: opacity .4s, transform .4s;
+    position:fixed; inset:0;
+    display:flex; align-items:center; justify-content:center;
+    background:var(--dark); z-index:100;
+    transition: opacity .5s, transform .5s;
   }
-  #auth-screen.hidden { opacity:0; transform:scale(1.05); pointer-events:none; }
+  #auth-screen.hidden { opacity:0; transform:scale(1.04); pointer-events:none; }
 
-  .auth-bg {
+  .auth-grid {
     position:absolute; inset:0; overflow:hidden;
+    background-image:
+      linear-gradient(rgba(200,255,0,0.04) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(200,255,0,0.04) 1px, transparent 1px);
+    background-size: 60px 60px;
+    mask-image: radial-gradient(ellipse 70% 70% at 50% 50%, black 40%, transparent 100%);
   }
-  .auth-bg .orb {
-    position:absolute; border-radius:50%;
-    filter: blur(80px); opacity:.25;
-  }
-  .auth-bg .orb1 { width:500px;height:500px; background:var(--gold2); top:-100px;right:-100px; animation: floatOrb 8s ease-in-out infinite; }
-  .auth-bg .orb2 { width:400px;height:400px; background:var(--blue); bottom:-50px;left:-80px; animation: floatOrb 10s ease-in-out infinite reverse; }
-  .auth-bg .orb3 { width:300px;height:300px; background:var(--red); top:40%;left:40%; animation: floatOrb 12s ease-in-out infinite 2s; }
 
-  @keyframes floatOrb {
-    0%,100% { transform: translate(0,0) scale(1); }
-    33% { transform: translate(20px,-30px) scale(1.05); }
-    66% { transform: translate(-15px,20px) scale(.95); }
+  .auth-orb {
+    position:absolute; border-radius:50%; filter:blur(100px); pointer-events:none;
+  }
+  .auth-orb1 { width:600px;height:600px;background:rgba(200,255,0,0.12);top:-200px;right:-200px;animation:drift 12s ease-in-out infinite; }
+  .auth-orb2 { width:500px;height:500px;background:rgba(0,255,224,0.08);bottom:-150px;left:-150px;animation:drift 15s ease-in-out infinite reverse; }
+
+  @keyframes drift {
+    0%,100% { transform:translate(0,0); }
+    50% { transform:translate(30px,-40px); }
   }
 
   .auth-box {
     position:relative; z-index:2;
-    width:420px; max-width:90vw;
-    background: rgba(22,22,31,0.85);
-    backdrop-filter: blur(20px);
-    border: 1px solid var(--border);
-    border-radius:20px;
-    padding: 48px 40px;
-    box-shadow: 0 32px 80px rgba(0,0,0,.6), 0 0 0 1px rgba(255,217,61,.1);
+    width:440px; max-width:92vw;
+    background:rgba(14,14,24,0.9);
+    backdrop-filter:blur(24px);
+    border:1px solid var(--border);
+    border-radius:24px; padding:52px 44px;
+    box-shadow: 0 0 0 1px rgba(200,255,0,0.06), 0 40px 100px rgba(0,0,0,0.7);
   }
 
-  .auth-logo {
-    font-family: var(--font-head);
-    font-size: 52px;
-    letter-spacing: 3px;
-    background: linear-gradient(135deg, var(--gold) 0%, #FF8C00 100%);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    text-align:center; margin-bottom:4px;
+  .auth-wordmark {
+    display:flex; align-items:baseline; gap:2px; justify-content:center;
+    margin-bottom:6px;
+  }
+  .auth-wordmark span:first-child {
+    font-family:var(--font-head); font-size:44px; font-weight:800;
+    letter-spacing:-1px; color:var(--lime);
+  }
+  .auth-wordmark span:last-child {
+    font-family:var(--font-head); font-size:44px; font-weight:800;
+    letter-spacing:-1px; color:var(--text);
   }
   .auth-tagline {
-    font-family: var(--font-cond);
-    font-size:13px; letter-spacing:5px;
-    color: var(--muted); text-align:center;
-    text-transform: uppercase; margin-bottom:36px;
+    text-align:center; font-size:11px; letter-spacing:4px;
+    color:var(--muted); text-transform:uppercase; margin-bottom:40px;
+    font-family:var(--font-mono);
   }
 
-  .auth-tabs { display:flex; gap:4px; background:var(--dark3); border-radius:10px; padding:4px; margin-bottom:28px; }
+  .auth-tabs {
+    display:grid; grid-template-columns:1fr 1fr;
+    background:var(--dark3); border-radius:12px; padding:4px; margin-bottom:28px;
+    border:1px solid var(--border);
+  }
   .auth-tab {
-    flex:1; padding:10px; text-align:center;
-    font-family:var(--font-cond); font-size:15px; font-weight:600; letter-spacing:1px;
-    cursor:pointer; border-radius:8px; color:var(--muted);
-    transition: all .2s;
+    padding:10px; text-align:center;
+    font-family:var(--font-head); font-size:13px; font-weight:700; letter-spacing:1px;
+    text-transform:uppercase; cursor:pointer; border-radius:9px; color:var(--muted);
+    transition:all .2s;
   }
-  .auth-tab.active { background:var(--gold); color:var(--dark); }
+  .auth-tab.active { background:var(--lime); color:var(--dark); }
 
-  .auth-form { display:flex; flex-direction:column; gap:14px; }
+  .auth-form { display:flex; flex-direction:column; gap:12px; }
   .auth-form input {
-    background: var(--dark3); border:1px solid var(--border);
-    border-radius:10px; padding:14px 16px;
-    color:var(--text); font-family:var(--font-body); font-size:15px;
-    outline:none; transition: border-color .2s, box-shadow .2s;
+    background:var(--dark3); border:1px solid var(--border);
+    border-radius:12px; padding:14px 18px;
+    color:var(--text); font-family:var(--font-body); font-size:14px;
+    outline:none; transition:border-color .2s, box-shadow .2s;
   }
-  .auth-form input:focus { border-color: var(--gold); box-shadow:0 0 0 3px rgba(255,217,61,.12); }
+  .auth-form input:focus { border-color:var(--lime); box-shadow:0 0 0 3px rgba(200,255,0,0.1); }
   .auth-form input::placeholder { color:var(--muted); }
 
   .btn-primary {
-    background: linear-gradient(135deg, var(--gold) 0%, #FF8C00 100%);
-    color: var(--dark); font-family:var(--font-cond); font-size:16px;
-    font-weight:700; letter-spacing:2px; text-transform:uppercase;
-    border:none; border-radius:10px; padding:15px;
-    cursor:pointer; transition: transform .15s, box-shadow .2s;
-    box-shadow: 0 4px 20px rgba(255,193,7,.3);
+    background:var(--lime); color:var(--dark);
+    font-family:var(--font-head); font-size:14px; font-weight:800; letter-spacing:2px;
+    text-transform:uppercase; border:none; border-radius:12px; padding:15px;
+    cursor:pointer; transition:all .2s;
+    box-shadow: 0 0 24px rgba(200,255,0,0.25);
   }
-  .btn-primary:hover { transform:translateY(-2px); box-shadow:0 8px 32px rgba(255,193,7,.45); }
+  .btn-primary:hover { background:var(--lime2); transform:translateY(-2px); box-shadow:0 6px 32px rgba(200,255,0,0.4); }
   .btn-primary:active { transform:translateY(0); }
+  .btn-primary:disabled { opacity:.5; cursor:not-allowed; transform:none; }
 
   #auth-error {
-    font-size:13px; color:var(--red); text-align:center;
-    min-height:18px; transition: opacity .2s;
+    font-size:12px; color:var(--red); text-align:center;
+    min-height:18px; margin-top:8px; font-family:var(--font-mono);
   }
 
-  /* ═══════════════════════════════
-     MAIN APP
-  ═══════════════════════════════ */
-  #app { display:none; min-height:100vh; }
-  #app.visible { display:block; animation: fadeIn .5s ease; }
-  @keyframes fadeIn { from{opacity:0;transform:translateY(10px)} to{opacity:1;transform:none} }
+  /* ══════════════ APP ══════════════ */
+  #app { display:none; min-height:100vh; position:relative; z-index:1; }
+  #app.visible { display:block; animation:fadeUp .4s ease; }
+  @keyframes fadeUp { from{opacity:0;transform:translateY(12px)} to{opacity:1;transform:none} }
 
-  /* ── TOPBAR ── */
+  /* TOPBAR */
   .topbar {
-    position: sticky; top:0; z-index:50;
-    background: rgba(10,10,15,0.9);
-    backdrop-filter: blur(16px);
-    border-bottom: 1px solid var(--border);
-    padding: 0 24px;
-    display: flex; align-items:center; justify-content:space-between;
-    height:64px;
+    position:sticky; top:0; z-index:50;
+    background:rgba(8,8,16,0.92);
+    backdrop-filter:blur(20px);
+    border-bottom:1px solid var(--border);
+    padding:0 28px; height:60px;
+    display:flex; align-items:center; justify-content:space-between;
   }
   .topbar-logo {
-    font-family:var(--font-head); font-size:28px; letter-spacing:2px;
-    background: linear-gradient(135deg, var(--gold) 0%, #FF8C00 100%);
-    -webkit-background-clip:text; -webkit-text-fill-color:transparent;
+    font-family:var(--font-head); font-weight:800; font-size:22px; letter-spacing:-0.5px;
   }
-  .topbar-points {
+  .topbar-logo span { color:var(--lime); }
+
+  .topbar-center { display:flex; align-items:center; gap:16px; }
+
+  .pts-pill {
     display:flex; align-items:center; gap:8px;
-    background:var(--dark3); border:1px solid rgba(255,217,61,.2);
-    border-radius:999px; padding:8px 18px;
+    background:var(--dark3); border:1px solid var(--border-accent);
+    border-radius:999px; padding:7px 16px;
   }
-  .topbar-points .coin { font-size:18px; }
-  .topbar-points .amount {
-    font-family:var(--font-cond); font-size:20px; font-weight:700; color:var(--gold);
+  .pts-pill .dot { width:7px;height:7px;border-radius:50%;background:var(--lime);box-shadow:0 0 8px rgba(200,255,0,0.8);flex-shrink:0; }
+  .pts-pill .pts-num { font-family:var(--font-mono); font-size:15px; font-weight:500; color:var(--lime); }
+  .pts-pill .pts-lbl { font-size:10px; color:var(--muted); letter-spacing:2px; text-transform:uppercase; }
+
+  /* ACTIVE JOB INDICATOR */
+  .active-job-pill {
+    display:none; align-items:center; gap:8px;
+    background:rgba(255,122,0,0.1); border:1px solid rgba(255,122,0,0.3);
+    border-radius:999px; padding:7px 16px; font-family:var(--font-mono); font-size:12px; color:var(--orange);
   }
-  .topbar-right { display:flex; align-items:center; gap:12px; }
-  .topbar-user {
-    font-family:var(--font-cond); font-size:14px; color:var(--muted); letter-spacing:1px;
-  }
+  .active-job-pill.show { display:flex; }
+  .active-job-pill .pulse { width:7px;height:7px;border-radius:50%;background:var(--orange);animation:pulseAnim 1s ease-in-out infinite;flex-shrink:0; }
+  @keyframes pulseAnim { 0%,100%{opacity:1;transform:scale(1)} 50%{opacity:.5;transform:scale(.8)} }
+
+  .topbar-right { display:flex; align-items:center; gap:10px; }
+  .topbar-user { font-family:var(--font-mono); font-size:11px; color:var(--muted); letter-spacing:1px; }
   .btn-logout {
     background:transparent; border:1px solid var(--border); color:var(--muted);
-    font-family:var(--font-cond); font-size:13px; letter-spacing:1px;
+    font-family:var(--font-head); font-size:11px; letter-spacing:1px; text-transform:uppercase;
     padding:7px 14px; border-radius:8px; cursor:pointer; transition:all .2s;
   }
-  .btn-logout:hover { border-color:var(--red); color:var(--red); }
+  .btn-logout:hover { border-color:rgba(255,59,59,.5); color:var(--red); }
 
-  /* ── NAV TABS ── */
+  /* NAV */
   .nav-tabs {
-    display:flex; gap:2px;
+    display:flex; gap:0;
     background:var(--dark2); border-bottom:1px solid var(--border);
-    padding: 0 24px; overflow-x:auto;
+    padding:0 28px; overflow-x:auto;
   }
+  .nav-tabs::-webkit-scrollbar { height:0; }
   .nav-tab {
-    font-family:var(--font-cond); font-size:14px; font-weight:600; letter-spacing:2px;
+    font-family:var(--font-head); font-size:12px; font-weight:700; letter-spacing:2px;
     text-transform:uppercase; color:var(--muted);
-    padding:16px 20px; cursor:pointer; border-bottom:2px solid transparent;
+    padding:14px 18px; cursor:pointer; border-bottom:2px solid transparent;
     white-space:nowrap; transition:all .2s;
   }
   .nav-tab:hover { color:var(--text); }
-  .nav-tab.active { color:var(--gold); border-bottom-color:var(--gold); }
+  .nav-tab.active { color:var(--lime); border-bottom-color:var(--lime); }
 
-  /* ── SECTIONS ── */
-  .section { display:none; padding:32px 24px; max-width:1100px; margin:0 auto; }
-  .section.active { display:block; animation: fadeIn .3s ease; }
+  /* SECTIONS */
+  .section { display:none; padding:36px 28px; max-width:1100px; margin:0 auto; }
+  .section.active { display:block; animation:fadeUp .3s ease; }
 
   .section-title {
-    font-family:var(--font-head); font-size:42px; letter-spacing:2px;
-    line-height:1; margin-bottom:6px;
+    font-family:var(--font-head); font-size:40px; font-weight:800;
+    letter-spacing:-1px; line-height:1; margin-bottom:4px;
   }
-  .section-sub { font-size:14px; color:var(--muted); margin-bottom:32px; letter-spacing:.5px; }
+  .section-title .accent { color:var(--lime); }
+  .section-sub { font-size:13px; color:var(--muted); margin-bottom:32px; }
 
-  /* ── CARDS ── */
+  /* CARD */
   .card {
     background:var(--card); border:1px solid var(--border);
     border-radius:16px; padding:24px;
-    transition: border-color .2s, transform .2s, box-shadow .2s;
+    transition:border-color .2s, transform .2s, box-shadow .2s;
   }
-  .card:hover { border-color:rgba(255,217,61,.2); transform:translateY(-2px); box-shadow:0 8px 32px rgba(0,0,0,.4); }
+  .card:hover { border-color:var(--border-accent); transform:translateY(-2px); box-shadow:0 8px 40px rgba(0,0,0,.5); }
 
-  /* ── GRID ── */
-  .grid-2 { display:grid; grid-template-columns:repeat(auto-fill, minmax(280px,1fr)); gap:16px; }
-  .grid-3 { display:grid; grid-template-columns:repeat(auto-fill, minmax(220px,1fr)); gap:16px; }
+  .grid-2 { display:grid; grid-template-columns:repeat(auto-fill,minmax(290px,1fr)); gap:14px; }
+  .grid-3 { display:grid; grid-template-columns:repeat(auto-fill,minmax(220px,1fr)); gap:14px; }
 
-  /* ═══════════════════════
-     DASHBOARD
-  ═══════════════════════ */
-  .dashboard-hero {
-    background: linear-gradient(135deg, var(--dark3) 0%, #1E1520 100%);
-    border: 1px solid rgba(255,217,61,.1);
-    border-radius:20px; padding:40px;
-    margin-bottom:28px; position:relative; overflow:hidden;
+  /* ════════ DASHBOARD ════════ */
+  .dash-hero {
+    background:linear-gradient(135deg, var(--dark3) 0%, #0E0E1A 100%);
+    border:1px solid var(--border); border-radius:20px;
+    padding:44px 40px; margin-bottom:24px; position:relative; overflow:hidden;
   }
-  .dashboard-hero::before {
-    content:''; position:absolute; top:-60px; right:-60px;
-    width:300px; height:300px; border-radius:50%;
-    background: radial-gradient(circle, rgba(255,193,7,.15) 0%, transparent 70%);
+  .dash-hero::before {
+    content:''; position:absolute; top:-80px; right:-80px;
+    width:400px; height:400px; border-radius:50%;
+    background:radial-gradient(circle, rgba(200,255,0,0.08) 0%, transparent 70%);
+    pointer-events:none;
   }
-  .dashboard-hero h1 {
-    font-family:var(--font-head); font-size:56px; line-height:1;
-    letter-spacing:2px; margin-bottom:8px;
+  .dash-hero::after {
+    content:'SKILLRUSH'; position:absolute; right:-10px; bottom:-30px;
+    font-family:var(--font-head); font-size:120px; font-weight:800;
+    color:rgba(255,255,255,0.025); letter-spacing:-3px; pointer-events:none;
+    line-height:1;
   }
-  .dashboard-hero h1 span { color:var(--gold); }
-  .dashboard-hero p { color:var(--muted); font-size:15px; max-width:400px; }
+  .dash-hero h1 {
+    font-family:var(--font-head); font-size:52px; font-weight:800;
+    letter-spacing:-2px; line-height:1; margin-bottom:8px;
+  }
+  .dash-hero h1 em { color:var(--lime); font-style:normal; }
+  .dash-hero p { color:var(--muted); font-size:14px; max-width:380px; line-height:1.6; }
 
-  .stats-row { display:grid; grid-template-columns:repeat(auto-fill,minmax(180px,1fr)); gap:16px; margin-bottom:28px; }
+  .level-section { margin-top:24px; max-width:440px; }
+  .level-row { display:flex; justify-content:space-between; align-items:center; margin-bottom:8px; }
+  .level-tag {
+    font-family:var(--font-mono); font-size:11px; letter-spacing:2px;
+    color:var(--lime); background:rgba(200,255,0,0.1);
+    border:1px solid rgba(200,255,0,0.2); border-radius:999px; padding:3px 10px;
+  }
+  .level-xp { font-family:var(--font-mono); font-size:11px; color:var(--muted); }
+  .level-bar { height:4px; background:var(--dark4); border-radius:2px; overflow:hidden; }
+  .level-bar-fill {
+    height:100%; background:linear-gradient(90deg, var(--lime), var(--cyan));
+    border-radius:2px; transition:width .8s cubic-bezier(.4,0,.2,1);
+    box-shadow:0 0 8px rgba(200,255,0,0.4);
+  }
+
+  .stats-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(170px,1fr)); gap:12px; margin-bottom:24px; }
   .stat-card {
     background:var(--card); border:1px solid var(--border); border-radius:14px;
-    padding:20px; text-align:center;
+    padding:20px; position:relative; overflow:hidden;
   }
-  .stat-card .stat-icon { font-size:28px; margin-bottom:8px; }
-  .stat-card .stat-value {
-    font-family:var(--font-head); font-size:36px; color:var(--gold);
-    letter-spacing:1px; line-height:1;
+  .stat-card::before {
+    content:''; position:absolute; top:0; right:0;
+    width:60px; height:60px; border-radius:0 14px 0 100%;
+    background:rgba(200,255,0,0.04);
   }
-  .stat-card .stat-label { font-size:12px; color:var(--muted); text-transform:uppercase; letter-spacing:2px; margin-top:4px; }
+  .stat-icon { font-size:22px; margin-bottom:10px; }
+  .stat-value {
+    font-family:var(--font-head); font-size:32px; font-weight:800;
+    color:var(--lime); letter-spacing:-1px; line-height:1;
+  }
+  .stat-label { font-size:11px; color:var(--muted); text-transform:uppercase; letter-spacing:2px; margin-top:4px; font-family:var(--font-mono); }
 
-  /* ═══════════════════════
-     MISSIONS
-  ═══════════════════════ */
+  /* DAILY */
+  .daily-banner {
+    background:linear-gradient(135deg, rgba(200,255,0,0.08), rgba(0,255,224,0.05));
+    border:1px solid rgba(200,255,0,0.2); border-radius:16px;
+    padding:20px 24px; margin-bottom:24px;
+    display:flex; align-items:center; justify-content:space-between; gap:16px; flex-wrap:wrap;
+  }
+  .daily-banner h3 { font-family:var(--font-head); font-size:18px; font-weight:700; color:var(--lime); margin-bottom:2px; }
+  .daily-banner p { font-size:12px; color:var(--muted); }
+
+  /* ACTIVITY */
+  .activity-item {
+    background:var(--dark3); border:1px solid var(--border); border-radius:10px;
+    padding:12px 16px; display:flex; justify-content:space-between; align-items:center;
+    font-size:13px; transition:border-color .2s;
+  }
+  .activity-item:hover { border-color:var(--border-accent); }
+  .act-time { font-family:var(--font-mono); font-size:10px; color:var(--muted); white-space:nowrap; margin-left:12px; }
+
+  /* ════════ MISSIONS ════════ */
   .job-card {
     background:var(--card); border:1px solid var(--border);
     border-radius:16px; padding:24px; position:relative; overflow:hidden;
-    transition: all .2s; cursor:default;
+    display:flex; flex-direction:column; transition:all .25s;
   }
-  .job-card::before {
-    content:''; position:absolute; top:0; left:0; right:0; height:3px;
-  }
-  .job-card.common::before { background:var(--muted); }
-  .job-card.rare::before { background:var(--blue); }
-  .job-card.epic::before { background: linear-gradient(90deg, #A855F7, #EC4899); }
-  .job-card.legendary::before { background: linear-gradient(90deg, var(--gold), var(--red)); }
+  .job-card:hover:not(.locked-by-active) { transform:translateY(-3px); box-shadow:0 12px 48px rgba(0,0,0,.5); }
+  .job-card.locked-by-active { opacity:.5; pointer-events:none; }
 
-  .job-rarity {
-    font-family:var(--font-cond); font-size:11px; font-weight:700; letter-spacing:3px;
-    text-transform:uppercase; margin-bottom:8px;
+  .job-stripe {
+    position:absolute; top:0; left:0; right:0; height:3px;
+    border-radius:16px 16px 0 0;
   }
-  .job-rarity.common { color:var(--muted); }
-  .job-rarity.rare { color:var(--blue); }
-  .job-rarity.epic { color:#A855F7; }
-  .job-rarity.legendary { color:var(--gold); }
+  .job-stripe.common { background:var(--muted); }
+  .job-stripe.rare { background:var(--cyan); box-shadow:0 0 12px rgba(0,255,224,.4); }
+  .job-stripe.epic { background:linear-gradient(90deg,#A855F7,#EC4899); box-shadow:0 0 12px rgba(168,85,247,.4); }
+  .job-stripe.legendary { background:linear-gradient(90deg,var(--lime),var(--orange)); box-shadow:0 0 12px rgba(200,255,0,.4); }
 
-  .job-icon { font-size:36px; margin-bottom:12px; }
-  .job-name { font-family:var(--font-head); font-size:24px; letter-spacing:1px; margin-bottom:6px; }
-  .job-desc { font-size:13px; color:var(--muted); margin-bottom:16px; line-height:1.5; }
-  .job-reward {
-    display:flex; align-items:center; gap:6px;
-    font-family:var(--font-cond); font-size:18px; font-weight:700; color:var(--gold);
-    margin-bottom:16px;
+  .job-rarity-badge {
+    font-family:var(--font-mono); font-size:9px; letter-spacing:3px; text-transform:uppercase;
+    margin-bottom:12px; padding:3px 8px; border-radius:4px; width:fit-content;
   }
-  .job-cooldown { font-size:12px; color:var(--muted); margin-bottom:14px; }
+  .job-rarity-badge.common { background:rgba(86,86,112,.15); color:var(--muted); }
+  .job-rarity-badge.rare { background:rgba(0,255,224,.1); color:var(--cyan); }
+  .job-rarity-badge.epic { background:rgba(168,85,247,.1); color:#A855F7; }
+  .job-rarity-badge.legendary { background:rgba(200,255,0,.1); color:var(--lime); }
+
+  .job-icon { font-size:34px; margin-bottom:10px; }
+  .job-name { font-family:var(--font-head); font-size:22px; font-weight:700; letter-spacing:-.5px; margin-bottom:6px; }
+  .job-desc { font-size:12px; color:var(--muted); line-height:1.6; flex:1; margin-bottom:16px; }
+  .job-meta { display:flex; gap:12px; margin-bottom:14px; }
+  .job-reward { font-family:var(--font-mono); font-size:16px; color:var(--lime); }
+  .job-cd { font-family:var(--font-mono); font-size:11px; color:var(--muted); align-self:flex-end; }
 
   .btn-work {
-    width:100%; background:linear-gradient(135deg, var(--gold) 0%, #FF8C00 100%);
-    color:var(--dark); font-family:var(--font-cond); font-size:14px;
-    font-weight:700; letter-spacing:2px; text-transform:uppercase;
-    border:none; border-radius:10px; padding:12px;
-    cursor:pointer; transition:all .2s;
+    width:100%; background:var(--lime); color:var(--dark);
+    font-family:var(--font-head); font-size:13px; font-weight:800; letter-spacing:2px;
+    text-transform:uppercase; border:none; border-radius:10px; padding:13px;
+    cursor:pointer; transition:all .2s; margin-top:auto;
   }
-  .btn-work:hover:not(:disabled) { transform:translateY(-2px); box-shadow:0 6px 20px rgba(255,193,7,.4); }
+  .btn-work:hover:not(:disabled) { background:var(--lime2); transform:translateY(-1px); box-shadow:0 4px 20px rgba(200,255,0,.35); }
   .btn-work:disabled {
-    background:var(--dark3); color:var(--muted); cursor:not-allowed;
-    transform:none; box-shadow:none;
+    background:var(--dark4); color:var(--muted); cursor:not-allowed;
+    transform:none; box-shadow:none; border:1px solid var(--border);
+  }
+  .btn-work.working {
+    background:rgba(255,122,0,.15); color:var(--orange); border:1px solid rgba(255,122,0,.3); cursor:not-allowed;
   }
 
-  .cooldown-bar {
-    height:3px; background:var(--dark3); border-radius:2px;
-    margin-top:10px; overflow:hidden; display:none;
-  }
-  .cooldown-bar-fill {
-    height:100%; background:var(--gold);
-    border-radius:2px; transition:width .5s linear;
-  }
+  .cd-track { height:2px; background:var(--dark4); border-radius:1px; margin-top:10px; overflow:hidden; }
+  .cd-fill { height:100%; background:linear-gradient(90deg,var(--lime),var(--cyan)); border-radius:1px; transition:width .5s linear; }
 
-  /* ═══════════════════════
-     SHOP
-  ═══════════════════════ */
-  .shop-item {
+  /* ════════ SHOP ════════ */
+  .shop-card {
     background:var(--card); border:1px solid var(--border);
     border-radius:16px; padding:24px; text-align:center;
-    transition:all .2s; position:relative; overflow:hidden;
+    position:relative; overflow:hidden; transition:all .2s;
+    display:flex; flex-direction:column;
   }
-  .shop-item-icon { font-size:48px; margin-bottom:12px; display:block; }
-  .shop-item-name { font-family:var(--font-head); font-size:22px; letter-spacing:1px; margin-bottom:6px; }
-  .shop-item-desc { font-size:12px; color:var(--muted); margin-bottom:16px; line-height:1.5; }
-  .shop-item-price {
-    font-family:var(--font-cond); font-size:22px; font-weight:700; color:var(--gold);
-    margin-bottom:14px;
-  }
-  .btn-buy {
-    width:100%; background:var(--dark3); border:1px solid rgba(255,217,61,.3);
-    color:var(--gold); font-family:var(--font-cond); font-size:13px;
-    font-weight:700; letter-spacing:2px; text-transform:uppercase;
-    border-radius:10px; padding:11px; cursor:pointer; transition:all .2s;
-  }
-  .btn-buy:hover:not(:disabled) {
-    background:var(--gold); color:var(--dark);
-    box-shadow:0 4px 20px rgba(255,193,7,.4);
-  }
-  .btn-buy:disabled { opacity:.4; cursor:not-allowed; }
+  .shop-card:hover { border-color:var(--border-accent); transform:translateY(-2px); box-shadow:0 8px 32px rgba(0,0,0,.5); }
+  .shop-item-icon { font-size:44px; display:block; margin-bottom:12px; }
+  .shop-item-name { font-family:var(--font-head); font-size:20px; font-weight:700; margin-bottom:6px; }
+  .shop-item-desc { font-size:11px; color:var(--muted); line-height:1.6; margin-bottom:16px; flex:1; }
+  .shop-item-price { font-family:var(--font-mono); font-size:20px; color:var(--lime); margin-bottom:14px; }
 
-  /* INVENTORY BADGE */
+  .btn-buy {
+    width:100%; background:var(--dark3); border:1px solid var(--border-accent);
+    color:var(--lime); font-family:var(--font-head); font-size:12px; font-weight:700;
+    letter-spacing:2px; text-transform:uppercase; border-radius:10px; padding:11px;
+    cursor:pointer; transition:all .2s; margin-top:auto;
+  }
+  .btn-buy:hover:not(:disabled) { background:var(--lime); color:var(--dark); box-shadow:0 4px 20px rgba(200,255,0,.3); }
+  .btn-buy:disabled { opacity:.35; cursor:not-allowed; }
+
   .owned-badge {
     position:absolute; top:12px; right:12px;
-    background:var(--success); color:#000; font-size:10px;
-    font-family:var(--font-cond); font-weight:700; letter-spacing:1px;
-    padding:3px 8px; border-radius:999px;
+    background:var(--success); color:#000; font-size:9px;
+    font-family:var(--font-mono); font-weight:500; letter-spacing:1px;
+    padding:3px 8px; border-radius:4px;
   }
 
-  /* ═══════════════════════
-     LEADERBOARD
-  ═══════════════════════ */
-  .leaderboard-list { display:flex; flex-direction:column; gap:8px; }
-  .lb-row {
+  /* ════════ LEADERBOARD ════════ */
+  .lb-item {
     display:flex; align-items:center; gap:16px;
     background:var(--card); border:1px solid var(--border);
     border-radius:12px; padding:16px 20px; transition:all .2s;
   }
-  .lb-row:hover { border-color:rgba(255,217,61,.2); }
-  .lb-row.me { border-color:rgba(255,217,61,.4); background:rgba(255,217,61,.05); }
-  .lb-rank {
-    font-family:var(--font-head); font-size:28px; color:var(--muted);
-    min-width:36px; text-align:center;
+  .lb-item:hover { border-color:var(--border-accent); }
+  .lb-item.is-me { border-color:rgba(200,255,0,.3); background:rgba(200,255,0,.03); }
+  .lb-pos {
+    font-family:var(--font-head); font-size:24px; font-weight:800; color:var(--muted);
+    min-width:32px; text-align:right;
   }
-  .lb-row:nth-child(1) .lb-rank { color:var(--gold); font-size:32px; }
-  .lb-row:nth-child(2) .lb-rank { color:#C0C0C0; }
-  .lb-row:nth-child(3) .lb-rank { color:#CD7F32; }
-  .lb-medal { font-size:24px; display:none; }
-  .lb-row:nth-child(1) .lb-medal { display:block; }
-  .lb-name { flex:1; font-family:var(--font-cond); font-size:18px; font-weight:600; }
-  .lb-pts { font-family:var(--font-head); font-size:24px; color:var(--gold); }
-  .lb-pts-label { font-size:11px; color:var(--muted); margin-left:4px; align-self:flex-end; margin-bottom:3px; }
+  .lb-item:nth-child(1) .lb-pos { color:var(--lime); font-size:28px; }
+  .lb-item:nth-child(2) .lb-pos { color:#C0C0C0; }
+  .lb-item:nth-child(3) .lb-pos { color:#CD7F32; }
+  .lb-medal { font-size:20px; width:24px; text-align:center; }
+  .lb-name { flex:1; font-family:var(--font-head); font-size:16px; font-weight:700; }
+  .lb-pts { font-family:var(--font-mono); font-size:16px; color:var(--lime); }
 
-  /* ═══════════════════════
-     PROFILE
-  ═══════════════════════ */
-  .profile-hero {
-    background: linear-gradient(135deg, var(--dark3), #1A1525);
-    border:1px solid var(--border); border-radius:20px;
-    padding:36px; display:flex; gap:28px; align-items:center;
-    margin-bottom:24px; flex-wrap:wrap;
+  /* ════════ PROFILE ════════ */
+  .profile-header {
+    background:var(--dark3); border:1px solid var(--border); border-radius:20px;
+    padding:36px; display:flex; gap:28px; align-items:flex-start;
+    margin-bottom:24px; flex-wrap:wrap; position:relative; overflow:hidden;
   }
-  .profile-avatar {
-    width:90px; height:90px; border-radius:50%;
-    background: linear-gradient(135deg, var(--gold), var(--red));
+  .profile-header::before {
+    content:''; position:absolute; top:0; right:0;
+    width:200px; height:200px; border-radius:50%;
+    background:radial-gradient(circle, rgba(200,255,0,.06) 0%, transparent 70%);
+  }
+  .avatar {
+    width:80px; height:80px; border-radius:16px;
+    background:linear-gradient(135deg, var(--lime), var(--cyan));
     display:flex; align-items:center; justify-content:center;
-    font-family:var(--font-head); font-size:36px; color:var(--dark);
+    font-family:var(--font-head); font-size:32px; font-weight:800; color:var(--dark);
     flex-shrink:0;
   }
-  .profile-info h2 { font-family:var(--font-head); font-size:36px; letter-spacing:2px; }
-  .profile-info p { color:var(--muted); font-size:14px; margin-top:4px; }
-  .profile-rank {
-    margin-top:12px; display:inline-flex; align-items:center; gap:6px;
-    background:rgba(255,217,61,.1); border:1px solid rgba(255,217,61,.2);
-    border-radius:999px; padding:5px 14px;
-    font-family:var(--font-cond); font-size:14px; color:var(--gold); font-weight:600;
+  .profile-info h2 { font-family:var(--font-head); font-size:32px; font-weight:800; letter-spacing:-.5px; }
+  .profile-info .email { color:var(--muted); font-size:13px; font-family:var(--font-mono); margin-top:4px; }
+  .rank-badge {
+    display:inline-flex; align-items:center; gap:6px; margin-top:12px;
+    background:rgba(200,255,0,.08); border:1px solid rgba(200,255,0,.2);
+    border-radius:8px; padding:5px 14px;
+    font-family:var(--font-mono); font-size:12px; color:var(--lime); letter-spacing:1px;
   }
 
-  .inventory-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(100px,1fr)); gap:12px; }
+  .inv-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(96px,1fr)); gap:10px; }
   .inv-item {
     background:var(--dark3); border:1px solid var(--border);
-    border-radius:12px; padding:16px 12px; text-align:center;
-    transition:all .2s;
+    border-radius:12px; padding:14px 10px; text-align:center; transition:all .2s;
   }
-  .inv-item:hover { border-color:rgba(255,217,61,.3); }
-  .inv-item-icon { font-size:32px; display:block; margin-bottom:6px; }
-  .inv-item-name { font-size:11px; color:var(--muted); font-family:var(--font-cond); letter-spacing:1px; }
-  .inv-item-qty {
-    font-family:var(--font-head); font-size:18px; color:var(--gold);
-  }
+  .inv-item:hover { border-color:var(--border-accent); }
+  .inv-item-icon { font-size:28px; display:block; margin-bottom:4px; }
+  .inv-item-qty { font-family:var(--font-head); font-size:18px; color:var(--lime); line-height:1; }
+  .inv-item-name { font-size:9px; color:var(--muted); font-family:var(--font-mono); letter-spacing:1px; margin-top:2px; }
 
-  /* ═══════════════════════
-     TRANSFER
-  ═══════════════════════ */
-  .transfer-box {
+  /* ════════ TRANSFER ════════ */
+  .transfer-card {
     max-width:480px; background:var(--card); border:1px solid var(--border);
     border-radius:16px; padding:32px;
   }
-  .form-label { font-family:var(--font-cond); font-size:13px; color:var(--muted); letter-spacing:2px; text-transform:uppercase; margin-bottom:8px; display:block; }
-  .form-input {
+  .field-label { font-family:var(--font-mono); font-size:10px; color:var(--muted); letter-spacing:2px; text-transform:uppercase; margin-bottom:8px; display:block; }
+  .field-input {
     width:100%; background:var(--dark3); border:1px solid var(--border);
-    border-radius:10px; padding:14px 16px;
-    color:var(--text); font-family:var(--font-body); font-size:15px;
-    outline:none; margin-bottom:18px; transition:border-color .2s, box-shadow .2s;
+    border-radius:10px; padding:13px 16px; color:var(--text);
+    font-family:var(--font-body); font-size:14px; outline:none; margin-bottom:16px;
+    transition:border-color .2s, box-shadow .2s;
   }
-  .form-input:focus { border-color:var(--gold); box-shadow:0 0 0 3px rgba(255,217,61,.12); }
+  .field-input:focus { border-color:var(--lime); box-shadow:0 0 0 3px rgba(200,255,0,.1); }
+  .field-input::placeholder { color:var(--muted); }
 
-  /* ═══════════════════════
-     TOAST
-  ═══════════════════════ */
-  #toast-container {
+  /* ════════ TOAST ════════ */
+  #toast-wrap {
     position:fixed; bottom:24px; right:24px;
-    display:flex; flex-direction:column; gap:10px; z-index:999;
+    display:flex; flex-direction:column; gap:8px; z-index:9999;
   }
   .toast {
     background:var(--dark3); border:1px solid var(--border);
-    border-radius:12px; padding:14px 20px;
-    font-family:var(--font-cond); font-size:15px; font-weight:600;
-    display:flex; align-items:center; gap:10px;
-    min-width:260px; box-shadow:0 8px 32px rgba(0,0,0,.4);
-    animation: toastIn .3s ease;
-    transition: opacity .3s, transform .3s;
+    border-radius:12px; padding:13px 18px;
+    font-family:var(--font-mono); font-size:13px;
+    display:flex; align-items:center; gap:10px; min-width:260px;
+    box-shadow:0 8px 32px rgba(0,0,0,.5);
+    animation:toastIn .3s ease;
+    transition:opacity .3s, transform .3s;
   }
   .toast.out { opacity:0; transform:translateX(20px); }
-  .toast.success { border-color:rgba(0,230,118,.3); }
-  .toast.error { border-color:rgba(255,59,59,.3); }
-  .toast.info { border-color:rgba(0,194,255,.3); }
+  .toast.success { border-color:rgba(0,255,178,.25); }
+  .toast.error { border-color:rgba(255,59,59,.25); }
+  .toast.info { border-color:rgba(0,255,224,.2); }
   @keyframes toastIn { from{opacity:0;transform:translateX(20px)} to{opacity:1;transform:none} }
 
-  /* ═══════════════════════
-     MODALS
-  ═══════════════════════ */
-  .modal-overlay {
-    position:fixed; inset:0; background:rgba(0,0,0,.7);
-    backdrop-filter:blur(4px); z-index:200;
+  /* MODAL */
+  .overlay {
+    position:fixed; inset:0; background:rgba(0,0,0,.75);
+    backdrop-filter:blur(6px); z-index:200;
     display:none; align-items:center; justify-content:center;
   }
-  .modal-overlay.open { display:flex; animation:fadeIn .2s ease; }
-  .modal {
+  .overlay.open { display:flex; animation:fadeUp .2s ease; }
+  .modal-box {
     background:var(--dark2); border:1px solid var(--border);
-    border-radius:20px; padding:36px; width:420px; max-width:90vw;
-    position:relative;
+    border-radius:20px; padding:36px; width:400px; max-width:90vw; position:relative;
   }
-  .modal h3 { font-family:var(--font-head); font-size:28px; margin-bottom:8px; }
-  .modal p { color:var(--muted); font-size:14px; margin-bottom:24px; }
+  .modal-box h3 { font-family:var(--font-head); font-size:26px; font-weight:700; margin-bottom:6px; }
+  .modal-box p { color:var(--muted); font-size:13px; line-height:1.6; margin-bottom:20px; }
   .modal-close {
-    position:absolute; top:16px; right:16px;
-    background:var(--dark3); border:none; color:var(--muted);
-    width:32px; height:32px; border-radius:8px; cursor:pointer; font-size:16px;
-    display:flex;align-items:center;justify-content:center;transition:all .2s;
+    position:absolute; top:14px; right:14px;
+    background:var(--dark3); border:1px solid var(--border); color:var(--muted);
+    width:30px; height:30px; border-radius:8px; cursor:pointer; font-size:14px;
+    display:flex; align-items:center; justify-content:center; transition:all .2s;
   }
-  .modal-close:hover { color:var(--text); background:var(--dark4); }
+  .modal-close:hover { color:var(--text); border-color:var(--border-accent); }
 
-  /* DAILY BONUS */
-  .daily-bonus {
-    background:linear-gradient(135deg,#1a1a08,#2a2000);
-    border:1px solid rgba(255,217,61,.3); border-radius:16px;
-    padding:20px 24px; margin-bottom:24px;
-    display:flex; align-items:center; justify-content:space-between; gap:16px; flex-wrap:wrap;
+  /* ANTICHEAT notice */
+  .ac-notice {
+    background:rgba(255,59,59,.05); border:1px solid rgba(255,59,59,.15);
+    border-radius:10px; padding:10px 14px; margin-top:16px;
+    font-family:var(--font-mono); font-size:10px; color:rgba(255,59,59,.7); letter-spacing:.5px;
   }
-  .daily-bonus .db-text h3 { font-family:var(--font-head); font-size:22px; color:var(--gold); }
-  .daily-bonus .db-text p { font-size:13px; color:var(--muted); }
 
-  /* LEVEL BAR */
-  .level-bar-wrap { margin:12px 0; }
-  .level-info { display:flex; justify-content:space-between; font-size:12px; color:var(--muted); margin-bottom:6px; font-family:var(--font-cond); letter-spacing:1px; }
-  .level-bar { height:6px; background:var(--dark3); border-radius:3px; overflow:hidden; }
-  .level-bar-fill { height:100%; background:linear-gradient(90deg,var(--gold),#FF8C00); border-radius:3px; transition:width .6s ease; }
-
-  /* RESPONSIVE */
   @media(max-width:600px) {
     .auth-box { padding:32px 24px; }
     .section { padding:20px 16px; }
     .topbar { padding:0 16px; }
-    .dashboard-hero { padding:28px 24px; }
-    .dashboard-hero h1 { font-size:38px; }
-    .profile-hero { padding:24px; }
+    .dash-hero { padding:28px 24px; }
+    .dash-hero h1 { font-size:36px; }
+    .profile-header { padding:24px; }
+    .topbar-center { display:none; }
   }
 </style>
 </head>
 <body>
 
-<!-- ══════════════════════════════════════
-     AUTH SCREEN
-══════════════════════════════════════ -->
+<!-- AUTH -->
 <div id="auth-screen">
-  <div class="auth-bg">
-    <div class="orb orb1"></div>
-    <div class="orb orb2"></div>
-    <div class="orb orb3"></div>
-  </div>
+  <div class="auth-grid"></div>
+  <div class="auth-orb auth-orb1"></div>
+  <div class="auth-orb auth-orb2"></div>
   <div class="auth-box">
-    <div class="auth-logo">ChampDrop</div>
-    <div class="auth-tagline">Trabaja · Gana · Domina</div>
+    <div class="auth-wordmark"><span>Skill</span><span>Rush</span></div>
+    <div class="auth-tagline">Trabaja · Sube · Domina</div>
     <div class="auth-tabs">
       <div class="auth-tab active" onclick="switchAuth('login')">Entrar</div>
-      <div class="auth-tab" onclick="switchAuth('register')">Registrarse</div>
+      <div class="auth-tab" onclick="switchAuth('register')">Registro</div>
     </div>
     <div class="auth-form">
-      <input type="text" id="auth-username" placeholder="Nombre de usuario" style="display:none" maxlength="20">
-      <input type="email" id="auth-email" placeholder="Email">
-      <input type="password" id="auth-password" placeholder="Contraseña" minlength="6">
-      <button class="btn-primary" onclick="handleAuth()">ENTRAR</button>
+      <input type="text" id="auth-username" placeholder="Nombre de usuario" style="display:none" maxlength="20" autocomplete="off">
+      <input type="email" id="auth-email" placeholder="Email" autocomplete="email">
+      <input type="password" id="auth-password" placeholder="Contraseña (mín. 6 caracteres)" autocomplete="current-password">
+      <button class="btn-primary" onclick="handleAuth()" id="auth-btn">ENTRAR</button>
     </div>
-    <div id="auth-error" style="margin-top:12px;"></div>
+    <div id="auth-error"></div>
   </div>
 </div>
 
-<!-- ══════════════════════════════════════
-     MAIN APP
-══════════════════════════════════════ -->
+<!-- APP -->
 <div id="app">
-  <!-- TOPBAR -->
   <div class="topbar">
-    <div class="topbar-logo">ChampDrop</div>
-    <div class="topbar-points">
-      <span class="coin">🪙</span>
-      <span class="amount" id="topbar-pts">0</span>
-      <span style="color:var(--muted);font-size:12px;font-family:var(--font-cond);letter-spacing:1px">PTS</span>
+    <div class="topbar-logo"><span>Skill</span>Rush</div>
+    <div class="topbar-center">
+      <div class="pts-pill">
+        <div class="dot"></div>
+        <span class="pts-num" id="topbar-pts">0</span>
+        <span class="pts-lbl">pts</span>
+      </div>
+      <div class="active-job-pill" id="active-job-pill">
+        <div class="pulse"></div>
+        <span id="active-job-text">trabajando...</span>
+      </div>
     </div>
     <div class="topbar-right">
-      <span class="topbar-user" id="topbar-username"></span>
+      <span class="topbar-user" id="topbar-user"></span>
       <button class="btn-logout" onclick="logout()">Salir</button>
     </div>
   </div>
 
-  <!-- NAV -->
   <div class="nav-tabs">
-    <div class="nav-tab active" onclick="showSection('dashboard')">🏠 Inicio</div>
-    <div class="nav-tab" onclick="showSection('missions')">⚡ Misiones</div>
-    <div class="nav-tab" onclick="showSection('shop')">🛍 Tienda</div>
-    <div class="nav-tab" onclick="showSection('leaderboard')">🏆 Ranking</div>
-    <div class="nav-tab" onclick="showSection('profile')">👤 Perfil</div>
-    <div class="nav-tab" onclick="showSection('transfer')">💸 Transferir</div>
+    <div class="nav-tab active" data-sec="dashboard" onclick="showSection('dashboard',this)">🏠 Inicio</div>
+    <div class="nav-tab" data-sec="missions" onclick="showSection('missions',this)">⚡ Misiones</div>
+    <div class="nav-tab" data-sec="shop" onclick="showSection('shop',this)">🛍 Tienda</div>
+    <div class="nav-tab" data-sec="leaderboard" onclick="showSection('leaderboard',this)">🏆 Ranking</div>
+    <div class="nav-tab" data-sec="profile" onclick="showSection('profile',this)">👤 Perfil</div>
+    <div class="nav-tab" data-sec="transfer" onclick="showSection('transfer',this)">💸 Transferir</div>
   </div>
 
-  <!-- ── DASHBOARD ── -->
+  <!-- DASHBOARD -->
   <div class="section active" id="section-dashboard">
-    <div class="dashboard-hero">
-      <h1>BIENVENIDO,<br><span id="hero-name">JUGADOR</span></h1>
-      <p>Completa misiones, sube en el ranking y domina ChampDrop.</p>
-      <div class="level-bar-wrap" style="margin-top:20px;max-width:400px">
-        <div class="level-info">
-          <span id="level-label">NIVEL 1</span>
-          <span id="level-xp-label">0 / 500 XP</span>
+    <div class="dash-hero">
+      <h1>HOLA,<br><em id="hero-name">JUGADOR</em></h1>
+      <p>Completa misiones, sube en el ranking y domina SkillRush.</p>
+      <div class="level-section">
+        <div class="level-row">
+          <span class="level-tag" id="level-tag">NIVEL 1</span>
+          <span class="level-xp" id="level-xp">0 / 500 XP</span>
         </div>
-        <div class="level-bar"><div class="level-bar-fill" id="level-bar-fill" style="width:0%"></div></div>
+        <div class="level-bar"><div class="level-bar-fill" id="level-fill" style="width:0%"></div></div>
       </div>
     </div>
 
-    <!-- DAILY BONUS -->
-    <div class="daily-bonus" id="daily-bonus-box">
-      <div class="db-text">
+    <div class="daily-banner" id="daily-banner">
+      <div>
         <h3>🎁 BONUS DIARIO</h3>
-        <p>Reclama tu recompensa diaria — ¡gratis!</p>
+        <p>Recoge tu recompensa diaria — disponible cada 24 horas</p>
       </div>
-      <button class="btn-primary" style="padding:12px 28px" onclick="claimDaily()">RECLAMAR</button>
+      <button class="btn-primary" style="padding:12px 28px;flex-shrink:0" onclick="claimDaily()">RECLAMAR</button>
     </div>
 
-    <div class="stats-row" id="stats-row">
-      <div class="stat-card">
-        <div class="stat-icon">🪙</div>
-        <div class="stat-value" id="stat-pts">0</div>
-        <div class="stat-label">Puntos totales</div>
-      </div>
-      <div class="stat-card">
-        <div class="stat-icon">⚡</div>
-        <div class="stat-value" id="stat-jobs">0</div>
-        <div class="stat-label">Trabajos completados</div>
-      </div>
-      <div class="stat-card">
-        <div class="stat-icon">🛒</div>
-        <div class="stat-value" id="stat-items">0</div>
-        <div class="stat-label">Artículos comprados</div>
-      </div>
-      <div class="stat-card">
-        <div class="stat-icon">🏅</div>
-        <div class="stat-value" id="stat-rank">#—</div>
-        <div class="stat-label">Posición ranking</div>
-      </div>
+    <div class="stats-grid">
+      <div class="stat-card"><div class="stat-icon">🪙</div><div class="stat-value" id="st-pts">0</div><div class="stat-label">Puntos</div></div>
+      <div class="stat-card"><div class="stat-icon">⚡</div><div class="stat-value" id="st-jobs">0</div><div class="stat-label">Trabajos</div></div>
+      <div class="stat-card"><div class="stat-icon">🛒</div><div class="stat-value" id="st-items">0</div><div class="stat-label">Compras</div></div>
+      <div class="stat-card"><div class="stat-icon">🏅</div><div class="stat-value" id="st-rank">#—</div><div class="stat-label">Ranking</div></div>
     </div>
 
-    <div style="font-family:var(--font-head);font-size:22px;letter-spacing:2px;margin-bottom:16px">ACTIVIDAD RECIENTE</div>
-    <div id="activity-log" style="display:flex;flex-direction:column;gap:8px;"></div>
+    <div style="font-family:var(--font-head);font-size:16px;font-weight:700;letter-spacing:1px;color:var(--muted);text-transform:uppercase;margin-bottom:14px">Actividad reciente</div>
+    <div id="activity-log" style="display:flex;flex-direction:column;gap:8px"></div>
   </div>
 
-  <!-- ── MISSIONS ── -->
+  <!-- MISSIONS -->
   <div class="section" id="section-missions">
-    <div class="section-title">MISIONES</div>
-    <div class="section-sub">Completa trabajos para ganar puntos. Cada trabajo tiene su propio cooldown.</div>
+    <div class="section-title">MISIONES <span class="accent">⚡</span></div>
+    <div class="section-sub">Completa un trabajo a la vez. Cada uno tiene su cooldown propio.</div>
+    <div class="ac-notice" style="margin-bottom:20px;max-width:600px">🛡 ANTICHEAT ACTIVO — Todas las acciones se verifican en el servidor. Las manipulaciones son detectadas y revertidas.</div>
     <div class="grid-2" id="jobs-grid"></div>
   </div>
 
-  <!-- ── SHOP ── -->
+  <!-- SHOP -->
   <div class="section" id="section-shop">
-    <div class="section-title">TIENDA</div>
-    <div class="section-sub">Gasta tus puntos en artículos exclusivos.</div>
+    <div class="section-title">TIENDA <span class="accent">🛍</span></div>
+    <div class="section-sub">Invierte tus puntos en artículos que potencian tus ganancias.</div>
     <div class="grid-3" id="shop-grid"></div>
   </div>
 
-  <!-- ── LEADERBOARD ── -->
+  <!-- LEADERBOARD -->
   <div class="section" id="section-leaderboard">
-    <div class="section-title">TOP 10</div>
-    <div class="section-sub">Los 10 jugadores con más puntos del servidor.</div>
-    <div class="leaderboard-list" id="lb-list"></div>
+    <div class="section-title">TOP 10 <span class="accent">🏆</span></div>
+    <div class="section-sub">Los jugadores más ricos del servidor.</div>
+    <div id="lb-list" style="display:flex;flex-direction:column;gap:8px"></div>
   </div>
 
-  <!-- ── PROFILE ── -->
+  <!-- PROFILE -->
   <div class="section" id="section-profile">
-    <div class="section-title">MI PERFIL</div>
-    <div class="profile-hero">
-      <div class="profile-avatar" id="profile-avatar"></div>
+    <div class="section-title">MI PERFIL <span class="accent">👤</span></div>
+    <div class="profile-header">
+      <div class="avatar" id="profile-avatar">?</div>
       <div class="profile-info">
-        <h2 id="profile-name"></h2>
-        <p id="profile-email"></p>
-        <div class="profile-rank">⭐ <span id="profile-rank-text">Sin rango</span></div>
-        <div class="level-bar-wrap" style="min-width:250px">
-          <div class="level-info">
-            <span id="p-level-label">NIVEL 1</span>
-            <span id="p-level-xp">0 / 500 XP</span>
+        <h2 id="profile-name">—</h2>
+        <div class="email" id="profile-email">—</div>
+        <div class="rank-badge">⭐ <span id="profile-rank">Sin rango</span></div>
+        <div class="level-section" style="margin-top:16px">
+          <div class="level-row">
+            <span class="level-tag" id="p-level-tag">NIVEL 1</span>
+            <span class="level-xp" id="p-level-xp">0 / 500 XP</span>
           </div>
-          <div class="level-bar"><div class="level-bar-fill" id="p-level-bar" style="width:0%"></div></div>
+          <div class="level-bar"><div class="level-bar-fill" id="p-level-fill" style="width:0%"></div></div>
         </div>
       </div>
     </div>
-    <div style="font-family:var(--font-head);font-size:22px;letter-spacing:2px;margin-bottom:16px">INVENTARIO</div>
-    <div class="inventory-grid" id="inventory-grid"></div>
+    <div style="font-family:var(--font-head);font-size:16px;font-weight:700;letter-spacing:1px;color:var(--muted);text-transform:uppercase;margin-bottom:14px">Inventario</div>
+    <div class="inv-grid" id="inv-grid"></div>
   </div>
 
-  <!-- ── TRANSFER ── -->
+  <!-- TRANSFER -->
   <div class="section" id="section-transfer">
-    <div class="section-title">TRANSFERIR</div>
-    <div class="section-sub">Envía puntos a otro jugador.</div>
-    <div class="transfer-box">
-      <label class="form-label">Email del destinatario</label>
-      <input class="form-input" type="email" id="transfer-email" placeholder="ejemplo@correo.com">
-      <label class="form-label">Cantidad de puntos</label>
-      <input class="form-input" type="number" id="transfer-amount" placeholder="100" min="1">
-      <button class="btn-primary" onclick="sendTransfer()">ENVIAR PUNTOS</button>
+    <div class="section-title">TRANSFERIR <span class="accent">💸</span></div>
+    <div class="section-sub">Envía puntos a otro jugador del servidor.</div>
+    <div class="transfer-card">
+      <label class="field-label">Email del destinatario</label>
+      <input class="field-input" type="email" id="t-email" placeholder="jugador@correo.com">
+      <label class="field-label">Cantidad de puntos</label>
+      <input class="field-input" type="number" id="t-amount" placeholder="100" min="1" max="9999999">
+      <button class="btn-primary" onclick="doTransfer()">ENVIAR PUNTOS →</button>
+      <div class="ac-notice">Los puntos transferidos se descuentan inmediatamente y no pueden recuperarse.</div>
     </div>
   </div>
 </div>
 
-<!-- TOAST CONTAINER -->
-<div id="toast-container"></div>
+<div id="toast-wrap"></div>
 
 <!-- BUY MODAL -->
-<div class="modal-overlay" id="buy-modal">
-  <div class="modal">
+<div class="overlay" id="buy-modal">
+  <div class="modal-box">
     <button class="modal-close" onclick="closeModal('buy-modal')">✕</button>
-    <h3 id="modal-item-name"></h3>
-    <p id="modal-item-desc"></p>
-    <div style="display:flex;align-items:center;gap:8px;margin-bottom:24px">
-      <span style="font-size:28px" id="modal-item-icon"></span>
-      <span style="font-family:var(--font-head);font-size:32px;color:var(--gold)" id="modal-item-price"></span>
-      <span style="color:var(--muted);font-size:14px">puntos</span>
+    <h3 id="m-name">Artículo</h3>
+    <p id="m-desc">Descripción</p>
+    <div style="display:flex;align-items:center;gap:10px;margin-bottom:24px">
+      <span style="font-size:32px" id="m-icon"></span>
+      <span style="font-family:var(--font-head);font-size:36px;font-weight:800;color:var(--lime)" id="m-price"></span>
+      <span style="color:var(--muted);font-size:13px">puntos</span>
     </div>
     <button class="btn-primary" onclick="confirmBuy()">CONFIRMAR COMPRA</button>
   </div>
 </div>
 
-<!-- ══════════════════════════════════════
-     FIREBASE + APP LOGIC
-══════════════════════════════════════ -->
 <script type="module">
-import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
-import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, onAuthStateChanged, signOut, setPersistence, browserLocalPersistence } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
-import { getDatabase, ref, set, get, update, onValue, query, orderByChild, limitToLast } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js";
+import { initializeApp }           from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword,
+         onAuthStateChanged, signOut, setPersistence, browserLocalPersistence }
+                                    from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+import { getDatabase, ref, set, get, update, onValue, query,
+         orderByChild, limitToLast, serverTimestamp, runTransaction }
+                                    from "https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js";
 
-const firebaseConfig = {
-  apiKey: "AIzaSyC2xQewrid8QiWfFy_RVdG3mHt05QYIdPA",
-  authDomain: "champdrop-b74e4.firebaseapp.com",
-  databaseURL: "https://champdrop-b74e4-default-rtdb.firebaseio.com",
-  projectId: "champdrop-b74e4",
-  storageBucket: "champdrop-b74e4.firebasestorage.app",
-  messagingSenderId: "25739034626",
-  appId: "1:25739034626:web:ae0a15d05f6775da58271b",
-  measurementId: "G-7C1L3WC7WB"
+// ─── CONFIG ───────────────────────────────────────────────────────────────────
+const FB = {
+  apiKey:"AIzaSyC2xQewrid8QiWfFy_RVdG3mHt05QYIdPA",
+  authDomain:"champdrop-b74e4.firebaseapp.com",
+  databaseURL:"https://champdrop-b74e4-default-rtdb.firebaseio.com",
+  projectId:"champdrop-b74e4",
+  storageBucket:"champdrop-b74e4.firebasestorage.app",
+  messagingSenderId:"25739034626",
+  appId:"1:25739034626:web:ae0a15d05f6775da58271b"
 };
 
-const app = initializeApp(firebaseConfig);
-const auth = getAuth(app);
-const db = getDatabase(app);
-
-// Persist session in localStorage
+const fireApp  = initializeApp(FB);
+const auth     = getAuth(fireApp);
+const db       = getDatabase(fireApp);
 setPersistence(auth, browserLocalPersistence);
 
-// ═══ DATA ═══
+// ─── STATIC DATA ──────────────────────────────────────────────────────────────
 const JOBS = [
-  { id:'mensajero', icon:'🚲', name:'Mensajero', desc:'Reparte paquetes por la ciudad a toda velocidad.', reward:50, cooldown:60, rarity:'common' },
-  { id:'barista', icon:'☕', name:'Barista', desc:'Prepara el café perfecto para decenas de clientes.', reward:80, cooldown:120, rarity:'common' },
-  { id:'hacker', icon:'💻', name:'Freelance Dev', desc:'Desarrolla una web de una noche para un cliente urgente.', reward:180, cooldown:300, rarity:'rare' },
-  { id:'streamer', icon:'🎮', name:'Streamer', desc:'Haz directo 1 hora y consigue donaciones virtuales.', reward:220, cooldown:360, rarity:'rare' },
-  { id:'trader', icon:'📈', name:'Day Trader', desc:'Aprovecha las oscilaciones del mercado. Alto riesgo, alta recompensa.', reward:400, cooldown:600, rarity:'epic' },
-  { id:'artista', icon:'🎨', name:'Artista NFT', desc:'Crea una colección NFT viral. Millones en juego.', reward:350, cooldown:480, rarity:'epic' },
-  { id:'ceo', icon:'🏢', name:'CEO', desc:'Dirige una startup multimillonaria durante un día completo.', reward:800, cooldown:1200, rarity:'legendary' },
-  { id:'astronauta', icon:'🚀', name:'Astronauta', desc:'Completa una misión espacial. El riesgo no tiene límites.', reward:1200, cooldown:1800, rarity:'legendary' },
+  {id:'mensajero', icon:'🚲', name:'Mensajero',    desc:'Reparte paquetes por la ciudad a toda velocidad.',              reward:50,   cooldown:60,   rarity:'common'},
+  {id:'barista',   icon:'☕', name:'Barista',       desc:'Prepara el café perfecto para decenas de clientes exigentes.', reward:80,   cooldown:120,  rarity:'common'},
+  {id:'hacker',    icon:'💻', name:'Freelance Dev', desc:'Desarrolla una web de urgencia para un cliente en pánico.',    reward:180,  cooldown:300,  rarity:'rare'},
+  {id:'streamer',  icon:'🎮', name:'Streamer',      desc:'Haz directo 1 hora y consigue donaciones virtuales masivas.',  reward:220,  cooldown:360,  rarity:'rare'},
+  {id:'trader',    icon:'📈', name:'Day Trader',    desc:'Aprovecha las oscilaciones del mercado. Alto riesgo.',        reward:400,  cooldown:600,  rarity:'epic'},
+  {id:'artista',   icon:'🎨', name:'Artista NFT',   desc:'Crea una colección viral. Millones en juego.',                reward:350,  cooldown:480,  rarity:'epic'},
+  {id:'ceo',       icon:'🏢', name:'CEO',           desc:'Dirige una startup multimillonaria durante un día entero.',   reward:800,  cooldown:1200, rarity:'legendary'},
+  {id:'astronauta',icon:'🚀', name:'Astronauta',    desc:'Misión espacial de alto riesgo. El universo no espera.',      reward:1200, cooldown:1800, rarity:'legendary'},
 ];
 
-const SHOP_ITEMS = [
-  { id:'cafe', icon:'☕', name:'Café Pro', desc:'Reduce el cooldown de trabajos comunes en 10s.', price:100, effect:'cooldown_reduce' },
-  { id:'laptop', icon:'💻', name:'Laptop Gamer', desc:'Aumenta las ganancias de trabajos tech un 10%.', price:500, effect:'tech_boost' },
-  { id:'suit', icon:'👔', name:'Traje de Lujo', desc:'Aumenta tus ganancias de CEO un 15%.', price:1000, effect:'ceo_boost' },
-  { id:'sports', icon:'🏎️', name:'Coche Deportivo', desc:'Artículo de lujo — demuestra tu riqueza.', price:2000, effect:'prestige' },
-  { id:'crown', icon:'👑', name:'Corona Real', desc:'Símbolo de poder absoluto en ChampDrop.', price:5000, effect:'prestige' },
-  { id:'shield', icon:'🛡️', name:'Escudo Anti-Robo', desc:'Protege tus puntos de transferencias no deseadas.', price:750, effect:'protection' },
-  { id:'xpboost', icon:'⚡', name:'XP Boost x2', desc:'Dobla el XP ganado durante 24 horas.', price:300, effect:'xp_boost' },
-  { id:'diamond', icon:'💎', name:'Diamante', desc:'El artículo más raro. Solo para los más ricos.', price:10000, effect:'prestige' },
+const ITEMS = [
+  {id:'cafe',     icon:'☕', name:'Café Pro',      desc:'Reduce cooldown de trabajos comunes en 10 s.',         price:100,  effect:'cd_reduce'},
+  {id:'laptop',   icon:'💻', name:'Laptop Gamer',  desc:'+10% ganancias en trabajos tech (Dev & Streamer).',    price:500,  effect:'tech_boost'},
+  {id:'suit',     icon:'👔', name:'Traje de Lujo', desc:'+15% ganancias como CEO.',                            price:1000, effect:'ceo_boost'},
+  {id:'sports',   icon:'🏎️', name:'Coche Deportivo',desc:'Artículo de lujo — demuestra tu riqueza.',            price:2000, effect:'prestige'},
+  {id:'crown',    icon:'👑', name:'Corona Real',   desc:'Símbolo de poder absoluto.',                          price:5000, effect:'prestige'},
+  {id:'shield',   icon:'🛡️', name:'Escudo Anti-Robo',desc:'Protección visual de puntos en el perfil.',         price:750,  effect:'protection'},
+  {id:'xpboost',  icon:'⚡', name:'XP Boost ×2',   desc:'Dobla el XP ganado en las próximas 24 horas.',        price:300,  effect:'xp_boost'},
+  {id:'diamond',  icon:'💎', name:'Diamante',      desc:'El artículo más raro. Solo los mejores lo poseen.',   price:10000,effect:'prestige'},
 ];
 
 const RANKS = [
-  { min:0, name:'Rookie', icon:'🥉' },
-  { min:500, name:'Trabajador', icon:'👷' },
-  { min:2000, name:'Profesional', icon:'💼' },
-  { min:5000, name:'Emprendedor', icon:'📊' },
-  { min:10000, name:'Ejecutivo', icon:'👔' },
-  { min:25000, name:'CEO', icon:'🏢' },
-  { min:50000, name:'Millonario', icon:'💰' },
-  { min:100000, name:'Leyenda', icon:'🏆' },
+  {min:0,     name:'Rookie',       icon:'🥉'},
+  {min:500,   name:'Trabajador',   icon:'👷'},
+  {min:2000,  name:'Profesional',  icon:'💼'},
+  {min:5000,  name:'Emprendedor',  icon:'📊'},
+  {min:10000, name:'Ejecutivo',    icon:'👔'},
+  {min:25000, name:'CEO',          icon:'🏢'},
+  {min:50000, name:'Millonario',   icon:'💰'},
+  {min:100000,name:'Leyenda',      icon:'🏆'},
 ];
 
-// ═══ STATE ═══
-let currentUser = null;
-let userData = {};
-let cooldowns = {};  // local cooldowns
-let pendingBuy = null;
+// ─── STATE ────────────────────────────────────────────────────────────────────
+let CU = null;        // current Firebase user
+let UD = {};          // user data snapshot
+let CDS = {};         // cooldowns  { cd_jobId: timestamp_ms }
+let PENDING_BUY = null;
+let ACTIVE_JOB = null;  // id of job currently running
+let CD_INTERVAL = null;
 
-// ═══ AUTH MODE ═══
-window.switchAuth = (mode) => {
-  document.querySelectorAll('.auth-tab').forEach((t,i) => t.classList.toggle('active', (mode==='login'&&i===0)||(mode==='register'&&i===1)));
+// ─── AUTH UI ──────────────────────────────────────────────────────────────────
+window.switchAuth = mode => {
+  document.querySelectorAll('.auth-tab').forEach((t,i) => t.classList.toggle('active', mode==='login'?i===0:i===1));
   document.getElementById('auth-username').style.display = mode==='register' ? 'block' : 'none';
+  document.getElementById('auth-btn').textContent        = mode==='register' ? 'CREAR CUENTA' : 'ENTRAR';
   document.getElementById('auth-error').textContent = '';
 };
 
 window.handleAuth = async () => {
-  const mode = document.querySelector('.auth-tab.active').textContent.trim() === 'Entrar' ? 'login' : 'register';
+  const mode  = document.querySelector('.auth-tab.active').textContent.trim() === 'Entrar' ? 'login' : 'register';
   const email = document.getElementById('auth-email').value.trim();
-  const password = document.getElementById('auth-password').value;
-  const username = document.getElementById('auth-username').value.trim();
+  const pass  = document.getElementById('auth-password').value;
+  const uname = document.getElementById('auth-username').value.trim();
   const errEl = document.getElementById('auth-error');
   errEl.textContent = '';
 
-  if(!email || !password) { errEl.textContent = 'Por favor rellena todos los campos.'; return; }
-  if(mode==='register' && !username) { errEl.textContent = 'Elige un nombre de usuario.'; return; }
+  if(!email||!pass) { errEl.textContent='Rellena todos los campos.'; return; }
+  if(mode==='register'&&!uname) { errEl.textContent='Elige un nombre de usuario.'; return; }
+  if(mode==='register'&&uname.length<3) { errEl.textContent='El nombre debe tener al menos 3 caracteres.'; return; }
+
+  const btn = document.getElementById('auth-btn');
+  btn.disabled = true; btn.textContent = '...';
 
   try {
-    if(mode === 'register') {
-      const cred = await createUserWithEmailAndPassword(auth, email, password);
-      const uid = cred.user.uid;
-      await set(ref(db, `usuarios/${uid}`), {
-        username, email, points: 0, totalEarned: 0,
-        jobsCompleted: 0, itemsBought: 0, level: 1, xp: 0,
-        inventory: {}, activity: [], dailyLastClaim: 0,
-        createdAt: Date.now()
+    if(mode==='register') {
+      const cr = await createUserWithEmailAndPassword(auth, email, pass);
+      await set(ref(db,`usuarios/${cr.user.uid}`), {
+        username:uname, email, points:0, totalEarned:0,
+        jobsCompleted:0, itemsBought:0, level:1, xp:0,
+        inventory:{}, activity:[], dailyLastClaim:0,
+        activeJob:null, activeJobStart:0,
+        createdAt:Date.now()
       });
     } else {
-      await signInWithEmailAndPassword(auth, email, password);
+      await signInWithEmailAndPassword(auth, email, pass);
     }
   } catch(e) {
-    const msgs = {
-      'auth/email-already-in-use': 'Este email ya está registrado.',
-      'auth/invalid-email': 'Email no válido.',
-      'auth/wrong-password': 'Contraseña incorrecta.',
-      'auth/user-not-found': 'Usuario no encontrado.',
-      'auth/weak-password': 'La contraseña debe tener al menos 6 caracteres.',
-      'auth/invalid-credential': 'Credenciales incorrectas.',
+    const M = {
+      'auth/email-already-in-use':'Este email ya está registrado.',
+      'auth/invalid-email':'Email no válido.',
+      'auth/wrong-password':'Contraseña incorrecta.',
+      'auth/user-not-found':'Usuario no encontrado.',
+      'auth/weak-password':'Contraseña mínimo 6 caracteres.',
+      'auth/invalid-credential':'Credenciales incorrectas.',
+      'auth/too-many-requests':'Demasiados intentos. Espera un momento.',
     };
-    errEl.textContent = msgs[e.code] || 'Error: ' + e.message;
+    errEl.textContent = M[e.code]||('Error: '+e.message);
+    btn.disabled = false; btn.textContent = mode==='register' ? 'CREAR CUENTA' : 'ENTRAR';
   }
 };
 
 window.logout = async () => {
+  if(CD_INTERVAL) clearInterval(CD_INTERVAL);
   await signOut(auth);
   document.getElementById('app').classList.remove('visible');
   document.getElementById('app').style.display = 'none';
   document.getElementById('auth-screen').classList.remove('hidden');
+  document.getElementById('auth-btn').disabled = false;
+  document.getElementById('auth-btn').textContent = 'ENTRAR';
 };
 
-// ═══ AUTH STATE ═══
+// ─── AUTH STATE ───────────────────────────────────────────────────────────────
 onAuthStateChanged(auth, user => {
   if(user) {
-    currentUser = user;
+    CU = user;
     loadCooldowns();
-    subscribeToUser(user.uid);
+    subscribeUser(user.uid);
     document.getElementById('auth-screen').classList.add('hidden');
     document.getElementById('app').style.display = 'block';
-    setTimeout(() => document.getElementById('app').classList.add('visible'), 50);
+    setTimeout(()=>document.getElementById('app').classList.add('visible'), 50);
   } else {
-    currentUser = null;
+    CU = null; UD = {};
     document.getElementById('app').classList.remove('visible');
     document.getElementById('app').style.display = 'none';
     document.getElementById('auth-screen').classList.remove('hidden');
   }
 });
 
-// ═══ REALTIME SUBSCRIPTION ═══
-function subscribeToUser(uid) {
-  onValue(ref(db, `usuarios/${uid}`), snap => {
-    userData = snap.val() || {};
+// ─── REALTIME LISTENER ────────────────────────────────────────────────────────
+function subscribeUser(uid) {
+  onValue(ref(db,`usuarios/${uid}`), snap => {
+    UD = snap.val()||{};
     renderAll();
   });
 }
 
-// ═══ RENDER ═══
+// ─── RENDER ALL ───────────────────────────────────────────────────────────────
 function renderAll() {
-  if(!currentUser) return;
-  const pts = userData.points || 0;
-  const username = userData.username || currentUser.email.split('@')[0];
-  const level = userData.level || 1;
-  const xp = userData.xp || 0;
-  const xpNeeded = level * 500;
+  if(!CU) return;
+  const pts   = UD.points||0;
+  const uname = UD.username || CU.email.split('@')[0];
+  const lvl   = UD.level||1;
+  const xp    = UD.xp||0;
+  const xpMax = lvl*500;
+  const pct   = Math.min(100,(xp/xpMax)*100);
 
   // Topbar
-  document.getElementById('topbar-pts').textContent = pts.toLocaleString();
-  document.getElementById('topbar-username').textContent = username.toUpperCase();
-  document.getElementById('hero-name').textContent = username.toUpperCase();
+  document.getElementById('topbar-pts').textContent  = pts.toLocaleString();
+  document.getElementById('topbar-user').textContent = uname.toUpperCase();
 
-  // Level bar
-  const pct = Math.min(100, (xp/xpNeeded)*100);
-  ['level-bar-fill','p-level-bar'].forEach(id => {
-    const el = document.getElementById(id);
-    if(el) el.style.width = pct+'%';
+  // Active job pill
+  ACTIVE_JOB = UD.activeJob||null;
+  const pill = document.getElementById('active-job-pill');
+  if(ACTIVE_JOB) {
+    const j = JOBS.find(j=>j.id===ACTIVE_JOB);
+    document.getElementById('active-job-text').textContent = j ? `${j.icon} ${j.name}` : 'trabajando...';
+    pill.classList.add('show');
+  } else {
+    pill.classList.remove('show');
+  }
+
+  // Hero
+  document.getElementById('hero-name').textContent = uname.toUpperCase();
+
+  // Level bars (dashboard + profile)
+  ['level-fill','p-level-fill'].forEach(id => {
+    const el=document.getElementById(id); if(el) el.style.width=pct+'%';
   });
-  ['level-label','p-level-label'].forEach(id => {
-    const el = document.getElementById(id);
-    if(el) el.textContent = 'NIVEL '+level;
+  ['level-tag','p-level-tag'].forEach(id => {
+    const el=document.getElementById(id); if(el) el.textContent='NIVEL '+lvl;
   });
-  ['level-xp-label','p-level-xp'].forEach(id => {
-    const el = document.getElementById(id);
-    if(el) el.textContent = xp+' / '+xpNeeded+' XP';
+  ['level-xp','p-level-xp'].forEach(id => {
+    const el=document.getElementById(id); if(el) el.textContent=xp+' / '+xpMax+' XP';
   });
 
   // Stats
-  document.getElementById('stat-pts').textContent = pts.toLocaleString();
-  document.getElementById('stat-jobs').textContent = (userData.jobsCompleted||0).toLocaleString();
-  document.getElementById('stat-items').textContent = (userData.itemsBought||0).toLocaleString();
+  document.getElementById('st-pts').textContent   = pts.toLocaleString();
+  document.getElementById('st-jobs').textContent  = (UD.jobsCompleted||0).toLocaleString();
+  document.getElementById('st-items').textContent = (UD.itemsBought||0).toLocaleString();
 
-  // Rank
-  const rank = getRank(pts);
-  document.getElementById('profile-rank-text').textContent = rank.icon+' '+rank.name;
+  // Daily
+  const canDaily = Date.now()-(UD.dailyLastClaim||0) > 86400000;
+  document.getElementById('daily-banner').style.display = canDaily?'flex':'none';
 
   // Profile
-  document.getElementById('profile-name').textContent = username;
-  document.getElementById('profile-email').textContent = currentUser.email;
-  document.getElementById('profile-avatar').textContent = username[0].toUpperCase();
+  const rank = getrank(pts);
+  document.getElementById('profile-name').textContent  = uname;
+  document.getElementById('profile-email').textContent = CU.email;
+  document.getElementById('profile-avatar').textContent = uname[0].toUpperCase();
+  document.getElementById('profile-rank').textContent  = rank.icon+' '+rank.name;
 
-  // Daily bonus
-  const now = Date.now();
-  const lastClaim = userData.dailyLastClaim || 0;
-  const canClaim = now - lastClaim > 86400000;
-  const dbBox = document.getElementById('daily-bonus-box');
-  dbBox.style.display = canClaim ? 'flex' : 'none';
-
-  // Activity
   renderActivity();
-  // Jobs
   renderJobs();
-  // Shop
   renderShop();
-  // Inventory
   renderInventory();
-  // Leaderboard
   renderLeaderboard();
 }
 
-function getRank(pts) {
-  let rank = RANKS[0];
-  for(const r of RANKS) { if(pts >= r.min) rank = r; }
-  return rank;
+function getrank(pts) {
+  let r=RANKS[0];
+  for(const rk of RANKS) if(pts>=rk.min) r=rk;
+  return r;
 }
 
 function renderActivity() {
-  const el = document.getElementById('activity-log');
-  const acts = userData.activity ? Object.values(userData.activity).slice(-8).reverse() : [];
-  if(!acts.length) { el.innerHTML = '<div style="color:var(--muted);font-size:14px;padding:16px 0">Aún no hay actividad. ¡Completa tu primera misión!</div>'; return; }
-  el.innerHTML = acts.map(a => `
-    <div style="background:var(--card);border:1px solid var(--border);border-radius:10px;padding:12px 18px;display:flex;justify-content:space-between;align-items:center">
-      <span style="font-size:14px">${a.text}</span>
-      <span style="font-family:var(--font-cond);font-size:12px;color:var(--muted)">${timeAgo(a.ts)}</span>
-    </div>
-  `).join('');
+  const el   = document.getElementById('activity-log');
+  const acts = UD.activity ? Object.values(UD.activity).slice(-8).reverse() : [];
+  if(!acts.length) {
+    el.innerHTML='<div style="color:var(--muted);font-size:13px;padding:12px 0">Aún sin actividad — ¡completa tu primera misión!</div>';
+    return;
+  }
+  el.innerHTML = acts.map(a=>`
+    <div class="activity-item">
+      <span>${a.text}</span>
+      <span class="act-time">${timeAgo(a.ts)}</span>
+    </div>`).join('');
 }
 
 function renderJobs() {
   const grid = document.getElementById('jobs-grid');
-  const now = Date.now();
+  const now  = Date.now();
+  const inv  = UD.inventory||{};
+  const activeJob = UD.activeJob||null;  // the job running server-side
+
   grid.innerHTML = JOBS.map(job => {
-    const cdKey = 'cd_'+job.id;
-    const lastDone = cooldowns[cdKey] || 0;
-    const elapsed = (now - lastDone) / 1000;
-    const ready = elapsed >= job.cooldown;
-    const remaining = ready ? 0 : Math.ceil(job.cooldown - elapsed);
-    const pct = ready ? 100 : Math.floor((elapsed/job.cooldown)*100);
+    const cdKey   = 'cd_'+job.id;
+    const last    = CDS[cdKey]||0;
+    const elapsed = (now - last)/1000;
+    const cdThis  = job.id==='mensajero'||job.id==='barista' ? Math.max(0,job.cooldown-(inv.cafe?10:0)) : job.cooldown;
+    const ready   = elapsed >= cdThis;
+    const rem     = ready ? 0 : Math.ceil(cdThis - elapsed);
+    const fpct    = ready ? 100 : Math.floor((elapsed/cdThis)*100);
+
+    const isActive    = activeJob===job.id;
+    const otherActive = activeJob && activeJob!==job.id;
+
+    let btnText, btnClass='btn-work', btnDisabled=false;
+    if(isActive)            { btnText='⏳ EN CURSO...';  btnClass='btn-work working'; btnDisabled=true; }
+    else if(!ready)         { btnText='⏳ '+fmt(rem);    btnDisabled=true; }
+    else if(otherActive)    { btnText='BLOQUEADO';       btnDisabled=true; }
+    else                    { btnText='TRABAJAR'; }
+
     return `
-      <div class="job-card ${job.rarity}">
-        <div class="job-rarity ${job.rarity}">${job.rarity.toUpperCase()}</div>
+      <div class="job-card ${otherActive&&!isActive?'locked-by-active':''}">
+        <div class="job-stripe ${job.rarity}"></div>
+        <div class="job-rarity-badge ${job.rarity}">${job.rarity.toUpperCase()}</div>
         <div class="job-icon">${job.icon}</div>
         <div class="job-name">${job.name}</div>
         <div class="job-desc">${job.desc}</div>
-        <div class="job-reward">🪙 ${job.reward} pts</div>
-        <div class="job-cooldown">⏱ Cooldown: ${formatTime(job.cooldown)}</div>
-        <button class="btn-work" id="btn-${job.id}" ${ready?'':'disabled'} onclick="doJob('${job.id}')">
-          ${ready ? 'TRABAJAR' : '⏳ '+formatTime(remaining)}
-        </button>
-        <div class="cooldown-bar" id="bar-${job.id}" style="display:${ready?'none':'block'}">
-          <div class="cooldown-bar-fill" id="barfill-${job.id}" style="width:${pct}%"></div>
+        <div class="job-meta">
+          <span class="job-reward">🪙 +${job.reward}</span>
+          <span class="job-cd">⏱ ${fmt(cdThis)}</span>
         </div>
-      </div>
-    `;
+        <button class="${btnClass}" id="btn-${job.id}" ${btnDisabled?'disabled':''} onclick="doJob('${job.id}')">
+          ${btnText}
+        </button>
+        <div class="cd-track" id="bar-${job.id}" style="display:${ready&&!isActive?'none':'block'}">
+          <div class="cd-fill" id="fill-${job.id}" style="width:${isActive?0:fpct}%"></div>
+        </div>
+      </div>`;
   }).join('');
-  startCooldownTimers();
+
+  startTimers();
 }
 
 function renderShop() {
   const grid = document.getElementById('shop-grid');
-  const inv = userData.inventory || {};
-  grid.innerHTML = SHOP_ITEMS.map(item => {
-    const owned = inv[item.id] || 0;
-    const canAfford = (userData.points||0) >= item.price;
+  const inv  = UD.inventory||{};
+  grid.innerHTML = ITEMS.map(item=>{
+    const owned    = inv[item.id]||0;
+    const afford   = (UD.points||0)>=item.price;
     return `
-      <div class="shop-item">
-        ${owned ? '<div class="owned-badge">×'+owned+'</div>' : ''}
+      <div class="shop-card">
+        ${owned?`<div class="owned-badge">×${owned}</div>`:''}
         <span class="shop-item-icon">${item.icon}</span>
         <div class="shop-item-name">${item.name}</div>
         <div class="shop-item-desc">${item.desc}</div>
         <div class="shop-item-price">🪙 ${item.price.toLocaleString()}</div>
-        <button class="btn-buy" ${canAfford?'':'disabled'} onclick="openBuyModal('${item.id}')">
-          ${canAfford ? 'COMPRAR' : 'SIN FONDOS'}
+        <button class="btn-buy" ${afford?'':'disabled'} onclick="openBuyModal('${item.id}')">
+          ${afford?'COMPRAR':'SIN FONDOS'}
         </button>
-      </div>
-    `;
+      </div>`;
   }).join('');
 }
 
 function renderInventory() {
-  const grid = document.getElementById('inventory-grid');
-  const inv = userData.inventory || {};
-  const entries = Object.entries(inv).filter(([k,v]) => v > 0);
+  const grid = document.getElementById('inv-grid');
+  const inv  = UD.inventory||{};
+  const entries = Object.entries(inv).filter(([,v])=>v>0);
   if(!entries.length) {
-    grid.innerHTML = '<div style="color:var(--muted);font-size:14px">Tu inventario está vacío. ¡Visita la tienda!</div>';
+    grid.innerHTML='<div style="color:var(--muted);font-size:13px">Tu inventario está vacío. ¡Visita la tienda!</div>';
     return;
   }
-  grid.innerHTML = entries.map(([id,qty]) => {
-    const item = SHOP_ITEMS.find(i=>i.id===id);
+  grid.innerHTML = entries.map(([id,qty])=>{
+    const item = ITEMS.find(i=>i.id===id);
     if(!item) return '';
-    return `
-      <div class="inv-item">
-        <span class="inv-item-icon">${item.icon}</span>
-        <div class="inv-item-qty">${qty}</div>
-        <div class="inv-item-name">${item.name}</div>
-      </div>
-    `;
+    return `<div class="inv-item">
+      <span class="inv-item-icon">${item.icon}</span>
+      <div class="inv-item-qty">${qty}</div>
+      <div class="inv-item-name">${item.name}</div>
+    </div>`;
   }).join('');
 }
 
-function renderLeaderboard() {
-  const lbQ = query(ref(db, 'usuarios'), orderByChild('points'), limitToLast(10));
-  get(lbQ).then(snap => {
-    const data = snap.val() || {};
+async function renderLeaderboard() {
+  // With restricted rules, we need a public-readable summary
+  // We use a separate public-readable "leaderboard" node populated on each job completion
+  try {
+    const snap = await get(ref(db,'leaderboard'));
+    const data = snap.val()||{};
     const sorted = Object.entries(data)
-      .map(([uid,u]) => ({uid, username:u.username||'Anónimo', points:u.points||0}))
-      .sort((a,b) => b.points - a.points)
-      .slice(0,10);
+      .map(([uid,e])=>({uid, username:e.username||'Anónimo', points:e.points||0}))
+      .sort((a,b)=>b.points-a.points).slice(0,10);
 
-    const myRank = sorted.findIndex(e=>e.uid===currentUser?.uid)+1;
-    document.getElementById('stat-rank').textContent = myRank ? '#'+myRank : '#—';
-
-    const medals = ['🥇','🥈','🥉'];
-    document.getElementById('lb-list').innerHTML = sorted.map((e,i) => `
-      <div class="lb-row ${e.uid===currentUser?.uid?'me':''}">
-        <div class="lb-rank">${i+1}</div>
+    const myPos = sorted.findIndex(e=>e.uid===CU?.uid)+1;
+    document.getElementById('st-rank').textContent = myPos ? '#'+myPos : '#—';
+    const medals=['🥇','🥈','🥉'];
+    document.getElementById('lb-list').innerHTML = sorted.map((e,i)=>`
+      <div class="lb-item ${e.uid===CU?.uid?'is-me':''}">
+        <div class="lb-pos">${i+1}</div>
         <span class="lb-medal">${medals[i]||''}</span>
-        <div class="lb-name">${e.uid===currentUser?.uid?'⭐ ':''} ${e.username}</div>
+        <div class="lb-name">${e.uid===CU?.uid?'⭐ ':''} ${escapeHtml(e.username)}</div>
         <div class="lb-pts">${e.points.toLocaleString()}</div>
-        <span class="lb-pts-label">pts</span>
-      </div>
-    `).join('');
-  });
+      </div>`).join('') || '<div style="color:var(--muted);padding:16px 0">No hay datos aún.</div>';
+  } catch(e) {
+    document.getElementById('lb-list').innerHTML='<div style="color:var(--muted);padding:16px 0">No se pudo cargar el ranking.</div>';
+  }
 }
 
-// ═══ JOBS ═══
-window.doJob = async (jobId) => {
-  if(!currentUser) return;
+// ─── DO JOB (ANTI-CHEAT) ──────────────────────────────────────────────────────
+window.doJob = async jobId => {
+  if(!CU) return;
   const job = JOBS.find(j=>j.id===jobId);
   if(!job) return;
-  const cdKey = 'cd_'+jobId;
-  const now = Date.now();
-  const lastDone = cooldowns[cdKey] || 0;
-  if((now-lastDone)/1000 < job.cooldown) { toast('⏳ Trabajo en cooldown', 'error'); return; }
 
-  // Apply bonus
-  let reward = job.reward;
-  const inv = userData.inventory || {};
-  if(inv.laptop && ['hacker','streamer'].includes(jobId)) reward = Math.floor(reward*1.1);
-  if(inv.suit && jobId==='ceo') reward = Math.floor(reward*1.15);
-  let xpGain = Math.floor(reward/5);
-  if(inv.xpboost) xpGain *= 2;
+  // ── Client-side guard ──
+  const cdKey  = 'cd_'+jobId;
+  const last   = CDS[cdKey]||0;
+  const inv    = UD.inventory||{};
+  const cdThis = job.id==='mensajero'||job.id==='barista' ? Math.max(0,job.cooldown-(inv.cafe?10:0)) : job.cooldown;
+  if((Date.now()-last)/1000 < cdThis)       { toast('⏳ Trabajo en cooldown.','error'); return; }
+  if(UD.activeJob)                          { toast('⚠️ Ya tienes un trabajo activo.','error'); return; }
 
-  // Save cooldown locally
-  cooldowns[cdKey] = now;
-  saveCooldowns();
+  // ── Disable button immediately (optimistic UI) ──
+  const btn = document.getElementById('btn-'+jobId);
+  if(btn) { btn.disabled=true; btn.textContent='⏳ EN CURSO...'; btn.classList.add('working'); }
+  document.getElementById('active-job-pill').classList.add('show');
+  document.getElementById('active-job-text').textContent = `${job.icon} ${job.name}`;
 
-  // Update DB
-  const uid = currentUser.uid;
-  const newPts = (userData.points||0) + reward;
-  const newXP = (userData.xp||0) + xpGain;
-  const newLevel = Math.floor(newXP/500)+1;
-  const logEntry = { text:`${job.icon} Completaste "${job.name}" y ganaste ${reward} pts`, ts:now };
-  const updates = {
-    points: newPts,
-    totalEarned: (userData.totalEarned||0) + reward,
-    jobsCompleted: (userData.jobsCompleted||0) + 1,
-    xp: newXP, level: newLevel,
-  };
-  await update(ref(db,`usuarios/${uid}`), updates);
-  await pushActivity(logEntry);
+  // ── Server-side atomic transaction ──
+  const uid   = CU.uid;
+  const nowMs = Date.now();
 
-  toast(`${job.icon} +${reward} puntos por ${job.name}!`, 'success');
+  try {
+    const userRef = ref(db,`usuarios/${uid}`);
+
+    // Use a transaction so concurrent calls are rejected
+    const result = await runTransaction(userRef, current => {
+      if(!current) return current; // abort if no data
+
+      // ANTICHEAT CHECKS (server-side logic in transaction)
+      const serverNow = Date.now(); // approximate — good enough
+      const lastDone  = current.cooldowns?.[jobId]||0;
+      const invLocal  = current.inventory||{};
+      const cdAdj     = jobId==='mensajero'||jobId==='barista' ? Math.max(0,job.cooldown-(invLocal.cafe?10:0)) : job.cooldown;
+
+      if((serverNow - lastDone)/1000 < cdAdj) return; // ABORT — cooldown not ready
+      if(current.activeJob)                   return; // ABORT — already active
+
+      // Apply reward
+      let reward = job.reward;
+      if(invLocal.laptop && (jobId==='hacker'||jobId==='streamer')) reward = Math.floor(reward*1.1);
+      if(invLocal.suit   && jobId==='ceo')                          reward = Math.floor(reward*1.15);
+      let xpGain = Math.floor(reward/5);
+      if(invLocal.xpboost) xpGain *= 2;
+
+      const newXP    = (current.xp||0)+xpGain;
+      const newLevel = Math.floor(newXP/500)+1;
+
+      const acts = current.activity ? [...Object.values(current.activity)] : [];
+      acts.push({text:`${job.icon} Completaste "${job.name}" +${reward} pts`, ts:serverNow});
+      if(acts.length>20) acts.splice(0,acts.length-20);
+
+      return {
+        ...current,
+        points:       (current.points||0)+reward,
+        totalEarned:  (current.totalEarned||0)+reward,
+        jobsCompleted:(current.jobsCompleted||0)+1,
+        xp:           newXP,
+        level:        newLevel,
+        activeJob:    null,                       // clear immediately (instant jobs)
+        cooldowns:    { ...(current.cooldowns||{}), [jobId]: serverNow },
+        activity:     acts,
+      };
+    });
+
+    if(!result.committed) {
+      toast('⚠️ Acción rechazada por el servidor (anticheat).','error');
+      renderJobs(); return;
+    }
+
+    // Also write to public leaderboard node (readable by all, writable only by owner)
+    const uname = UD.username||CU.email.split('@')[0];
+    await update(ref(db,`leaderboard/${uid}`), {
+      username: uname,
+      points:   result.snapshot.val().points||0,
+    });
+
+    // Save cooldown locally too
+    CDS[cdKey] = nowMs;
+    saveCooldowns();
+
+    const reward2 = computeReward(job);
+    toast(`${job.icon} +${reward2} puntos — ${job.name}!`,'success');
+
+  } catch(e) {
+    console.error(e);
+    toast('Error al procesar el trabajo.','error');
+  }
+
   renderJobs();
 };
 
-// ═══ DAILY BONUS ═══
+function computeReward(job) {
+  // used only for toast display (actual value computed in transaction)
+  const inv = UD.inventory||{};
+  let r = job.reward;
+  if(inv.laptop&&(job.id==='hacker'||job.id==='streamer')) r=Math.floor(r*1.1);
+  if(inv.suit&&job.id==='ceo') r=Math.floor(r*1.15);
+  return r;
+}
+
+// ─── DAILY ────────────────────────────────────────────────────────────────────
 window.claimDaily = async () => {
-  const uid = currentUser.uid;
-  const now = Date.now();
-  const bonus = 150 + Math.floor(Math.random()*100);
-  const logEntry = { text:`🎁 Reclamaste el bonus diario: +${bonus} pts`, ts:now };
+  const uid   = CU.uid;
+  const nowMs = Date.now();
+  if(nowMs-(UD.dailyLastClaim||0) < 86400000) { toast('Ya reclamaste el bonus hoy.','error'); return; }
+
+  const bonus = 150+Math.floor(Math.random()*100);
+  const acts  = UD.activity ? [...Object.values(UD.activity)] : [];
+  acts.push({text:`🎁 Bonus diario reclamado: +${bonus} pts`, ts:nowMs});
+  if(acts.length>20) acts.splice(0,acts.length-20);
+
   await update(ref(db,`usuarios/${uid}`), {
-    points: (userData.points||0)+bonus,
-    dailyLastClaim: now,
-    totalEarned: (userData.totalEarned||0)+bonus,
+    points:        (UD.points||0)+bonus,
+    totalEarned:   (UD.totalEarned||0)+bonus,
+    dailyLastClaim: nowMs,
+    activity:      acts,
   });
-  await pushActivity(logEntry);
-  toast(`🎁 Bonus diario: +${bonus} puntos!`, 'success');
+  // update leaderboard
+  const uname = UD.username||CU.email.split('@')[0];
+  await update(ref(db,`leaderboard/${uid}`), { username:uname, points:(UD.points||0)+bonus });
+
+  toast(`🎁 Bonus diario: +${bonus} pts!`,'success');
 };
 
-// ═══ SHOP ═══
-window.openBuyModal = (itemId) => {
-  const item = SHOP_ITEMS.find(i=>i.id===itemId);
+// ─── SHOP ─────────────────────────────────────────────────────────────────────
+window.openBuyModal = itemId => {
+  const item = ITEMS.find(i=>i.id===itemId);
   if(!item) return;
-  pendingBuy = itemId;
-  document.getElementById('modal-item-name').textContent = item.name;
-  document.getElementById('modal-item-desc').textContent = item.desc;
-  document.getElementById('modal-item-icon').textContent = item.icon;
-  document.getElementById('modal-item-price').textContent = item.price.toLocaleString();
+  PENDING_BUY = itemId;
+  document.getElementById('m-name').textContent  = item.name;
+  document.getElementById('m-desc').textContent  = item.desc;
+  document.getElementById('m-icon').textContent  = item.icon;
+  document.getElementById('m-price').textContent = item.price.toLocaleString();
   document.getElementById('buy-modal').classList.add('open');
 };
 
 window.confirmBuy = async () => {
-  if(!pendingBuy || !currentUser) return;
-  const item = SHOP_ITEMS.find(i=>i.id===pendingBuy);
-  if(!item) return;
-  if((userData.points||0) < item.price) { toast('Puntos insuficientes.', 'error'); return; }
+  if(!PENDING_BUY||!CU) return;
+  const item = ITEMS.find(i=>i.id===PENDING_BUY);
+  if(!item||(UD.points||0)<item.price) { toast('Puntos insuficientes.','error'); return; }
 
-  const uid = currentUser.uid;
-  const inv = userData.inventory || {};
-  const newQty = (inv[item.id]||0)+1;
-  const logEntry = { text:`🛍 Compraste "${item.name}" por ${item.price} pts`, ts:Date.now() };
+  const uid  = CU.uid;
+  const inv  = UD.inventory||{};
+  const qty  = (inv[item.id]||0)+1;
+  const acts = UD.activity ? [...Object.values(UD.activity)] : [];
+  acts.push({text:`🛍 Compraste "${item.name}" por ${item.price} pts`, ts:Date.now()});
+  if(acts.length>20) acts.splice(0,acts.length-20);
+
   await update(ref(db,`usuarios/${uid}`), {
-    points: (userData.points||0)-item.price,
-    itemsBought: (userData.itemsBought||0)+1,
-    [`inventory/${item.id}`]: newQty,
+    points:       (UD.points||0)-item.price,
+    itemsBought:  (UD.itemsBought||0)+1,
+    [`inventory/${item.id}`]: qty,
+    activity: acts,
   });
-  await pushActivity(logEntry);
+  const uname = UD.username||CU.email.split('@')[0];
+  await update(ref(db,`leaderboard/${uid}`), { username:uname, points:(UD.points||0)-item.price });
+
   closeModal('buy-modal');
-  toast(`${item.icon} Compraste ${item.name}!`, 'success');
+  toast(`${item.icon} Compraste ${item.name}!`,'success');
 };
 
-// ═══ TRANSFER ═══
-window.sendTransfer = async () => {
-  if(!currentUser) return;
-  const email = document.getElementById('transfer-email').value.trim();
-  const amount = parseInt(document.getElementById('transfer-amount').value);
-  if(!email || isNaN(amount) || amount <= 0) { toast('Rellena los campos correctamente.', 'error'); return; }
-  if(email === currentUser.email) { toast('No puedes transferirte a ti mismo.', 'error'); return; }
-  if((userData.points||0) < amount) { toast('Puntos insuficientes.', 'error'); return; }
+// ─── TRANSFER ─────────────────────────────────────────────────────────────────
+window.doTransfer = async () => {
+  if(!CU) return;
+  const email  = document.getElementById('t-email').value.trim().toLowerCase();
+  const amount = parseInt(document.getElementById('t-amount').value)||0;
 
-  // Find recipient
-  const allSnap = await get(ref(db, 'usuarios'));
-  const all = allSnap.val() || {};
-  const entry = Object.entries(all).find(([uid,u]) => u.email === email);
-  if(!entry) { toast('Usuario no encontrado.', 'error'); return; }
-  const [toUid, toData] = entry;
-  const logMe = { text:`💸 Transferiste ${amount} pts a ${toData.username||email}`, ts:Date.now() };
-  const logThem = { text:`💰 Recibiste ${amount} pts de ${userData.username||currentUser.email}`, ts:Date.now() };
+  if(!email)               { toast('Introduce un email.','error'); return; }
+  if(amount<=0)            { toast('Cantidad no válida.','error'); return; }
+  if(amount>9999999)       { toast('Cantidad demasiado alta.','error'); return; }
+  if(email===CU.email.toLowerCase()) { toast('No puedes transferirte a ti mismo.','error'); return; }
+  if((UD.points||0)<amount){ toast('Puntos insuficientes.','error'); return; }
 
-  await update(ref(db,`usuarios/${currentUser.uid}`), { points:(userData.points||0)-amount });
-  await update(ref(db,`usuarios/${toUid}`), { points:(toData.points||0)+amount });
-  await pushActivity(logMe);
-  await pushActivityFor(toUid, toData, logThem);
+  // ANTICHEAT: rate limit check (max 1 transfer per 30s locally)
+  const lastTrans = parseInt(localStorage.getItem('sr_last_transfer')||'0');
+  if(Date.now()-lastTrans < 30000) { toast('Espera 30s entre transferencias.','error'); return; }
 
-  toast(`💸 Enviaste ${amount} pts a ${toData.username||email}`, 'success');
-  document.getElementById('transfer-email').value = '';
-  document.getElementById('transfer-amount').value = '';
+  // Find recipient in leaderboard (public node) to get uid
+  // We need to scan leaderboard which is public
+  const lbSnap = await get(ref(db,'leaderboard'));
+  const lbData = lbSnap.val()||{};
+
+  // We can't read other users' email from leaderboard, so we need another approach.
+  // We'll use a public "email_to_uid" index
+  const idxSnap = await get(ref(db,'email_index'));
+  const idx     = idxSnap.val()||{};
+  const encoded = btoa(email).replace(/=/g,'').replace(/\+/g,'_').replace(/\//g,'-');
+  const toUid   = idx[encoded];
+
+  if(!toUid || toUid===CU.uid) { toast('Usuario no encontrado.','error'); return; }
+
+  // Get their current points from leaderboard (public)
+  const toEntry = lbData[toUid];
+  if(!toEntry)  { toast('El destinatario aún no aparece en el ranking.','error'); return; }
+
+  const nowMs  = Date.now();
+  const uname  = UD.username||CU.email.split('@')[0];
+  const toName = toEntry.username||email;
+
+  // Deduct from sender
+  const myActs = UD.activity ? [...Object.values(UD.activity)] : [];
+  myActs.push({text:`💸 Enviaste ${amount} pts a ${toName}`, ts:nowMs});
+  if(myActs.length>20) myActs.splice(0,myActs.length-20);
+
+  await update(ref(db,`usuarios/${CU.uid}`), {
+    points:   (UD.points||0)-amount,
+    activity: myActs,
+  });
+
+  // Add to recipient (we use a pending credits node they can apply — avoids cross-user write)
+  await update(ref(db,`credits/${toUid}`), {
+    [`${nowMs}`]: { from: uname, amount, ts: nowMs }
+  });
+
+  // Update sender leaderboard
+  await update(ref(db,`leaderboard/${CU.uid}`), { username:uname, points:(UD.points||0)-amount });
+
+  localStorage.setItem('sr_last_transfer', String(nowMs));
+  document.getElementById('t-email').value='';
+  document.getElementById('t-amount').value='';
+  toast(`💸 Enviaste ${amount} pts a ${toName}`,'success');
 };
 
-async function pushActivity(entry) {
-  const uid = currentUser.uid;
-  const acts = userData.activity ? [...Object.values(userData.activity)] : [];
-  acts.push(entry);
-  if(acts.length > 20) acts.splice(0, acts.length-20);
-  await update(ref(db,`usuarios/${uid}`), { activity: acts });
+// When user logs in, apply any pending credits
+async function applyPendingCredits(uid) {
+  try {
+    const snap = await get(ref(db,`credits/${uid}`));
+    if(!snap.exists()) return;
+    const credits = snap.val()||{};
+    let total = 0;
+    const msgs = [];
+    Object.values(credits).forEach(c=>{
+      total += c.amount||0;
+      msgs.push({text:`💰 Recibiste ${c.amount} pts de ${c.from}`, ts:c.ts});
+    });
+    if(!total) return;
+
+    const acts = UD.activity ? [...Object.values(UD.activity)] : [];
+    msgs.forEach(m=>acts.push(m));
+    if(acts.length>20) acts.splice(0,acts.length-20);
+
+    await update(ref(db,`usuarios/${uid}`), {
+      points:   (UD.points||0)+total,
+      activity: acts,
+    });
+    await set(ref(db,`credits/${uid}`), null); // clear
+    const uname = UD.username||CU.email.split('@')[0];
+    await update(ref(db,`leaderboard/${uid}`), { username:uname, points:(UD.points||0)+total });
+
+    if(msgs.length===1) toast(`💰 Recibiste ${total} pts!`,'success');
+    else toast(`💰 Recibiste ${total} pts en total!`,'success');
+  } catch(e) { /* silent */ }
 }
 
-async function pushActivityFor(uid, uData, entry) {
-  const acts = uData.activity ? [...Object.values(uData.activity)] : [];
-  acts.push(entry);
-  if(acts.length > 20) acts.splice(0, acts.length-20);
-  await update(ref(db,`usuarios/${uid}`), { activity: acts });
-}
+// Register email index on first load & apply credits
+onAuthStateChanged(auth, async user => {
+  if(!user) return;
+  // Write email -> uid index (public readable)
+  const encoded = btoa(user.email.toLowerCase()).replace(/=/g,'').replace(/\+/g,'_').replace(/\//g,'-');
+  await update(ref(db,`email_index`), { [encoded]: user.uid });
+  // Apply pending credits after data loads
+  setTimeout(()=>applyPendingCredits(user.uid), 2000);
+});
 
-// ═══ COOLDOWN TIMERS ═══
-function startCooldownTimers() {
-  setInterval(() => {
+// ─── COOLDOWN TIMERS ──────────────────────────────────────────────────────────
+function startTimers() {
+  if(CD_INTERVAL) clearInterval(CD_INTERVAL);
+  CD_INTERVAL = setInterval(()=>{
     const now = Date.now();
-    JOBS.forEach(job => {
-      const cdKey = 'cd_'+job.id;
-      const lastDone = cooldowns[cdKey] || 0;
-      const elapsed = (now - lastDone) / 1000;
-      const ready = elapsed >= job.cooldown;
-      const btn = document.getElementById('btn-'+job.id);
-      const bar = document.getElementById('bar-'+job.id);
-      const fill = document.getElementById('barfill-'+job.id);
+    const inv = UD.inventory||{};
+    JOBS.forEach(job=>{
+      const cdKey   = 'cd_'+job.id;
+      const last    = CDS[cdKey]||0;
+      const cdThis  = job.id==='mensajero'||job.id==='barista' ? Math.max(0,job.cooldown-(inv.cafe?10:0)) : job.cooldown;
+      const elapsed = (now-last)/1000;
+      const ready   = elapsed>=cdThis;
+      const btn  = document.getElementById('btn-'+job.id);
+      const fill = document.getElementById('fill-'+job.id);
+      const bar  = document.getElementById('bar-'+job.id);
       if(!btn) return;
+
+      const isActive    = UD.activeJob===job.id;
+      const otherActive = UD.activeJob && UD.activeJob!==job.id;
+
+      if(isActive) return; // managed server-side
+      if(otherActive) return;
+
       if(ready) {
-        if(btn.disabled) {
-          btn.disabled = false;
-          btn.textContent = 'TRABAJAR';
+        if(btn.disabled && !btn.classList.contains('working')) {
+          btn.disabled=false; btn.textContent='TRABAJAR'; btn.classList.remove('working');
           if(bar) bar.style.display='none';
         }
       } else {
-        const remaining = Math.ceil(job.cooldown - elapsed);
-        btn.textContent = '⏳ '+formatTime(remaining);
-        const pct = Math.floor((elapsed/job.cooldown)*100);
-        if(fill) fill.style.width=pct+'%';
-        if(bar) bar.style.display='block';
+        const rem=Math.ceil(cdThis-elapsed);
+        btn.textContent='⏳ '+fmt(rem);
+        if(fill) fill.style.width=Math.floor((elapsed/cdThis)*100)+'%';
+        if(bar)  bar.style.display='block';
       }
     });
-  }, 1000);
+  },1000);
 }
 
-// ═══ LOCAL COOLDOWNS ═══
-function saveCooldowns() {
-  localStorage.setItem('champdrop_cooldowns', JSON.stringify(cooldowns));
-}
-function loadCooldowns() {
-  try { cooldowns = JSON.parse(localStorage.getItem('champdrop_cooldowns')) || {}; }
-  catch { cooldowns = {}; }
-}
+// ─── LOCAL COOLDOWNS ──────────────────────────────────────────────────────────
+function saveCooldowns() { localStorage.setItem('sr_cd', JSON.stringify(CDS)); }
+function loadCooldowns() { try{ CDS=JSON.parse(localStorage.getItem('sr_cd'))||{}; }catch{ CDS={}; } }
 
-// ═══ NAVIGATION ═══
-window.showSection = (id) => {
+// ─── NAV ──────────────────────────────────────────────────────────────────────
+window.showSection = (id, tab) => {
   document.querySelectorAll('.section').forEach(s=>s.classList.remove('active'));
   document.querySelectorAll('.nav-tab').forEach(t=>t.classList.remove('active'));
   document.getElementById('section-'+id).classList.add('active');
-  event.target.classList.add('active');
+  if(tab) tab.classList.add('active');
   if(id==='leaderboard') renderLeaderboard();
 };
 
-window.closeModal = (id) => document.getElementById(id).classList.remove('open');
+window.closeModal = id => document.getElementById(id).classList.remove('open');
 
-// ═══ TOAST ═══
+// ─── TOAST ────────────────────────────────────────────────────────────────────
 window.toast = (msg, type='info') => {
-  const icons = { success:'✅', error:'❌', info:'ℹ️' };
-  const el = document.createElement('div');
-  el.className = 'toast '+type;
-  el.innerHTML = `<span>${icons[type]}</span><span>${msg}</span>`;
-  document.getElementById('toast-container').appendChild(el);
-  setTimeout(() => { el.classList.add('out'); setTimeout(()=>el.remove(), 300); }, 3000);
+  const icons={success:'✅',error:'❌',info:'ℹ️'};
+  const el=document.createElement('div');
+  el.className='toast '+type;
+  el.innerHTML=`<span>${icons[type]}</span><span>${escapeHtml(msg)}</span>`;
+  document.getElementById('toast-wrap').appendChild(el);
+  setTimeout(()=>{ el.classList.add('out'); setTimeout(()=>el.remove(),300); },3500);
 };
 
-// ═══ HELPERS ═══
-function formatTime(s) {
-  if(s<60) return s+'s';
-  const m=Math.floor(s/60), sec=s%60;
-  return m+'m'+(sec?sec+'s':'');
-}
+// ─── HELPERS ──────────────────────────────────────────────────────────────────
+function fmt(s) { if(s<60) return s+'s'; const m=Math.floor(s/60),r=s%60; return m+'m'+(r?r+'s':''); }
 function timeAgo(ts) {
   const d=(Date.now()-ts)/1000;
   if(d<60) return 'ahora';
   if(d<3600) return Math.floor(d/60)+'m';
   if(d<86400) return Math.floor(d/3600)+'h';
   return Math.floor(d/86400)+'d';
+}
+function escapeHtml(s) {
+  return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
 }
 </script>
 </body>
