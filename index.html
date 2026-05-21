@@ -860,11 +860,12 @@ function renderAll(){
   const pts=UD.points||0, uname=UD.username||CU.email.split('@')[0];
   const lvl=UD.level||1, xp=UD.xp||0, xpMax=lvl*500;
   const pct=Math.min(100,(xp/xpMax)*100);
-  const energy=getEnergy();
+  const energyState=getEnergyState();
 
   document.getElementById('topbar-pts').textContent=pts.toLocaleString();
   document.getElementById('topbar-user').textContent=uname.toUpperCase();
-  document.getElementById('topbar-energy').textContent=energy;
+  document.getElementById('topbar-energy').textContent=energyState.energy;
+  document.querySelector('.energy-pill .e-max').textContent='/' + energyState.max;
 
   const pill=document.getElementById('active-job-pill');
   const activeJob=UD.activeJob||null;
@@ -913,9 +914,34 @@ function renderAll(){
   renderLeaderboard();
 }
 
-function getEnergy(){
-  const maxE=UD.energyMax||20;
-  return maxE; // Energía siempre disponible
+function getEnergyState(state=UD, now=Date.now()){
+  const baseEnergy = state.energy != null ? state.energy : 0;
+  const bonusMax = (state.energyBonusUntil && state.energyBonusUntil > now) ? 20 : 0;
+  const permanentMax = ((state.inventory && state.inventory.perm_energy_2) || (state.inventory && state.inventory.energy_boost)) ? 2 : 0;
+  const maxE = (state.energyMax || 20) + bonusMax + permanentMax;
+  const regenMultiplier = state.inventory && state.inventory.regen_boost ? 2 : 1;
+  const regenMs = Math.floor(300000 / regenMultiplier);
+  const elapsed = Math.max(0, now - (state.lastEnergyRegen || now));
+  const gained = Math.floor(elapsed / regenMs);
+  return {energy: Math.min(maxE, baseEnergy + gained), max: maxE, regenMs, gained};
+}
+
+function getCurrentEnergy(state=UD, now=Date.now()){
+  return getEnergyState(state, now).energy;
+}
+
+function consumeEnergy(current, amount, now=Date.now()){
+  const energyState = getEnergyState(current, now);
+  if(amount > energyState.energy) return false;
+  current.energy = energyState.energy - amount;
+  current.lastEnergyRegen = now;
+  return true;
+}
+
+function restoreEnergy(current, amount, now=Date.now()){
+  const energyState = getEnergyState(current, now);
+  current.energy = Math.min(energyState.max, energyState.energy + amount);
+  current.lastEnergyRegen = now;
 }
 
 function getrank(pts){let r=RANKS[0];for(const rk of RANKS)if(pts>=rk.min)r=rk;return r;}
@@ -1026,28 +1052,35 @@ function renderJobs(){
   const inv=UD.inventory||{};
   const activeJob=UD.activeJob||null;
   const lvl=UD.level||1;
-  const energy=getEnergy();
+  const energyState=getEnergyState();
+  const currentEnergy=energyState.energy;
 
   grid.innerHTML=JOBS.map(job=>{
     const last=(UD.cooldowns&&UD.cooldowns[job.id])||CDS['cd_'+job.id]||0;
     const elapsed=(now-last)/1000;
     let cdThis=job.cooldown;
     // CD reductions from items
-    if(inv.cd_boost) cdThis=Math.floor(cdThis*0.9);
+    if(inv.cd_boost || inv.perm_cd_10) cdThis=Math.floor(cdThis*0.9);
     if((job.id==='repartidor'||job.id==='cajero'||job.id==='barista')&&inv.martillo) cdThis=Math.max(0,cdThis-30);
     if((job.id==='consultor'||job.id==='ceo')&&inv.oficina) cdThis=Math.max(0,cdThis-60);
+    if(UD.tempCdAllUntil && Date.now() < UD.tempCdAllUntil) cdThis=Math.max(0, cdThis - (UD.tempCdAllReduction||0));
+    if(UD.tempCdCommonUntil && Date.now() < UD.tempCdCommonUntil && job.rarity==='common') cdThis=Math.max(0, cdThis - (UD.tempCdCommonReduction||0));
     const ready=elapsed>=cdThis;
     const rem=ready?0:Math.ceil(cdThis-elapsed);
     const fpct=ready?100:Math.floor((elapsed/cdThis)*100);
     const isActive=activeJob===job.id;
     const otherActive=activeJob&&activeJob!==job.id;
     const locked=lvl<job.minLevel&&!inv.job_unlock&&!(inv.job_unlock&&lvl>=(job.minLevel-2));
+    const freeCost=((UD.freeEnergyJobs||0)>0);
+    const jobCost=freeCost?0:job.energy;
+    const energyLock=!freeCost&&jobCost>currentEnergy;
 
     let btnText,btnClass='btn-work',btnDisabled=false;
     if(locked)           {btnText='🔒 LVL '+job.minLevel;btnDisabled=true;}
     else if(isActive)    {btnText='⏳ EN CURSO...';btnClass='btn-work working';btnDisabled=true;}
     else if(!ready)      {btnText='⏳ '+fmt(rem);btnDisabled=true;}
     else if(otherActive) {btnText='BLOQUEADO';btnDisabled=true;}
+    else if(energyLock)  {btnText='⚡ ENERGÍA';btnDisabled=true;}
     else                 {btnText='TRABAJAR';}
 
     return `<div class="job-card ${(otherActive&&!isActive)||locked?'locked-by-active':''}">
@@ -1060,7 +1093,7 @@ function renderJobs(){
       <div class="job-meta">
         <span class="job-reward">🪙 +${computeReward(job)}</span>
         <span class="job-cd">⏱ ${fmt(cdThis)}</span>
-        <span class="job-energy">⚡ ${job.energy}</span>
+        <span class="job-energy">⚡ ${jobCost}</span>
       </div>
       <button class="${btnClass}" id="btn-${job.id}" ${btnDisabled?'disabled':''} onclick="doJob('${job.id}')">
         ${btnText}
@@ -1101,6 +1134,10 @@ function computeReward(job){
   if(inv.vehiculo&&job.id==='conductor') r=Math.floor(r*1.30);
   if(inv.impresora3d&&job.id==='arquitecto') r=Math.floor(r*1.20);
   if(inv.cocina_pro&&job.id==='cocinero')   r=Math.floor(r*1.20);
+  const now=Date.now();
+  if(UD.activeAllBoostUntil && UD.activeAllBoostUntil > now) r=Math.floor(r*1.10);
+  if(UD.tempCommonBoostUntil && UD.tempCommonBoostUntil > now && job.rarity==='common') r=Math.floor(r*1.10);
+  if(UD.nextRewardBoost && (!UD.nextRewardJob || UD.nextRewardJob===job.id)) r=Math.floor(r*(1 + UD.nextRewardBoost/100));
   return r;
 }
 
@@ -1148,7 +1185,13 @@ function renderInventory(){
   grid.innerHTML=entries.map(([id,qty])=>{
     const item=ITEMS.find(i=>i.id===id);
     if(!item)return '';
-    return `<div class="inv-item"><span class="inv-item-icon">${item.icon}</span><div class="inv-item-qty">${qty}</div><div class="inv-item-name">${item.name}</div></div>`;
+    const canUse=item.cat==='consumable' && item.effect;
+    return `<div class="inv-item">
+      <span class="inv-item-icon">${item.icon}</span>
+      <div class="inv-item-qty">${qty}</div>
+      <div class="inv-item-name">${item.name}</div>
+      ${canUse?`<button class="btn-buy" style="margin-top:8px;font-size:10px;padding:8px;" onclick="useInventoryItem('${id}')">USAR</button>`:''}
+    </div>`;
   }).join('');
 }
 
@@ -1218,9 +1261,11 @@ window.doJob = async jobId=>{
       // Energy check — DESHABILITADO (siempre disponible)
       // CD check
       let cdThis=job.cooldown;
-      if(inv.cd_boost) cdThis=Math.floor(cdThis*0.9);
+      if(inv.cd_boost || inv.perm_cd_10) cdThis=Math.floor(cdThis*0.9);
       if((jobId==='repartidor'||jobId==='cajero'||jobId==='barista')&&inv.martillo) cdThis=Math.max(0,cdThis-30);
       if((jobId==='consultor'||jobId==='ceo')&&inv.oficina) cdThis=Math.max(0,cdThis-60);
+      if(current.tempCdAllUntil && now < current.tempCdAllUntil) cdThis=Math.max(0, cdThis - (current.tempCdAllReduction||0));
+      if(current.tempCdCommonUntil && now < current.tempCdCommonUntil && job.rarity==='common') cdThis=Math.max(0, cdThis - (current.tempCdCommonReduction||0));
       if((now-last)/1000<cdThis) return; // ABORT
       // Reward
       let reward=job.reward;
@@ -1252,9 +1297,15 @@ window.doJob = async jobId=>{
       if(inv.xp_crit&&Math.random()<0.10) xpGain*=5;
       const newXP=(current.xp||0)+xpGain;
       const newLevel=Math.floor(newXP/500)+1;
-      // consume energy — DESHABILITADO
-      const newEnergy=(current.energyMax||20);
-      // daily/weekly stats
+      const energyState = getEnergyState(current, now);
+      const energyCost = ((current.freeEnergyJobs||0) > 0) ? 0 : job.energy;
+      if(energyCost > energyState.energy) return;
+      if(energyCost > 0){
+        current.energy = Math.max(0, energyState.energy - energyCost);
+      } else {
+        current.freeEnergyJobs = Math.max(0, (current.freeEnergyJobs||0) - 1);
+      }
+      current.lastEnergyRegen = now;
       const isRare=['rare','epic','legendary'].includes(job.rarity);
       const isEpicLeg=['epic','legendary'].includes(job.rarity);
       const isLegendary=job.rarity==='legendary';
@@ -1267,7 +1318,6 @@ window.doJob = async jobId=>{
         totalEarned:(current.totalEarned||0)+reward,
         jobsCompleted:(current.jobsCompleted||0)+1,
         xp:newXP, level:newLevel,
-        energy:newEnergy,
         lastEnergyRegen:now,
         cooldowns:{...cooldowns,[jobId]:now},
         activity:acts,
@@ -1303,7 +1353,8 @@ window.claimDaily = async ()=>{
   const maxStreak=Math.max(newStreak,UD.maxStreak||0);
   // Bonus scales with streak
   let bonus=150+Math.floor(Math.random()*100);
-  if(UD.perm_daily_2x||UD.inventory?.daily_bonus) bonus*=2;
+  const useNextDaily=(UD.nextDailyDouble||false);
+  if(UD.perm_daily_2x||UD.inventory?.daily_bonus||useNextDaily) bonus*=2;
   bonus+=Math.floor(newStreak*10); // +10 per streak day
   const acts=UD.activity?[...Object.values(UD.activity)]:[];
   acts.push({text:`🎁 Bonus diario: +${bonus} pts (Racha: ${newStreak}🔥)`,ts:nowMs});
@@ -1314,6 +1365,7 @@ window.claimDaily = async ()=>{
     points:(UD.points||0)+bonus,totalEarned:(UD.totalEarned||0)+bonus,
     dailyLastClaim:nowMs,streak:newStreak,maxStreak,
     xp:newXP,level:newLevel,activity:acts,
+    nextDailyDouble:false,
   });
   const uname=UD.username||CU.email.split('@')[0];
   await update(ref(db,`leaderboard/${uid}`),{username:uname,points:(UD.points||0)+bonus,level:newLevel});
@@ -1355,6 +1407,72 @@ window.confirmBuy=async()=>{
   await update(ref(db,`leaderboard/${uid}`),{username:uname,points:(UD.points||0)-item.price});
   closeModal('buy-modal');
   toast(`${item.icon} Compraste ${item.name}!`,'success');
+};
+
+window.useInventoryItem = async itemId=>{
+  if(!CU) return;
+  const item=ITEMS.find(i=>i.id===itemId);
+  if(!item||!item.effect){toast('No se puede usar este artículo.','error');return;}
+  try{
+    const result=await runTransaction(ref(db,`usuarios/${CU.uid}`),current=>{
+      if(!current) return current;
+      const inv=current.inventory||{};
+      const qty=(inv[itemId]||0);
+      if(qty<=0) return;
+      const now=Date.now();
+      inv[itemId]=qty-1;
+      if(inv[itemId]===0) delete inv[itemId];
+      current.inventory=inv;
+
+      const restore=amount=>{
+        const energyState=getEnergyState(current, now);
+        current.energy=Math.min(energyState.max, energyState.energy + amount);
+        current.lastEnergyRegen=now;
+      };
+      const setBoost=(boost, jobs=1, jobId=null)=>{
+        current.nextRewardBoost=boost;
+        current.remainingBoostJobs=jobs;
+        if(jobId) current.nextRewardJob=jobId;
+      };
+
+      switch(item.effect){
+        case 'energy_restore_2': restore(2); break;
+        case 'energy_restore_5': restore(5); break;
+        case 'energy_restore_10': restore(10); break;
+        case 'energy_restore_max': current.energyBonusUntil=now+3600000; restore(getEnergyState(current,now).max); break;
+        case 'perm_energy_3': current.energyMax=(current.energyMax||20)+3; restore(3); break;
+        case 'free_energy_job': current.freeEnergyJobs=(current.freeEnergyJobs||0)+1; break;
+        case 'next_boost_5': setBoost(5,1); break;
+        case 'next_boost_30': setBoost(30,1); break;
+        case 'boost_x3_20': setBoost(20,3); break;
+        case 'daily_boost_50': current.nextDailyDouble=true; break;
+        case 'all_boost_30m': current.activeAllBoostUntil=now+1800000; break;
+        case 'common_boost_1h': current.tempCommonBoostUntil=now+3600000; current.tempCommonBoostReduction=10; break;
+        case 'cd_reduce_common': current.tempCdCommonUntil=now+3600000; current.tempCdCommonReduction=15; break;
+        case 'cd_reduce_all': current.tempCdAllUntil=now+3600000; current.tempCdAllReduction=30; break;
+        case 'turbo': current.cooldowns={}; break;
+        case 'moneda_oro': current.points=(current.points||0)+200; current.totalEarned=(current.totalEarned||0)+200; break;
+        case 'pocion_xp': current.xp=(current.xp||0)+100; current.level=Math.floor((current.xp||0)/500)+1; break;
+        case 'ticket_loto': if(Math.random()<0.1){ current.points=(current.points||0)+5000; current.totalEarned=(current.totalEarned||0)+5000; } break;
+        case 'dado_suerte': {
+          const roll=Math.random();
+          if(roll<0.5){ current.points=(current.points||0)+500; current.totalEarned=(current.totalEarned||0)+500; }
+          else if(roll<0.8){ current.points=(current.points||0)+150; current.totalEarned=(current.totalEarned||0)+150; }
+          else { current.energy=Math.max(0,(getCurrentEnergy(current,now)||0)-2); current.lastEnergyRegen=now; }
+        } break;
+        case 'suero_trabajo': setBoost(30,1); break;
+        default: break;
+      }
+      const acts=current.activity?[...Object.values(current.activity)]:[];
+      acts.push({text:`🧪 Usaste ${item.name}` ,ts:now});
+      if(acts.length>20)acts.splice(0,acts.length-20);
+      current.activity=acts;
+      return current;
+    });
+    if(!result.committed){toast('No se pudo usar el artículo.','error');return;}
+    toast(`Usaste ${item.name}!`,'success');
+    renderAll();
+  } catch(e){console.error(e);toast('Error al usar el artículo.','error');}
 };
 
 // ════════════════════ PRESTIGE ════════════════════
@@ -1429,10 +1547,13 @@ function startTimers(){
   if(CD_INTERVAL) clearInterval(CD_INTERVAL);
   CD_INTERVAL=setInterval(()=>{
     const now=Date.now(), inv=UD.inventory||{};
+    const energyState=getEnergyState();
+    const currentEnergy=energyState.energy;
+    const freeCost=((UD.freeEnergyJobs||0)>0);
     JOBS.forEach(job=>{
       const last=(UD.cooldowns&&UD.cooldowns[job.id])||CDS['cd_'+job.id]||0;
       let cdThis=job.cooldown;
-      if(inv.cd_boost) cdThis=Math.floor(cdThis*0.9);
+      if(inv.cd_boost || inv.perm_cd_10) cdThis=Math.floor(cdThis*0.9);
       if((job.id==='repartidor'||job.id==='cajero'||job.id==='barista')&&inv.martillo) cdThis=Math.max(0,cdThis-30);
       if((job.id==='consultor'||job.id==='ceo')&&inv.oficina) cdThis=Math.max(0,cdThis-60);
       const elapsed=(now-last)/1000, ready=elapsed>=cdThis;
@@ -1442,14 +1563,17 @@ function startTimers(){
       if(!btn) return;
       const isActive=UD.activeJob===job.id, otherActive=UD.activeJob&&UD.activeJob!==job.id;
       if(isActive||otherActive) return;
-      const energy=getEnergy();
+      const energyCost=freeCost?0:job.energy;
+      const energyLock=!freeCost && energyCost>currentEnergy;
       const locked=(UD.level||1)<job.minLevel&&!inv.job_unlock;
       if(locked) return;
-      if(ready){
+      if(ready && !energyLock){
         if(btn.disabled&&!btn.classList.contains('working')){
           btn.disabled=false; btn.textContent='TRABAJAR';
           btn.classList.remove('working'); if(bar) bar.style.display='none';
         }
+      } else if(ready && energyLock){
+        btn.disabled=true; btn.textContent='⚡ ENERGÍA';
       } else {
         const rem=Math.ceil(cdThis-elapsed);
         btn.textContent='⏳ '+fmt(rem); btn.disabled=true;
@@ -1458,8 +1582,8 @@ function startTimers(){
       }
     });
     // Update energy display
-    const e=getEnergy();
-    document.getElementById('topbar-energy').textContent=e;
+    document.getElementById('topbar-energy').textContent=energyState.energy;
+    document.querySelector('.energy-pill .e-max').textContent='/' + energyState.max;
   },1000);
 }
 
