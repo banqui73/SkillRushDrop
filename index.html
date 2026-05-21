@@ -1,0 +1,1206 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ChampDrop — Gana. Sube. Domina.</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Barlow:wght@300;400;500;600;700&family=Barlow+Condensed:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --gold: #FFD93D;
+    --gold2: #FFC107;
+    --red: #FF3B3B;
+    --blue: #00C2FF;
+    --dark: #0A0A0F;
+    --dark2: #111118;
+    --dark3: #1A1A25;
+    --dark4: #22222F;
+    --card: #16161F;
+    --border: rgba(255,255,255,0.07);
+    --text: #E8E8F0;
+    --muted: #6B6B85;
+    --success: #00E676;
+    --font-head: 'Bebas Neue', sans-serif;
+    --font-body: 'Barlow', sans-serif;
+    --font-cond: 'Barlow Condensed', sans-serif;
+  }
+
+  * { margin:0; padding:0; box-sizing:border-box; }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    background: var(--dark);
+    color: var(--text);
+    font-family: var(--font-body);
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  /* ── NOISE OVERLAY ── */
+  body::before {
+    content:'';
+    position:fixed; inset:0;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.035'/%3E%3C/svg%3E");
+    pointer-events:none; z-index:999;
+  }
+
+  /* ── SCROLLBAR ── */
+  ::-webkit-scrollbar { width:4px; }
+  ::-webkit-scrollbar-track { background: var(--dark2); }
+  ::-webkit-scrollbar-thumb { background: var(--gold); border-radius:2px; }
+
+  /* ═══════════════════════════════
+     AUTH SCREEN
+  ═══════════════════════════════ */
+  #auth-screen {
+    position: fixed; inset: 0;
+    display: flex; align-items: center; justify-content: center;
+    background: var(--dark);
+    z-index: 100;
+    transition: opacity .4s, transform .4s;
+  }
+  #auth-screen.hidden { opacity:0; transform:scale(1.05); pointer-events:none; }
+
+  .auth-bg {
+    position:absolute; inset:0; overflow:hidden;
+  }
+  .auth-bg .orb {
+    position:absolute; border-radius:50%;
+    filter: blur(80px); opacity:.25;
+  }
+  .auth-bg .orb1 { width:500px;height:500px; background:var(--gold2); top:-100px;right:-100px; animation: floatOrb 8s ease-in-out infinite; }
+  .auth-bg .orb2 { width:400px;height:400px; background:var(--blue); bottom:-50px;left:-80px; animation: floatOrb 10s ease-in-out infinite reverse; }
+  .auth-bg .orb3 { width:300px;height:300px; background:var(--red); top:40%;left:40%; animation: floatOrb 12s ease-in-out infinite 2s; }
+
+  @keyframes floatOrb {
+    0%,100% { transform: translate(0,0) scale(1); }
+    33% { transform: translate(20px,-30px) scale(1.05); }
+    66% { transform: translate(-15px,20px) scale(.95); }
+  }
+
+  .auth-box {
+    position:relative; z-index:2;
+    width:420px; max-width:90vw;
+    background: rgba(22,22,31,0.85);
+    backdrop-filter: blur(20px);
+    border: 1px solid var(--border);
+    border-radius:20px;
+    padding: 48px 40px;
+    box-shadow: 0 32px 80px rgba(0,0,0,.6), 0 0 0 1px rgba(255,217,61,.1);
+  }
+
+  .auth-logo {
+    font-family: var(--font-head);
+    font-size: 52px;
+    letter-spacing: 3px;
+    background: linear-gradient(135deg, var(--gold) 0%, #FF8C00 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    text-align:center; margin-bottom:4px;
+  }
+  .auth-tagline {
+    font-family: var(--font-cond);
+    font-size:13px; letter-spacing:5px;
+    color: var(--muted); text-align:center;
+    text-transform: uppercase; margin-bottom:36px;
+  }
+
+  .auth-tabs { display:flex; gap:4px; background:var(--dark3); border-radius:10px; padding:4px; margin-bottom:28px; }
+  .auth-tab {
+    flex:1; padding:10px; text-align:center;
+    font-family:var(--font-cond); font-size:15px; font-weight:600; letter-spacing:1px;
+    cursor:pointer; border-radius:8px; color:var(--muted);
+    transition: all .2s;
+  }
+  .auth-tab.active { background:var(--gold); color:var(--dark); }
+
+  .auth-form { display:flex; flex-direction:column; gap:14px; }
+  .auth-form input {
+    background: var(--dark3); border:1px solid var(--border);
+    border-radius:10px; padding:14px 16px;
+    color:var(--text); font-family:var(--font-body); font-size:15px;
+    outline:none; transition: border-color .2s, box-shadow .2s;
+  }
+  .auth-form input:focus { border-color: var(--gold); box-shadow:0 0 0 3px rgba(255,217,61,.12); }
+  .auth-form input::placeholder { color:var(--muted); }
+
+  .btn-primary {
+    background: linear-gradient(135deg, var(--gold) 0%, #FF8C00 100%);
+    color: var(--dark); font-family:var(--font-cond); font-size:16px;
+    font-weight:700; letter-spacing:2px; text-transform:uppercase;
+    border:none; border-radius:10px; padding:15px;
+    cursor:pointer; transition: transform .15s, box-shadow .2s;
+    box-shadow: 0 4px 20px rgba(255,193,7,.3);
+  }
+  .btn-primary:hover { transform:translateY(-2px); box-shadow:0 8px 32px rgba(255,193,7,.45); }
+  .btn-primary:active { transform:translateY(0); }
+
+  #auth-error {
+    font-size:13px; color:var(--red); text-align:center;
+    min-height:18px; transition: opacity .2s;
+  }
+
+  /* ═══════════════════════════════
+     MAIN APP
+  ═══════════════════════════════ */
+  #app { display:none; min-height:100vh; }
+  #app.visible { display:block; animation: fadeIn .5s ease; }
+  @keyframes fadeIn { from{opacity:0;transform:translateY(10px)} to{opacity:1;transform:none} }
+
+  /* ── TOPBAR ── */
+  .topbar {
+    position: sticky; top:0; z-index:50;
+    background: rgba(10,10,15,0.9);
+    backdrop-filter: blur(16px);
+    border-bottom: 1px solid var(--border);
+    padding: 0 24px;
+    display: flex; align-items:center; justify-content:space-between;
+    height:64px;
+  }
+  .topbar-logo {
+    font-family:var(--font-head); font-size:28px; letter-spacing:2px;
+    background: linear-gradient(135deg, var(--gold) 0%, #FF8C00 100%);
+    -webkit-background-clip:text; -webkit-text-fill-color:transparent;
+  }
+  .topbar-points {
+    display:flex; align-items:center; gap:8px;
+    background:var(--dark3); border:1px solid rgba(255,217,61,.2);
+    border-radius:999px; padding:8px 18px;
+  }
+  .topbar-points .coin { font-size:18px; }
+  .topbar-points .amount {
+    font-family:var(--font-cond); font-size:20px; font-weight:700; color:var(--gold);
+  }
+  .topbar-right { display:flex; align-items:center; gap:12px; }
+  .topbar-user {
+    font-family:var(--font-cond); font-size:14px; color:var(--muted); letter-spacing:1px;
+  }
+  .btn-logout {
+    background:transparent; border:1px solid var(--border); color:var(--muted);
+    font-family:var(--font-cond); font-size:13px; letter-spacing:1px;
+    padding:7px 14px; border-radius:8px; cursor:pointer; transition:all .2s;
+  }
+  .btn-logout:hover { border-color:var(--red); color:var(--red); }
+
+  /* ── NAV TABS ── */
+  .nav-tabs {
+    display:flex; gap:2px;
+    background:var(--dark2); border-bottom:1px solid var(--border);
+    padding: 0 24px; overflow-x:auto;
+  }
+  .nav-tab {
+    font-family:var(--font-cond); font-size:14px; font-weight:600; letter-spacing:2px;
+    text-transform:uppercase; color:var(--muted);
+    padding:16px 20px; cursor:pointer; border-bottom:2px solid transparent;
+    white-space:nowrap; transition:all .2s;
+  }
+  .nav-tab:hover { color:var(--text); }
+  .nav-tab.active { color:var(--gold); border-bottom-color:var(--gold); }
+
+  /* ── SECTIONS ── */
+  .section { display:none; padding:32px 24px; max-width:1100px; margin:0 auto; }
+  .section.active { display:block; animation: fadeIn .3s ease; }
+
+  .section-title {
+    font-family:var(--font-head); font-size:42px; letter-spacing:2px;
+    line-height:1; margin-bottom:6px;
+  }
+  .section-sub { font-size:14px; color:var(--muted); margin-bottom:32px; letter-spacing:.5px; }
+
+  /* ── CARDS ── */
+  .card {
+    background:var(--card); border:1px solid var(--border);
+    border-radius:16px; padding:24px;
+    transition: border-color .2s, transform .2s, box-shadow .2s;
+  }
+  .card:hover { border-color:rgba(255,217,61,.2); transform:translateY(-2px); box-shadow:0 8px 32px rgba(0,0,0,.4); }
+
+  /* ── GRID ── */
+  .grid-2 { display:grid; grid-template-columns:repeat(auto-fill, minmax(280px,1fr)); gap:16px; }
+  .grid-3 { display:grid; grid-template-columns:repeat(auto-fill, minmax(220px,1fr)); gap:16px; }
+
+  /* ═══════════════════════
+     DASHBOARD
+  ═══════════════════════ */
+  .dashboard-hero {
+    background: linear-gradient(135deg, var(--dark3) 0%, #1E1520 100%);
+    border: 1px solid rgba(255,217,61,.1);
+    border-radius:20px; padding:40px;
+    margin-bottom:28px; position:relative; overflow:hidden;
+  }
+  .dashboard-hero::before {
+    content:''; position:absolute; top:-60px; right:-60px;
+    width:300px; height:300px; border-radius:50%;
+    background: radial-gradient(circle, rgba(255,193,7,.15) 0%, transparent 70%);
+  }
+  .dashboard-hero h1 {
+    font-family:var(--font-head); font-size:56px; line-height:1;
+    letter-spacing:2px; margin-bottom:8px;
+  }
+  .dashboard-hero h1 span { color:var(--gold); }
+  .dashboard-hero p { color:var(--muted); font-size:15px; max-width:400px; }
+
+  .stats-row { display:grid; grid-template-columns:repeat(auto-fill,minmax(180px,1fr)); gap:16px; margin-bottom:28px; }
+  .stat-card {
+    background:var(--card); border:1px solid var(--border); border-radius:14px;
+    padding:20px; text-align:center;
+  }
+  .stat-card .stat-icon { font-size:28px; margin-bottom:8px; }
+  .stat-card .stat-value {
+    font-family:var(--font-head); font-size:36px; color:var(--gold);
+    letter-spacing:1px; line-height:1;
+  }
+  .stat-card .stat-label { font-size:12px; color:var(--muted); text-transform:uppercase; letter-spacing:2px; margin-top:4px; }
+
+  /* ═══════════════════════
+     MISSIONS
+  ═══════════════════════ */
+  .job-card {
+    background:var(--card); border:1px solid var(--border);
+    border-radius:16px; padding:24px; position:relative; overflow:hidden;
+    transition: all .2s; cursor:default;
+  }
+  .job-card::before {
+    content:''; position:absolute; top:0; left:0; right:0; height:3px;
+  }
+  .job-card.common::before { background:var(--muted); }
+  .job-card.rare::before { background:var(--blue); }
+  .job-card.epic::before { background: linear-gradient(90deg, #A855F7, #EC4899); }
+  .job-card.legendary::before { background: linear-gradient(90deg, var(--gold), var(--red)); }
+
+  .job-rarity {
+    font-family:var(--font-cond); font-size:11px; font-weight:700; letter-spacing:3px;
+    text-transform:uppercase; margin-bottom:8px;
+  }
+  .job-rarity.common { color:var(--muted); }
+  .job-rarity.rare { color:var(--blue); }
+  .job-rarity.epic { color:#A855F7; }
+  .job-rarity.legendary { color:var(--gold); }
+
+  .job-icon { font-size:36px; margin-bottom:12px; }
+  .job-name { font-family:var(--font-head); font-size:24px; letter-spacing:1px; margin-bottom:6px; }
+  .job-desc { font-size:13px; color:var(--muted); margin-bottom:16px; line-height:1.5; }
+  .job-reward {
+    display:flex; align-items:center; gap:6px;
+    font-family:var(--font-cond); font-size:18px; font-weight:700; color:var(--gold);
+    margin-bottom:16px;
+  }
+  .job-cooldown { font-size:12px; color:var(--muted); margin-bottom:14px; }
+
+  .btn-work {
+    width:100%; background:linear-gradient(135deg, var(--gold) 0%, #FF8C00 100%);
+    color:var(--dark); font-family:var(--font-cond); font-size:14px;
+    font-weight:700; letter-spacing:2px; text-transform:uppercase;
+    border:none; border-radius:10px; padding:12px;
+    cursor:pointer; transition:all .2s;
+  }
+  .btn-work:hover:not(:disabled) { transform:translateY(-2px); box-shadow:0 6px 20px rgba(255,193,7,.4); }
+  .btn-work:disabled {
+    background:var(--dark3); color:var(--muted); cursor:not-allowed;
+    transform:none; box-shadow:none;
+  }
+
+  .cooldown-bar {
+    height:3px; background:var(--dark3); border-radius:2px;
+    margin-top:10px; overflow:hidden; display:none;
+  }
+  .cooldown-bar-fill {
+    height:100%; background:var(--gold);
+    border-radius:2px; transition:width .5s linear;
+  }
+
+  /* ═══════════════════════
+     SHOP
+  ═══════════════════════ */
+  .shop-item {
+    background:var(--card); border:1px solid var(--border);
+    border-radius:16px; padding:24px; text-align:center;
+    transition:all .2s; position:relative; overflow:hidden;
+  }
+  .shop-item-icon { font-size:48px; margin-bottom:12px; display:block; }
+  .shop-item-name { font-family:var(--font-head); font-size:22px; letter-spacing:1px; margin-bottom:6px; }
+  .shop-item-desc { font-size:12px; color:var(--muted); margin-bottom:16px; line-height:1.5; }
+  .shop-item-price {
+    font-family:var(--font-cond); font-size:22px; font-weight:700; color:var(--gold);
+    margin-bottom:14px;
+  }
+  .btn-buy {
+    width:100%; background:var(--dark3); border:1px solid rgba(255,217,61,.3);
+    color:var(--gold); font-family:var(--font-cond); font-size:13px;
+    font-weight:700; letter-spacing:2px; text-transform:uppercase;
+    border-radius:10px; padding:11px; cursor:pointer; transition:all .2s;
+  }
+  .btn-buy:hover:not(:disabled) {
+    background:var(--gold); color:var(--dark);
+    box-shadow:0 4px 20px rgba(255,193,7,.4);
+  }
+  .btn-buy:disabled { opacity:.4; cursor:not-allowed; }
+
+  /* INVENTORY BADGE */
+  .owned-badge {
+    position:absolute; top:12px; right:12px;
+    background:var(--success); color:#000; font-size:10px;
+    font-family:var(--font-cond); font-weight:700; letter-spacing:1px;
+    padding:3px 8px; border-radius:999px;
+  }
+
+  /* ═══════════════════════
+     LEADERBOARD
+  ═══════════════════════ */
+  .leaderboard-list { display:flex; flex-direction:column; gap:8px; }
+  .lb-row {
+    display:flex; align-items:center; gap:16px;
+    background:var(--card); border:1px solid var(--border);
+    border-radius:12px; padding:16px 20px; transition:all .2s;
+  }
+  .lb-row:hover { border-color:rgba(255,217,61,.2); }
+  .lb-row.me { border-color:rgba(255,217,61,.4); background:rgba(255,217,61,.05); }
+  .lb-rank {
+    font-family:var(--font-head); font-size:28px; color:var(--muted);
+    min-width:36px; text-align:center;
+  }
+  .lb-row:nth-child(1) .lb-rank { color:var(--gold); font-size:32px; }
+  .lb-row:nth-child(2) .lb-rank { color:#C0C0C0; }
+  .lb-row:nth-child(3) .lb-rank { color:#CD7F32; }
+  .lb-medal { font-size:24px; display:none; }
+  .lb-row:nth-child(1) .lb-medal { display:block; }
+  .lb-name { flex:1; font-family:var(--font-cond); font-size:18px; font-weight:600; }
+  .lb-pts { font-family:var(--font-head); font-size:24px; color:var(--gold); }
+  .lb-pts-label { font-size:11px; color:var(--muted); margin-left:4px; align-self:flex-end; margin-bottom:3px; }
+
+  /* ═══════════════════════
+     PROFILE
+  ═══════════════════════ */
+  .profile-hero {
+    background: linear-gradient(135deg, var(--dark3), #1A1525);
+    border:1px solid var(--border); border-radius:20px;
+    padding:36px; display:flex; gap:28px; align-items:center;
+    margin-bottom:24px; flex-wrap:wrap;
+  }
+  .profile-avatar {
+    width:90px; height:90px; border-radius:50%;
+    background: linear-gradient(135deg, var(--gold), var(--red));
+    display:flex; align-items:center; justify-content:center;
+    font-family:var(--font-head); font-size:36px; color:var(--dark);
+    flex-shrink:0;
+  }
+  .profile-info h2 { font-family:var(--font-head); font-size:36px; letter-spacing:2px; }
+  .profile-info p { color:var(--muted); font-size:14px; margin-top:4px; }
+  .profile-rank {
+    margin-top:12px; display:inline-flex; align-items:center; gap:6px;
+    background:rgba(255,217,61,.1); border:1px solid rgba(255,217,61,.2);
+    border-radius:999px; padding:5px 14px;
+    font-family:var(--font-cond); font-size:14px; color:var(--gold); font-weight:600;
+  }
+
+  .inventory-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(100px,1fr)); gap:12px; }
+  .inv-item {
+    background:var(--dark3); border:1px solid var(--border);
+    border-radius:12px; padding:16px 12px; text-align:center;
+    transition:all .2s;
+  }
+  .inv-item:hover { border-color:rgba(255,217,61,.3); }
+  .inv-item-icon { font-size:32px; display:block; margin-bottom:6px; }
+  .inv-item-name { font-size:11px; color:var(--muted); font-family:var(--font-cond); letter-spacing:1px; }
+  .inv-item-qty {
+    font-family:var(--font-head); font-size:18px; color:var(--gold);
+  }
+
+  /* ═══════════════════════
+     TRANSFER
+  ═══════════════════════ */
+  .transfer-box {
+    max-width:480px; background:var(--card); border:1px solid var(--border);
+    border-radius:16px; padding:32px;
+  }
+  .form-label { font-family:var(--font-cond); font-size:13px; color:var(--muted); letter-spacing:2px; text-transform:uppercase; margin-bottom:8px; display:block; }
+  .form-input {
+    width:100%; background:var(--dark3); border:1px solid var(--border);
+    border-radius:10px; padding:14px 16px;
+    color:var(--text); font-family:var(--font-body); font-size:15px;
+    outline:none; margin-bottom:18px; transition:border-color .2s, box-shadow .2s;
+  }
+  .form-input:focus { border-color:var(--gold); box-shadow:0 0 0 3px rgba(255,217,61,.12); }
+
+  /* ═══════════════════════
+     TOAST
+  ═══════════════════════ */
+  #toast-container {
+    position:fixed; bottom:24px; right:24px;
+    display:flex; flex-direction:column; gap:10px; z-index:999;
+  }
+  .toast {
+    background:var(--dark3); border:1px solid var(--border);
+    border-radius:12px; padding:14px 20px;
+    font-family:var(--font-cond); font-size:15px; font-weight:600;
+    display:flex; align-items:center; gap:10px;
+    min-width:260px; box-shadow:0 8px 32px rgba(0,0,0,.4);
+    animation: toastIn .3s ease;
+    transition: opacity .3s, transform .3s;
+  }
+  .toast.out { opacity:0; transform:translateX(20px); }
+  .toast.success { border-color:rgba(0,230,118,.3); }
+  .toast.error { border-color:rgba(255,59,59,.3); }
+  .toast.info { border-color:rgba(0,194,255,.3); }
+  @keyframes toastIn { from{opacity:0;transform:translateX(20px)} to{opacity:1;transform:none} }
+
+  /* ═══════════════════════
+     MODALS
+  ═══════════════════════ */
+  .modal-overlay {
+    position:fixed; inset:0; background:rgba(0,0,0,.7);
+    backdrop-filter:blur(4px); z-index:200;
+    display:none; align-items:center; justify-content:center;
+  }
+  .modal-overlay.open { display:flex; animation:fadeIn .2s ease; }
+  .modal {
+    background:var(--dark2); border:1px solid var(--border);
+    border-radius:20px; padding:36px; width:420px; max-width:90vw;
+    position:relative;
+  }
+  .modal h3 { font-family:var(--font-head); font-size:28px; margin-bottom:8px; }
+  .modal p { color:var(--muted); font-size:14px; margin-bottom:24px; }
+  .modal-close {
+    position:absolute; top:16px; right:16px;
+    background:var(--dark3); border:none; color:var(--muted);
+    width:32px; height:32px; border-radius:8px; cursor:pointer; font-size:16px;
+    display:flex;align-items:center;justify-content:center;transition:all .2s;
+  }
+  .modal-close:hover { color:var(--text); background:var(--dark4); }
+
+  /* DAILY BONUS */
+  .daily-bonus {
+    background:linear-gradient(135deg,#1a1a08,#2a2000);
+    border:1px solid rgba(255,217,61,.3); border-radius:16px;
+    padding:20px 24px; margin-bottom:24px;
+    display:flex; align-items:center; justify-content:space-between; gap:16px; flex-wrap:wrap;
+  }
+  .daily-bonus .db-text h3 { font-family:var(--font-head); font-size:22px; color:var(--gold); }
+  .daily-bonus .db-text p { font-size:13px; color:var(--muted); }
+
+  /* LEVEL BAR */
+  .level-bar-wrap { margin:12px 0; }
+  .level-info { display:flex; justify-content:space-between; font-size:12px; color:var(--muted); margin-bottom:6px; font-family:var(--font-cond); letter-spacing:1px; }
+  .level-bar { height:6px; background:var(--dark3); border-radius:3px; overflow:hidden; }
+  .level-bar-fill { height:100%; background:linear-gradient(90deg,var(--gold),#FF8C00); border-radius:3px; transition:width .6s ease; }
+
+  /* RESPONSIVE */
+  @media(max-width:600px) {
+    .auth-box { padding:32px 24px; }
+    .section { padding:20px 16px; }
+    .topbar { padding:0 16px; }
+    .dashboard-hero { padding:28px 24px; }
+    .dashboard-hero h1 { font-size:38px; }
+    .profile-hero { padding:24px; }
+  }
+</style>
+</head>
+<body>
+
+<!-- ══════════════════════════════════════
+     AUTH SCREEN
+══════════════════════════════════════ -->
+<div id="auth-screen">
+  <div class="auth-bg">
+    <div class="orb orb1"></div>
+    <div class="orb orb2"></div>
+    <div class="orb orb3"></div>
+  </div>
+  <div class="auth-box">
+    <div class="auth-logo">ChampDrop</div>
+    <div class="auth-tagline">Trabaja · Gana · Domina</div>
+    <div class="auth-tabs">
+      <div class="auth-tab active" onclick="switchAuth('login')">Entrar</div>
+      <div class="auth-tab" onclick="switchAuth('register')">Registrarse</div>
+    </div>
+    <div class="auth-form">
+      <input type="text" id="auth-username" placeholder="Nombre de usuario" style="display:none" maxlength="20">
+      <input type="email" id="auth-email" placeholder="Email">
+      <input type="password" id="auth-password" placeholder="Contraseña" minlength="6">
+      <button class="btn-primary" onclick="handleAuth()">ENTRAR</button>
+    </div>
+    <div id="auth-error" style="margin-top:12px;"></div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════
+     MAIN APP
+══════════════════════════════════════ -->
+<div id="app">
+  <!-- TOPBAR -->
+  <div class="topbar">
+    <div class="topbar-logo">ChampDrop</div>
+    <div class="topbar-points">
+      <span class="coin">🪙</span>
+      <span class="amount" id="topbar-pts">0</span>
+      <span style="color:var(--muted);font-size:12px;font-family:var(--font-cond);letter-spacing:1px">PTS</span>
+    </div>
+    <div class="topbar-right">
+      <span class="topbar-user" id="topbar-username"></span>
+      <button class="btn-logout" onclick="logout()">Salir</button>
+    </div>
+  </div>
+
+  <!-- NAV -->
+  <div class="nav-tabs">
+    <div class="nav-tab active" onclick="showSection('dashboard')">🏠 Inicio</div>
+    <div class="nav-tab" onclick="showSection('missions')">⚡ Misiones</div>
+    <div class="nav-tab" onclick="showSection('shop')">🛍 Tienda</div>
+    <div class="nav-tab" onclick="showSection('leaderboard')">🏆 Ranking</div>
+    <div class="nav-tab" onclick="showSection('profile')">👤 Perfil</div>
+    <div class="nav-tab" onclick="showSection('transfer')">💸 Transferir</div>
+  </div>
+
+  <!-- ── DASHBOARD ── -->
+  <div class="section active" id="section-dashboard">
+    <div class="dashboard-hero">
+      <h1>BIENVENIDO,<br><span id="hero-name">JUGADOR</span></h1>
+      <p>Completa misiones, sube en el ranking y domina ChampDrop.</p>
+      <div class="level-bar-wrap" style="margin-top:20px;max-width:400px">
+        <div class="level-info">
+          <span id="level-label">NIVEL 1</span>
+          <span id="level-xp-label">0 / 500 XP</span>
+        </div>
+        <div class="level-bar"><div class="level-bar-fill" id="level-bar-fill" style="width:0%"></div></div>
+      </div>
+    </div>
+
+    <!-- DAILY BONUS -->
+    <div class="daily-bonus" id="daily-bonus-box">
+      <div class="db-text">
+        <h3>🎁 BONUS DIARIO</h3>
+        <p>Reclama tu recompensa diaria — ¡gratis!</p>
+      </div>
+      <button class="btn-primary" style="padding:12px 28px" onclick="claimDaily()">RECLAMAR</button>
+    </div>
+
+    <div class="stats-row" id="stats-row">
+      <div class="stat-card">
+        <div class="stat-icon">🪙</div>
+        <div class="stat-value" id="stat-pts">0</div>
+        <div class="stat-label">Puntos totales</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-icon">⚡</div>
+        <div class="stat-value" id="stat-jobs">0</div>
+        <div class="stat-label">Trabajos completados</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-icon">🛒</div>
+        <div class="stat-value" id="stat-items">0</div>
+        <div class="stat-label">Artículos comprados</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-icon">🏅</div>
+        <div class="stat-value" id="stat-rank">#—</div>
+        <div class="stat-label">Posición ranking</div>
+      </div>
+    </div>
+
+    <div style="font-family:var(--font-head);font-size:22px;letter-spacing:2px;margin-bottom:16px">ACTIVIDAD RECIENTE</div>
+    <div id="activity-log" style="display:flex;flex-direction:column;gap:8px;"></div>
+  </div>
+
+  <!-- ── MISSIONS ── -->
+  <div class="section" id="section-missions">
+    <div class="section-title">MISIONES</div>
+    <div class="section-sub">Completa trabajos para ganar puntos. Cada trabajo tiene su propio cooldown.</div>
+    <div class="grid-2" id="jobs-grid"></div>
+  </div>
+
+  <!-- ── SHOP ── -->
+  <div class="section" id="section-shop">
+    <div class="section-title">TIENDA</div>
+    <div class="section-sub">Gasta tus puntos en artículos exclusivos.</div>
+    <div class="grid-3" id="shop-grid"></div>
+  </div>
+
+  <!-- ── LEADERBOARD ── -->
+  <div class="section" id="section-leaderboard">
+    <div class="section-title">TOP 10</div>
+    <div class="section-sub">Los 10 jugadores con más puntos del servidor.</div>
+    <div class="leaderboard-list" id="lb-list"></div>
+  </div>
+
+  <!-- ── PROFILE ── -->
+  <div class="section" id="section-profile">
+    <div class="section-title">MI PERFIL</div>
+    <div class="profile-hero">
+      <div class="profile-avatar" id="profile-avatar"></div>
+      <div class="profile-info">
+        <h2 id="profile-name"></h2>
+        <p id="profile-email"></p>
+        <div class="profile-rank">⭐ <span id="profile-rank-text">Sin rango</span></div>
+        <div class="level-bar-wrap" style="min-width:250px">
+          <div class="level-info">
+            <span id="p-level-label">NIVEL 1</span>
+            <span id="p-level-xp">0 / 500 XP</span>
+          </div>
+          <div class="level-bar"><div class="level-bar-fill" id="p-level-bar" style="width:0%"></div></div>
+        </div>
+      </div>
+    </div>
+    <div style="font-family:var(--font-head);font-size:22px;letter-spacing:2px;margin-bottom:16px">INVENTARIO</div>
+    <div class="inventory-grid" id="inventory-grid"></div>
+  </div>
+
+  <!-- ── TRANSFER ── -->
+  <div class="section" id="section-transfer">
+    <div class="section-title">TRANSFERIR</div>
+    <div class="section-sub">Envía puntos a otro jugador.</div>
+    <div class="transfer-box">
+      <label class="form-label">Email del destinatario</label>
+      <input class="form-input" type="email" id="transfer-email" placeholder="ejemplo@correo.com">
+      <label class="form-label">Cantidad de puntos</label>
+      <input class="form-input" type="number" id="transfer-amount" placeholder="100" min="1">
+      <button class="btn-primary" onclick="sendTransfer()">ENVIAR PUNTOS</button>
+    </div>
+  </div>
+</div>
+
+<!-- TOAST CONTAINER -->
+<div id="toast-container"></div>
+
+<!-- BUY MODAL -->
+<div class="modal-overlay" id="buy-modal">
+  <div class="modal">
+    <button class="modal-close" onclick="closeModal('buy-modal')">✕</button>
+    <h3 id="modal-item-name"></h3>
+    <p id="modal-item-desc"></p>
+    <div style="display:flex;align-items:center;gap:8px;margin-bottom:24px">
+      <span style="font-size:28px" id="modal-item-icon"></span>
+      <span style="font-family:var(--font-head);font-size:32px;color:var(--gold)" id="modal-item-price"></span>
+      <span style="color:var(--muted);font-size:14px">puntos</span>
+    </div>
+    <button class="btn-primary" onclick="confirmBuy()">CONFIRMAR COMPRA</button>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════
+     FIREBASE + APP LOGIC
+══════════════════════════════════════ -->
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, onAuthStateChanged, signOut, setPersistence, browserLocalPersistence } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+import { getDatabase, ref, set, get, update, onValue, query, orderByChild, limitToLast } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js";
+
+const firebaseConfig = {
+  apiKey: "AIzaSyC2xQewrid8QiWfFy_RVdG3mHt05QYIdPA",
+  authDomain: "champdrop-b74e4.firebaseapp.com",
+  databaseURL: "https://champdrop-b74e4-default-rtdb.firebaseio.com",
+  projectId: "champdrop-b74e4",
+  storageBucket: "champdrop-b74e4.firebasestorage.app",
+  messagingSenderId: "25739034626",
+  appId: "1:25739034626:web:ae0a15d05f6775da58271b",
+  measurementId: "G-7C1L3WC7WB"
+};
+
+const app = initializeApp(firebaseConfig);
+const auth = getAuth(app);
+const db = getDatabase(app);
+
+// Persist session in localStorage
+setPersistence(auth, browserLocalPersistence);
+
+// ═══ DATA ═══
+const JOBS = [
+  { id:'mensajero', icon:'🚲', name:'Mensajero', desc:'Reparte paquetes por la ciudad a toda velocidad.', reward:50, cooldown:60, rarity:'common' },
+  { id:'barista', icon:'☕', name:'Barista', desc:'Prepara el café perfecto para decenas de clientes.', reward:80, cooldown:120, rarity:'common' },
+  { id:'hacker', icon:'💻', name:'Freelance Dev', desc:'Desarrolla una web de una noche para un cliente urgente.', reward:180, cooldown:300, rarity:'rare' },
+  { id:'streamer', icon:'🎮', name:'Streamer', desc:'Haz directo 1 hora y consigue donaciones virtuales.', reward:220, cooldown:360, rarity:'rare' },
+  { id:'trader', icon:'📈', name:'Day Trader', desc:'Aprovecha las oscilaciones del mercado. Alto riesgo, alta recompensa.', reward:400, cooldown:600, rarity:'epic' },
+  { id:'artista', icon:'🎨', name:'Artista NFT', desc:'Crea una colección NFT viral. Millones en juego.', reward:350, cooldown:480, rarity:'epic' },
+  { id:'ceo', icon:'🏢', name:'CEO', desc:'Dirige una startup multimillonaria durante un día completo.', reward:800, cooldown:1200, rarity:'legendary' },
+  { id:'astronauta', icon:'🚀', name:'Astronauta', desc:'Completa una misión espacial. El riesgo no tiene límites.', reward:1200, cooldown:1800, rarity:'legendary' },
+];
+
+const SHOP_ITEMS = [
+  { id:'cafe', icon:'☕', name:'Café Pro', desc:'Reduce el cooldown de trabajos comunes en 10s.', price:100, effect:'cooldown_reduce' },
+  { id:'laptop', icon:'💻', name:'Laptop Gamer', desc:'Aumenta las ganancias de trabajos tech un 10%.', price:500, effect:'tech_boost' },
+  { id:'suit', icon:'👔', name:'Traje de Lujo', desc:'Aumenta tus ganancias de CEO un 15%.', price:1000, effect:'ceo_boost' },
+  { id:'sports', icon:'🏎️', name:'Coche Deportivo', desc:'Artículo de lujo — demuestra tu riqueza.', price:2000, effect:'prestige' },
+  { id:'crown', icon:'👑', name:'Corona Real', desc:'Símbolo de poder absoluto en ChampDrop.', price:5000, effect:'prestige' },
+  { id:'shield', icon:'🛡️', name:'Escudo Anti-Robo', desc:'Protege tus puntos de transferencias no deseadas.', price:750, effect:'protection' },
+  { id:'xpboost', icon:'⚡', name:'XP Boost x2', desc:'Dobla el XP ganado durante 24 horas.', price:300, effect:'xp_boost' },
+  { id:'diamond', icon:'💎', name:'Diamante', desc:'El artículo más raro. Solo para los más ricos.', price:10000, effect:'prestige' },
+];
+
+const RANKS = [
+  { min:0, name:'Rookie', icon:'🥉' },
+  { min:500, name:'Trabajador', icon:'👷' },
+  { min:2000, name:'Profesional', icon:'💼' },
+  { min:5000, name:'Emprendedor', icon:'📊' },
+  { min:10000, name:'Ejecutivo', icon:'👔' },
+  { min:25000, name:'CEO', icon:'🏢' },
+  { min:50000, name:'Millonario', icon:'💰' },
+  { min:100000, name:'Leyenda', icon:'🏆' },
+];
+
+// ═══ STATE ═══
+let currentUser = null;
+let userData = {};
+let cooldowns = {};  // local cooldowns
+let pendingBuy = null;
+
+// ═══ AUTH MODE ═══
+window.switchAuth = (mode) => {
+  document.querySelectorAll('.auth-tab').forEach((t,i) => t.classList.toggle('active', (mode==='login'&&i===0)||(mode==='register'&&i===1)));
+  document.getElementById('auth-username').style.display = mode==='register' ? 'block' : 'none';
+  document.getElementById('auth-error').textContent = '';
+};
+
+window.handleAuth = async () => {
+  const mode = document.querySelector('.auth-tab.active').textContent.trim() === 'Entrar' ? 'login' : 'register';
+  const email = document.getElementById('auth-email').value.trim();
+  const password = document.getElementById('auth-password').value;
+  const username = document.getElementById('auth-username').value.trim();
+  const errEl = document.getElementById('auth-error');
+  errEl.textContent = '';
+
+  if(!email || !password) { errEl.textContent = 'Por favor rellena todos los campos.'; return; }
+  if(mode==='register' && !username) { errEl.textContent = 'Elige un nombre de usuario.'; return; }
+
+  try {
+    if(mode === 'register') {
+      const cred = await createUserWithEmailAndPassword(auth, email, password);
+      const uid = cred.user.uid;
+      await set(ref(db, `usuarios/${uid}`), {
+        username, email, points: 0, totalEarned: 0,
+        jobsCompleted: 0, itemsBought: 0, level: 1, xp: 0,
+        inventory: {}, activity: [], dailyLastClaim: 0,
+        createdAt: Date.now()
+      });
+    } else {
+      await signInWithEmailAndPassword(auth, email, password);
+    }
+  } catch(e) {
+    const msgs = {
+      'auth/email-already-in-use': 'Este email ya está registrado.',
+      'auth/invalid-email': 'Email no válido.',
+      'auth/wrong-password': 'Contraseña incorrecta.',
+      'auth/user-not-found': 'Usuario no encontrado.',
+      'auth/weak-password': 'La contraseña debe tener al menos 6 caracteres.',
+      'auth/invalid-credential': 'Credenciales incorrectas.',
+    };
+    errEl.textContent = msgs[e.code] || 'Error: ' + e.message;
+  }
+};
+
+window.logout = async () => {
+  await signOut(auth);
+  document.getElementById('app').classList.remove('visible');
+  document.getElementById('app').style.display = 'none';
+  document.getElementById('auth-screen').classList.remove('hidden');
+};
+
+// ═══ AUTH STATE ═══
+onAuthStateChanged(auth, user => {
+  if(user) {
+    currentUser = user;
+    loadCooldowns();
+    subscribeToUser(user.uid);
+    document.getElementById('auth-screen').classList.add('hidden');
+    document.getElementById('app').style.display = 'block';
+    setTimeout(() => document.getElementById('app').classList.add('visible'), 50);
+  } else {
+    currentUser = null;
+    document.getElementById('app').classList.remove('visible');
+    document.getElementById('app').style.display = 'none';
+    document.getElementById('auth-screen').classList.remove('hidden');
+  }
+});
+
+// ═══ REALTIME SUBSCRIPTION ═══
+function subscribeToUser(uid) {
+  onValue(ref(db, `usuarios/${uid}`), snap => {
+    userData = snap.val() || {};
+    renderAll();
+  });
+}
+
+// ═══ RENDER ═══
+function renderAll() {
+  if(!currentUser) return;
+  const pts = userData.points || 0;
+  const username = userData.username || currentUser.email.split('@')[0];
+  const level = userData.level || 1;
+  const xp = userData.xp || 0;
+  const xpNeeded = level * 500;
+
+  // Topbar
+  document.getElementById('topbar-pts').textContent = pts.toLocaleString();
+  document.getElementById('topbar-username').textContent = username.toUpperCase();
+  document.getElementById('hero-name').textContent = username.toUpperCase();
+
+  // Level bar
+  const pct = Math.min(100, (xp/xpNeeded)*100);
+  ['level-bar-fill','p-level-bar'].forEach(id => {
+    const el = document.getElementById(id);
+    if(el) el.style.width = pct+'%';
+  });
+  ['level-label','p-level-label'].forEach(id => {
+    const el = document.getElementById(id);
+    if(el) el.textContent = 'NIVEL '+level;
+  });
+  ['level-xp-label','p-level-xp'].forEach(id => {
+    const el = document.getElementById(id);
+    if(el) el.textContent = xp+' / '+xpNeeded+' XP';
+  });
+
+  // Stats
+  document.getElementById('stat-pts').textContent = pts.toLocaleString();
+  document.getElementById('stat-jobs').textContent = (userData.jobsCompleted||0).toLocaleString();
+  document.getElementById('stat-items').textContent = (userData.itemsBought||0).toLocaleString();
+
+  // Rank
+  const rank = getRank(pts);
+  document.getElementById('profile-rank-text').textContent = rank.icon+' '+rank.name;
+
+  // Profile
+  document.getElementById('profile-name').textContent = username;
+  document.getElementById('profile-email').textContent = currentUser.email;
+  document.getElementById('profile-avatar').textContent = username[0].toUpperCase();
+
+  // Daily bonus
+  const now = Date.now();
+  const lastClaim = userData.dailyLastClaim || 0;
+  const canClaim = now - lastClaim > 86400000;
+  const dbBox = document.getElementById('daily-bonus-box');
+  dbBox.style.display = canClaim ? 'flex' : 'none';
+
+  // Activity
+  renderActivity();
+  // Jobs
+  renderJobs();
+  // Shop
+  renderShop();
+  // Inventory
+  renderInventory();
+  // Leaderboard
+  renderLeaderboard();
+}
+
+function getRank(pts) {
+  let rank = RANKS[0];
+  for(const r of RANKS) { if(pts >= r.min) rank = r; }
+  return rank;
+}
+
+function renderActivity() {
+  const el = document.getElementById('activity-log');
+  const acts = userData.activity ? Object.values(userData.activity).slice(-8).reverse() : [];
+  if(!acts.length) { el.innerHTML = '<div style="color:var(--muted);font-size:14px;padding:16px 0">Aún no hay actividad. ¡Completa tu primera misión!</div>'; return; }
+  el.innerHTML = acts.map(a => `
+    <div style="background:var(--card);border:1px solid var(--border);border-radius:10px;padding:12px 18px;display:flex;justify-content:space-between;align-items:center">
+      <span style="font-size:14px">${a.text}</span>
+      <span style="font-family:var(--font-cond);font-size:12px;color:var(--muted)">${timeAgo(a.ts)}</span>
+    </div>
+  `).join('');
+}
+
+function renderJobs() {
+  const grid = document.getElementById('jobs-grid');
+  const now = Date.now();
+  grid.innerHTML = JOBS.map(job => {
+    const cdKey = 'cd_'+job.id;
+    const lastDone = cooldowns[cdKey] || 0;
+    const elapsed = (now - lastDone) / 1000;
+    const ready = elapsed >= job.cooldown;
+    const remaining = ready ? 0 : Math.ceil(job.cooldown - elapsed);
+    const pct = ready ? 100 : Math.floor((elapsed/job.cooldown)*100);
+    return `
+      <div class="job-card ${job.rarity}">
+        <div class="job-rarity ${job.rarity}">${job.rarity.toUpperCase()}</div>
+        <div class="job-icon">${job.icon}</div>
+        <div class="job-name">${job.name}</div>
+        <div class="job-desc">${job.desc}</div>
+        <div class="job-reward">🪙 ${job.reward} pts</div>
+        <div class="job-cooldown">⏱ Cooldown: ${formatTime(job.cooldown)}</div>
+        <button class="btn-work" id="btn-${job.id}" ${ready?'':'disabled'} onclick="doJob('${job.id}')">
+          ${ready ? 'TRABAJAR' : '⏳ '+formatTime(remaining)}
+        </button>
+        <div class="cooldown-bar" id="bar-${job.id}" style="display:${ready?'none':'block'}">
+          <div class="cooldown-bar-fill" id="barfill-${job.id}" style="width:${pct}%"></div>
+        </div>
+      </div>
+    `;
+  }).join('');
+  startCooldownTimers();
+}
+
+function renderShop() {
+  const grid = document.getElementById('shop-grid');
+  const inv = userData.inventory || {};
+  grid.innerHTML = SHOP_ITEMS.map(item => {
+    const owned = inv[item.id] || 0;
+    const canAfford = (userData.points||0) >= item.price;
+    return `
+      <div class="shop-item">
+        ${owned ? '<div class="owned-badge">×'+owned+'</div>' : ''}
+        <span class="shop-item-icon">${item.icon}</span>
+        <div class="shop-item-name">${item.name}</div>
+        <div class="shop-item-desc">${item.desc}</div>
+        <div class="shop-item-price">🪙 ${item.price.toLocaleString()}</div>
+        <button class="btn-buy" ${canAfford?'':'disabled'} onclick="openBuyModal('${item.id}')">
+          ${canAfford ? 'COMPRAR' : 'SIN FONDOS'}
+        </button>
+      </div>
+    `;
+  }).join('');
+}
+
+function renderInventory() {
+  const grid = document.getElementById('inventory-grid');
+  const inv = userData.inventory || {};
+  const entries = Object.entries(inv).filter(([k,v]) => v > 0);
+  if(!entries.length) {
+    grid.innerHTML = '<div style="color:var(--muted);font-size:14px">Tu inventario está vacío. ¡Visita la tienda!</div>';
+    return;
+  }
+  grid.innerHTML = entries.map(([id,qty]) => {
+    const item = SHOP_ITEMS.find(i=>i.id===id);
+    if(!item) return '';
+    return `
+      <div class="inv-item">
+        <span class="inv-item-icon">${item.icon}</span>
+        <div class="inv-item-qty">${qty}</div>
+        <div class="inv-item-name">${item.name}</div>
+      </div>
+    `;
+  }).join('');
+}
+
+function renderLeaderboard() {
+  const lbQ = query(ref(db, 'usuarios'), orderByChild('points'), limitToLast(10));
+  get(lbQ).then(snap => {
+    const data = snap.val() || {};
+    const sorted = Object.entries(data)
+      .map(([uid,u]) => ({uid, username:u.username||'Anónimo', points:u.points||0}))
+      .sort((a,b) => b.points - a.points)
+      .slice(0,10);
+
+    const myRank = sorted.findIndex(e=>e.uid===currentUser?.uid)+1;
+    document.getElementById('stat-rank').textContent = myRank ? '#'+myRank : '#—';
+
+    const medals = ['🥇','🥈','🥉'];
+    document.getElementById('lb-list').innerHTML = sorted.map((e,i) => `
+      <div class="lb-row ${e.uid===currentUser?.uid?'me':''}">
+        <div class="lb-rank">${i+1}</div>
+        <span class="lb-medal">${medals[i]||''}</span>
+        <div class="lb-name">${e.uid===currentUser?.uid?'⭐ ':''} ${e.username}</div>
+        <div class="lb-pts">${e.points.toLocaleString()}</div>
+        <span class="lb-pts-label">pts</span>
+      </div>
+    `).join('');
+  });
+}
+
+// ═══ JOBS ═══
+window.doJob = async (jobId) => {
+  if(!currentUser) return;
+  const job = JOBS.find(j=>j.id===jobId);
+  if(!job) return;
+  const cdKey = 'cd_'+jobId;
+  const now = Date.now();
+  const lastDone = cooldowns[cdKey] || 0;
+  if((now-lastDone)/1000 < job.cooldown) { toast('⏳ Trabajo en cooldown', 'error'); return; }
+
+  // Apply bonus
+  let reward = job.reward;
+  const inv = userData.inventory || {};
+  if(inv.laptop && ['hacker','streamer'].includes(jobId)) reward = Math.floor(reward*1.1);
+  if(inv.suit && jobId==='ceo') reward = Math.floor(reward*1.15);
+  let xpGain = Math.floor(reward/5);
+  if(inv.xpboost) xpGain *= 2;
+
+  // Save cooldown locally
+  cooldowns[cdKey] = now;
+  saveCooldowns();
+
+  // Update DB
+  const uid = currentUser.uid;
+  const newPts = (userData.points||0) + reward;
+  const newXP = (userData.xp||0) + xpGain;
+  const newLevel = Math.floor(newXP/500)+1;
+  const logEntry = { text:`${job.icon} Completaste "${job.name}" y ganaste ${reward} pts`, ts:now };
+  const updates = {
+    points: newPts,
+    totalEarned: (userData.totalEarned||0) + reward,
+    jobsCompleted: (userData.jobsCompleted||0) + 1,
+    xp: newXP, level: newLevel,
+  };
+  await update(ref(db,`usuarios/${uid}`), updates);
+  await pushActivity(logEntry);
+
+  toast(`${job.icon} +${reward} puntos por ${job.name}!`, 'success');
+  renderJobs();
+};
+
+// ═══ DAILY BONUS ═══
+window.claimDaily = async () => {
+  const uid = currentUser.uid;
+  const now = Date.now();
+  const bonus = 150 + Math.floor(Math.random()*100);
+  const logEntry = { text:`🎁 Reclamaste el bonus diario: +${bonus} pts`, ts:now };
+  await update(ref(db,`usuarios/${uid}`), {
+    points: (userData.points||0)+bonus,
+    dailyLastClaim: now,
+    totalEarned: (userData.totalEarned||0)+bonus,
+  });
+  await pushActivity(logEntry);
+  toast(`🎁 Bonus diario: +${bonus} puntos!`, 'success');
+};
+
+// ═══ SHOP ═══
+window.openBuyModal = (itemId) => {
+  const item = SHOP_ITEMS.find(i=>i.id===itemId);
+  if(!item) return;
+  pendingBuy = itemId;
+  document.getElementById('modal-item-name').textContent = item.name;
+  document.getElementById('modal-item-desc').textContent = item.desc;
+  document.getElementById('modal-item-icon').textContent = item.icon;
+  document.getElementById('modal-item-price').textContent = item.price.toLocaleString();
+  document.getElementById('buy-modal').classList.add('open');
+};
+
+window.confirmBuy = async () => {
+  if(!pendingBuy || !currentUser) return;
+  const item = SHOP_ITEMS.find(i=>i.id===pendingBuy);
+  if(!item) return;
+  if((userData.points||0) < item.price) { toast('Puntos insuficientes.', 'error'); return; }
+
+  const uid = currentUser.uid;
+  const inv = userData.inventory || {};
+  const newQty = (inv[item.id]||0)+1;
+  const logEntry = { text:`🛍 Compraste "${item.name}" por ${item.price} pts`, ts:Date.now() };
+  await update(ref(db,`usuarios/${uid}`), {
+    points: (userData.points||0)-item.price,
+    itemsBought: (userData.itemsBought||0)+1,
+    [`inventory/${item.id}`]: newQty,
+  });
+  await pushActivity(logEntry);
+  closeModal('buy-modal');
+  toast(`${item.icon} Compraste ${item.name}!`, 'success');
+};
+
+// ═══ TRANSFER ═══
+window.sendTransfer = async () => {
+  if(!currentUser) return;
+  const email = document.getElementById('transfer-email').value.trim();
+  const amount = parseInt(document.getElementById('transfer-amount').value);
+  if(!email || isNaN(amount) || amount <= 0) { toast('Rellena los campos correctamente.', 'error'); return; }
+  if(email === currentUser.email) { toast('No puedes transferirte a ti mismo.', 'error'); return; }
+  if((userData.points||0) < amount) { toast('Puntos insuficientes.', 'error'); return; }
+
+  // Find recipient
+  const allSnap = await get(ref(db, 'usuarios'));
+  const all = allSnap.val() || {};
+  const entry = Object.entries(all).find(([uid,u]) => u.email === email);
+  if(!entry) { toast('Usuario no encontrado.', 'error'); return; }
+  const [toUid, toData] = entry;
+  const logMe = { text:`💸 Transferiste ${amount} pts a ${toData.username||email}`, ts:Date.now() };
+  const logThem = { text:`💰 Recibiste ${amount} pts de ${userData.username||currentUser.email}`, ts:Date.now() };
+
+  await update(ref(db,`usuarios/${currentUser.uid}`), { points:(userData.points||0)-amount });
+  await update(ref(db,`usuarios/${toUid}`), { points:(toData.points||0)+amount });
+  await pushActivity(logMe);
+  await pushActivityFor(toUid, toData, logThem);
+
+  toast(`💸 Enviaste ${amount} pts a ${toData.username||email}`, 'success');
+  document.getElementById('transfer-email').value = '';
+  document.getElementById('transfer-amount').value = '';
+};
+
+async function pushActivity(entry) {
+  const uid = currentUser.uid;
+  const acts = userData.activity ? [...Object.values(userData.activity)] : [];
+  acts.push(entry);
+  if(acts.length > 20) acts.splice(0, acts.length-20);
+  await update(ref(db,`usuarios/${uid}`), { activity: acts });
+}
+
+async function pushActivityFor(uid, uData, entry) {
+  const acts = uData.activity ? [...Object.values(uData.activity)] : [];
+  acts.push(entry);
+  if(acts.length > 20) acts.splice(0, acts.length-20);
+  await update(ref(db,`usuarios/${uid}`), { activity: acts });
+}
+
+// ═══ COOLDOWN TIMERS ═══
+function startCooldownTimers() {
+  setInterval(() => {
+    const now = Date.now();
+    JOBS.forEach(job => {
+      const cdKey = 'cd_'+job.id;
+      const lastDone = cooldowns[cdKey] || 0;
+      const elapsed = (now - lastDone) / 1000;
+      const ready = elapsed >= job.cooldown;
+      const btn = document.getElementById('btn-'+job.id);
+      const bar = document.getElementById('bar-'+job.id);
+      const fill = document.getElementById('barfill-'+job.id);
+      if(!btn) return;
+      if(ready) {
+        if(btn.disabled) {
+          btn.disabled = false;
+          btn.textContent = 'TRABAJAR';
+          if(bar) bar.style.display='none';
+        }
+      } else {
+        const remaining = Math.ceil(job.cooldown - elapsed);
+        btn.textContent = '⏳ '+formatTime(remaining);
+        const pct = Math.floor((elapsed/job.cooldown)*100);
+        if(fill) fill.style.width=pct+'%';
+        if(bar) bar.style.display='block';
+      }
+    });
+  }, 1000);
+}
+
+// ═══ LOCAL COOLDOWNS ═══
+function saveCooldowns() {
+  localStorage.setItem('champdrop_cooldowns', JSON.stringify(cooldowns));
+}
+function loadCooldowns() {
+  try { cooldowns = JSON.parse(localStorage.getItem('champdrop_cooldowns')) || {}; }
+  catch { cooldowns = {}; }
+}
+
+// ═══ NAVIGATION ═══
+window.showSection = (id) => {
+  document.querySelectorAll('.section').forEach(s=>s.classList.remove('active'));
+  document.querySelectorAll('.nav-tab').forEach(t=>t.classList.remove('active'));
+  document.getElementById('section-'+id).classList.add('active');
+  event.target.classList.add('active');
+  if(id==='leaderboard') renderLeaderboard();
+};
+
+window.closeModal = (id) => document.getElementById(id).classList.remove('open');
+
+// ═══ TOAST ═══
+window.toast = (msg, type='info') => {
+  const icons = { success:'✅', error:'❌', info:'ℹ️' };
+  const el = document.createElement('div');
+  el.className = 'toast '+type;
+  el.innerHTML = `<span>${icons[type]}</span><span>${msg}</span>`;
+  document.getElementById('toast-container').appendChild(el);
+  setTimeout(() => { el.classList.add('out'); setTimeout(()=>el.remove(), 300); }, 3000);
+};
+
+// ═══ HELPERS ═══
+function formatTime(s) {
+  if(s<60) return s+'s';
+  const m=Math.floor(s/60), sec=s%60;
+  return m+'m'+(sec?sec+'s':'');
+}
+function timeAgo(ts) {
+  const d=(Date.now()-ts)/1000;
+  if(d<60) return 'ahora';
+  if(d<3600) return Math.floor(d/60)+'m';
+  if(d<86400) return Math.floor(d/3600)+'h';
+  return Math.floor(d/86400)+'d';
+}
+</script>
+</body>
+</html>
