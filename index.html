@@ -3,1165 +3,1618 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>ZombieCraft — Survive or Die</title>
+<title>SkillRush v2 — Trabaja. Sube. Domina.</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:ital,wght@0,300;0,400;0,500;0,600;1,400&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
 <style>
-*{margin:0;padding:0;box-sizing:border-box;}
-body{background:#0a0a0f;color:#e0e0e0;font-family:'Courier New',monospace;overflow:hidden;user-select:none;}
-#auth-overlay{position:fixed;inset:0;background:linear-gradient(135deg,#0a0a0f,#0d1a0d,#0a0a0f);display:flex;align-items:center;justify-content:center;z-index:1000;flex-direction:column;}
-.auth-bg{position:absolute;inset:0;overflow:hidden;}
-.auth-bg::before{content:'';position:absolute;inset:0;background-image:repeating-linear-gradient(0deg,transparent,transparent 40px,rgba(0,255,0,0.03) 40px,rgba(0,255,0,0.03) 41px),repeating-linear-gradient(90deg,transparent,transparent 40px,rgba(0,255,0,0.03) 40px,rgba(0,255,0,0.03) 41px);}
-.auth-card{position:relative;z-index:2;background:rgba(10,15,10,0.97);border:2px solid #1a4a1a;border-radius:4px;padding:48px 40px;width:400px;box-shadow:0 0 60px rgba(0,255,0,0.1);}
-.auth-logo{text-align:center;margin-bottom:32px;}
-.auth-logo h1{font-size:38px;font-weight:900;letter-spacing:4px;color:#00ff41;text-shadow:0 0 20px rgba(0,255,65,0.5);}
-.auth-logo p{font-size:10px;letter-spacing:6px;color:#2a5a2a;margin-top:4px;text-transform:uppercase;}
-.auth-tabs{display:grid;grid-template-columns:1fr 1fr;gap:2px;background:#111;border:1px solid #1a3a1a;border-radius:2px;padding:2px;margin-bottom:24px;}
-.auth-tab{padding:10px;text-align:center;font-family:'Courier New',monospace;font-size:11px;letter-spacing:3px;text-transform:uppercase;cursor:pointer;color:#2a5a2a;border-radius:1px;transition:all .2s;}
-.auth-tab.active{background:#0d2a0d;color:#00ff41;}
-.auth-input{width:100%;background:#080d08;border:1px solid #1a3a1a;border-radius:2px;padding:12px 14px;color:#a0d0a0;font-family:'Courier New',monospace;font-size:13px;margin-bottom:10px;outline:none;transition:border-color .2s;}
-.auth-input:focus{border-color:#00ff41;box-shadow:0 0 0 2px rgba(0,255,65,0.1);}
-.auth-input::placeholder{color:#2a4a2a;}
-.btn-auth{width:100%;background:#00ff41;color:#000;font-family:'Courier New',monospace;font-size:12px;font-weight:900;letter-spacing:4px;text-transform:uppercase;border:none;border-radius:2px;padding:14px;cursor:pointer;transition:all .2s;margin-top:4px;}
-.btn-auth:hover{background:#00cc33;box-shadow:0 0 20px rgba(0,255,65,0.3);}
-.btn-auth:disabled{opacity:.4;cursor:not-allowed;}
-#auth-err{font-size:11px;color:#ff4444;text-align:center;margin-top:8px;min-height:16px;letter-spacing:1px;}
-#lobby-overlay{position:fixed;inset:0;background:#0a0a0f;display:none;z-index:500;flex-direction:column;}
-#lobby-overlay.show{display:flex;}
-.lobby-topbar{background:#080d08;border-bottom:1px solid #1a3a1a;padding:12px 20px;display:flex;align-items:center;justify-content:space-between;}
-.lobby-logo{font-size:18px;font-weight:900;letter-spacing:3px;color:#00ff41;}
-.lobby-pts{font-family:'Courier New',monospace;font-size:14px;color:#00ff41;background:#0d2a0d;border:1px solid #1a4a1a;padding:4px 12px;border-radius:2px;}
-.btn-sm{background:transparent;border:1px solid #1a3a1a;color:#4a8a4a;font-family:'Courier New',monospace;font-size:10px;letter-spacing:2px;text-transform:uppercase;padding:6px 12px;border-radius:2px;cursor:pointer;transition:all .2s;}
-.btn-sm:hover{border-color:#00ff41;color:#00ff41;}
-.lobby-body{flex:1;padding:20px;display:grid;grid-template-columns:1fr 280px;gap:16px;max-width:1200px;margin:0 auto;width:100%;overflow-y:auto;}
-.lobby-panel{background:#080d08;border:1px solid #1a3a1a;border-radius:3px;padding:18px;}
-.lobby-panel h3{font-size:11px;letter-spacing:4px;text-transform:uppercase;color:#2a7a2a;margin-bottom:14px;border-bottom:1px solid #1a3a1a;padding-bottom:10px;}
-.room-item{background:#0a100a;border:1px solid #1a3a1a;border-radius:2px;padding:12px 14px;display:flex;align-items:center;justify-content:space-between;cursor:pointer;transition:all .2s;margin-bottom:8px;}
-.room-item:hover{border-color:#00ff41;background:#0d1a0d;}
-.room-status{font-size:10px;padding:3px 8px;border-radius:2px;letter-spacing:2px;text-transform:uppercase;}
-.room-status.waiting{background:rgba(0,255,65,0.1);color:#00ff41;border:1px solid rgba(0,255,65,0.2);}
-.room-status.playing{background:rgba(255,100,0,0.1);color:#ff6400;border:1px solid rgba(255,100,0,0.2);}
-.btn-create{width:100%;background:#0d2a0d;border:2px solid #1a4a1a;color:#00ff41;font-family:'Courier New',monospace;font-size:11px;letter-spacing:3px;text-transform:uppercase;padding:13px;cursor:pointer;border-radius:2px;transition:all .2s;}
-.btn-create:hover{background:#1a4a1a;box-shadow:0 0 15px rgba(0,255,65,0.2);}
-.shop-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;}
-.shop-item{background:#0a100a;border:1px solid #1a3a1a;border-radius:2px;padding:10px;text-align:center;cursor:pointer;transition:all .2s;}
-.shop-item:hover:not(.locked){border-color:#00ff41;background:#0d1a0d;}
-.shop-item.locked{opacity:.3;cursor:not-allowed;}
-.shop-item.owned{border-color:rgba(0,255,65,0.4);background:rgba(0,255,65,0.03);}
-.lb-item{display:flex;align-items:center;gap:10px;padding:8px 0;border-bottom:1px solid #111;}
-.lb-pos{font-size:14px;font-weight:900;min-width:24px;color:#2a5a2a;}
-.lb-item:first-child .lb-pos{color:#00ff41;}
-.toast-wrap{position:fixed;bottom:16px;right:16px;display:flex;flex-direction:column;gap:6px;z-index:9999;}
-.toast{background:#0d2a0d;border:1px solid #1a4a1a;border-radius:2px;padding:10px 14px;font-size:11px;color:#80c080;letter-spacing:1px;animation:toastIn .3s ease;min-width:200px;}
-.toast.err{background:#2a0d0d;border-color:#4a1a1a;color:#ff8080;}
-.toast.warn{background:#2a2a0d;border-color:#4a4a1a;color:#ffff80;}
-@keyframes toastIn{from{opacity:0;transform:translateX(16px)}to{opacity:1;transform:none}}
-#game-canvas{display:none;position:fixed;inset:0;}
-#game-canvas.show{display:block;}
-canvas#c{display:block;}
-#hud{position:fixed;top:0;left:0;right:0;pointer-events:none;z-index:100;display:none;}
-#hud-top{display:flex;align-items:flex-start;justify-content:space-between;padding:12px 16px;}
-.hud-box{background:rgba(0,0,0,0.75);border:1px solid #1a4a1a;border-radius:2px;padding:8px 12px;}
-#hud-wave{position:absolute;top:12px;left:50%;transform:translateX(-50%);background:rgba(0,0,0,0.75);border:1px solid rgba(255,100,0,0.3);border-radius:2px;padding:8px 18px;font-size:11px;color:#ff6400;letter-spacing:3px;text-transform:uppercase;}
-#hud-bottom{position:fixed;bottom:0;left:0;right:0;padding:12px 16px;display:flex;align-items:flex-end;justify-content:space-between;pointer-events:none;}
-#crosshair{position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);pointer-events:none;z-index:101;display:none;}
-#minimap{position:fixed;bottom:80px;right:16px;border:1px solid #1a4a1a;border-radius:2px;background:rgba(0,0,0,0.8);pointer-events:none;z-index:102;display:none;}
-#wave-announce{position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);font-size:34px;font-weight:900;letter-spacing:6px;color:#ff6400;text-shadow:0 0 30px rgba(255,100,0,0.8);z-index:200;pointer-events:none;display:none;text-align:center;}
-#game-over-screen{position:fixed;inset:0;background:rgba(0,0,0,0.9);display:none;align-items:center;justify-content:center;z-index:300;flex-direction:column;gap:16px;}
-#game-over-screen.show{display:flex;}
-#game-over-screen h2{font-size:48px;font-weight:900;letter-spacing:6px;color:#ff4444;text-shadow:0 0 30px rgba(255,68,68,0.5);}
-.go-stat{font-size:22px;font-weight:900;color:#00ff41;}
-.go-label{font-size:10px;color:#2a5a2a;letter-spacing:3px;text-transform:uppercase;margin-top:2px;}
-#ctrl-hint{position:fixed;inset:0;background:rgba(0,0,0,0.92);display:none;align-items:center;justify-content:center;z-index:400;flex-direction:column;gap:12px;}
-#ctrl-hint.show{display:flex;}
-#ctrl-hint h3{font-size:14px;letter-spacing:4px;color:#00ff41;margin-bottom:8px;text-transform:uppercase;}
-.ctrl-row{display:flex;justify-content:space-between;gap:40px;font-size:12px;padding:4px 0;}
-.ctrl-key{color:#00ff41;min-width:80px;font-weight:bold;}
-.ctrl-desc{color:#4a8a4a;}
-#lock-hint{position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);font-size:13px;color:#2a5a2a;letter-spacing:3px;z-index:50;pointer-events:none;text-align:center;display:none;}
+:root {
+  --lime:#C8FF00; --lime2:#A8E000; --cyan:#00FFE0; --red:#FF3B3B; --orange:#FF7A00;
+  --purple:#A855F7; --pink:#EC4899; --gold:#FFD700; --teal:#00B4D8;
+  --dark:#080810; --dark2:#0E0E18; --dark3:#14141E; --dark4:#1C1C28;
+  --card:#111118; --card2:#0D0D16; --border:rgba(255,255,255,0.06);
+  --border-accent:rgba(200,255,0,0.15); --text:#E8E8F4; --muted:#565670;
+  --success:#00FFB2; --font-head:'Syne',sans-serif;
+  --font-body:'DM Sans',sans-serif; --font-mono:'DM Mono',monospace;
+}
+*{margin:0;padding:0;box-sizing:border-box;} html{scroll-behavior:smooth;}
+body{background:var(--dark);color:var(--text);font-family:var(--font-body);min-height:100vh;overflow-x:hidden;}
+body::after{content:'';position:fixed;inset:0;background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 512 512' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.025'/%3E%3C/svg%3E");pointer-events:none;z-index:9998;mix-blend-mode:overlay;}
+body::before{content:'';position:fixed;inset:0;background:radial-gradient(ellipse 600px 400px at 20% 10%,rgba(200,255,0,0.04) 0%,transparent 70%),radial-gradient(ellipse 500px 500px at 80% 80%,rgba(0,255,224,0.03) 0%,transparent 70%);pointer-events:none;z-index:0;}
+::-webkit-scrollbar{width:3px;} ::-webkit-scrollbar-track{background:var(--dark2);} ::-webkit-scrollbar-thumb{background:var(--lime);border-radius:2px;}
+
+/* ═══ AUTH ═══ */
+#auth-screen{position:fixed;inset:0;display:flex;align-items:center;justify-content:center;background:var(--dark);z-index:100;transition:opacity .5s,transform .5s;}
+#auth-screen.hidden{opacity:0;transform:scale(1.04);pointer-events:none;}
+.auth-grid{position:absolute;inset:0;overflow:hidden;background-image:linear-gradient(rgba(200,255,0,0.04) 1px,transparent 1px),linear-gradient(90deg,rgba(200,255,0,0.04) 1px,transparent 1px);background-size:60px 60px;mask-image:radial-gradient(ellipse 70% 70% at 50% 50%,black 40%,transparent 100%);}
+.auth-orb{position:absolute;border-radius:50%;filter:blur(100px);pointer-events:none;}
+.auth-orb1{width:600px;height:600px;background:rgba(200,255,0,0.12);top:-200px;right:-200px;animation:drift 12s ease-in-out infinite;}
+.auth-orb2{width:500px;height:500px;background:rgba(0,255,224,0.08);bottom:-150px;left:-150px;animation:drift 15s ease-in-out infinite reverse;}
+@keyframes drift{0%,100%{transform:translate(0,0)}50%{transform:translate(30px,-40px)}}
+.auth-box{position:relative;z-index:2;width:440px;max-width:92vw;background:rgba(14,14,24,0.9);backdrop-filter:blur(24px);border:1px solid var(--border);border-radius:24px;padding:52px 44px;box-shadow:0 0 0 1px rgba(200,255,0,0.06),0 40px 100px rgba(0,0,0,0.7);}
+.auth-wordmark{display:flex;align-items:baseline;gap:2px;justify-content:center;margin-bottom:6px;}
+.auth-wordmark span:first-child{font-family:var(--font-head);font-size:44px;font-weight:800;letter-spacing:-1px;color:var(--lime);}
+.auth-wordmark span:last-child{font-family:var(--font-head);font-size:44px;font-weight:800;letter-spacing:-1px;color:var(--text);}
+.auth-tagline{text-align:center;font-size:11px;letter-spacing:4px;color:var(--muted);text-transform:uppercase;margin-bottom:40px;font-family:var(--font-mono);}
+.auth-tabs{display:grid;grid-template-columns:1fr 1fr;background:var(--dark3);border-radius:12px;padding:4px;margin-bottom:28px;border:1px solid var(--border);}
+.auth-tab{padding:10px;text-align:center;font-family:var(--font-head);font-size:13px;font-weight:700;letter-spacing:1px;text-transform:uppercase;cursor:pointer;border-radius:9px;color:var(--muted);transition:all .2s;}
+.auth-tab.active{background:var(--lime);color:var(--dark);}
+.auth-form{display:flex;flex-direction:column;gap:12px;}
+.auth-form input{background:var(--dark3);border:1px solid var(--border);border-radius:12px;padding:14px 18px;color:var(--text);font-family:var(--font-body);font-size:14px;outline:none;transition:border-color .2s,box-shadow .2s;}
+.auth-form input:focus{border-color:var(--lime);box-shadow:0 0 0 3px rgba(200,255,0,0.1);}
+.auth-form input::placeholder{color:var(--muted);}
+.btn-primary{background:var(--lime);color:var(--dark);font-family:var(--font-head);font-size:14px;font-weight:800;letter-spacing:2px;text-transform:uppercase;border:none;border-radius:12px;padding:15px;cursor:pointer;transition:all .2s;box-shadow:0 0 24px rgba(200,255,0,0.25);}
+.btn-primary:hover{background:var(--lime2);transform:translateY(-2px);box-shadow:0 6px 32px rgba(200,255,0,0.4);}
+.btn-primary:active{transform:translateY(0);}
+.btn-primary:disabled{opacity:.5;cursor:not-allowed;transform:none;}
+#auth-error{font-size:12px;color:var(--red);text-align:center;min-height:18px;margin-top:8px;font-family:var(--font-mono);}
+
+/* ═══ APP ═══ */
+#app{display:none;min-height:100vh;position:relative;z-index:1;}
+#app.visible{display:block;animation:fadeUp .4s ease;}
+@keyframes fadeUp{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:none}}
+
+/* TOPBAR */
+.topbar{position:sticky;top:0;z-index:50;background:rgba(8,8,16,0.92);backdrop-filter:blur(20px);border-bottom:1px solid var(--border);padding:0 28px;height:60px;display:flex;align-items:center;justify-content:space-between;}
+.topbar-logo{font-family:var(--font-head);font-weight:800;font-size:22px;letter-spacing:-.5px;}
+.topbar-logo span{color:var(--lime);}
+.topbar-v2{font-family:var(--font-mono);font-size:9px;color:var(--muted);letter-spacing:2px;margin-left:6px;}
+.topbar-center{display:flex;align-items:center;gap:10px;}
+.pts-pill{display:flex;align-items:center;gap:8px;background:var(--dark3);border:1px solid var(--border-accent);border-radius:999px;padding:7px 16px;}
+.pts-pill .dot{width:7px;height:7px;border-radius:50%;background:var(--lime);box-shadow:0 0 8px rgba(200,255,0,0.8);flex-shrink:0;}
+.pts-pill .pts-num{font-family:var(--font-mono);font-size:15px;font-weight:500;color:var(--lime);}
+.pts-pill .pts-lbl{font-size:10px;color:var(--muted);letter-spacing:2px;text-transform:uppercase;}
+.energy-pill{display:flex;align-items:center;gap:6px;background:var(--dark3);border:1px solid rgba(255,122,0,0.2);border-radius:999px;padding:7px 14px;cursor:pointer;}
+.energy-pill .e-icon{font-size:14px;}
+.energy-pill .e-num{font-family:var(--font-mono);font-size:13px;color:var(--orange);}
+.energy-pill .e-max{font-family:var(--font-mono);font-size:10px;color:var(--muted);}
+.active-job-pill{display:none;align-items:center;gap:8px;background:rgba(255,122,0,0.1);border:1px solid rgba(255,122,0,0.3);border-radius:999px;padding:7px 16px;font-family:var(--font-mono);font-size:12px;color:var(--orange);}
+.active-job-pill.show{display:flex;}
+.active-job-pill .pulse{width:7px;height:7px;border-radius:50%;background:var(--orange);animation:pulseAnim 1s ease-in-out infinite;flex-shrink:0;}
+@keyframes pulseAnim{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.5;transform:scale(.8)}}
+.topbar-right{display:flex;align-items:center;gap:10px;}
+.topbar-user{font-family:var(--font-mono);font-size:11px;color:var(--muted);letter-spacing:1px;}
+.btn-logout{background:transparent;border:1px solid var(--border);color:var(--muted);font-family:var(--font-head);font-size:11px;letter-spacing:1px;text-transform:uppercase;padding:7px 14px;border-radius:8px;cursor:pointer;transition:all .2s;}
+.btn-logout:hover{border-color:rgba(255,59,59,.5);color:var(--red);}
+
+/* NAV */
+.nav-tabs{display:flex;gap:0;background:var(--dark2);border-bottom:1px solid var(--border);padding:0 28px;overflow-x:auto;}
+.nav-tabs::-webkit-scrollbar{height:0;}
+.nav-tab{font-family:var(--font-head);font-size:12px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--muted);padding:14px 18px;cursor:pointer;border-bottom:2px solid transparent;white-space:nowrap;transition:all .2s;position:relative;}
+.nav-tab:hover{color:var(--text);}
+.nav-tab.active{color:var(--lime);border-bottom-color:var(--lime);}
+.nav-badge{position:absolute;top:8px;right:6px;background:var(--red);color:#fff;font-size:8px;font-family:var(--font-mono);font-weight:500;padding:1px 5px;border-radius:999px;min-width:16px;text-align:center;}
+
+/* SECTIONS */
+.section{display:none;padding:36px 28px;max-width:1180px;margin:0 auto;}
+.section.active{display:block;animation:fadeUp .3s ease;}
+.section-title{font-family:var(--font-head);font-size:40px;font-weight:800;letter-spacing:-1px;line-height:1;margin-bottom:4px;}
+.section-title .accent{color:var(--lime);}
+.section-sub{font-size:13px;color:var(--muted);margin-bottom:32px;}
+
+/* CARD */
+.card{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:24px;transition:border-color .2s,transform .2s,box-shadow .2s;}
+.card:hover{border-color:var(--border-accent);transform:translateY(-2px);box-shadow:0 8px 40px rgba(0,0,0,.5);}
+.grid-2{display:grid;grid-template-columns:repeat(auto-fill,minmax(290px,1fr));gap:14px;}
+.grid-3{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:12px;}
+.grid-4{display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:10px;}
+
+/* ═══ DASHBOARD ═══ */
+.dash-hero{background:linear-gradient(135deg,var(--dark3) 0%,#0E0E1A 100%);border:1px solid var(--border);border-radius:20px;padding:44px 40px;margin-bottom:24px;position:relative;overflow:hidden;}
+.dash-hero::before{content:'';position:absolute;top:-80px;right:-80px;width:400px;height:400px;border-radius:50%;background:radial-gradient(circle,rgba(200,255,0,0.08) 0%,transparent 70%);pointer-events:none;}
+.dash-hero::after{content:'SKILLRUSH';position:absolute;right:-10px;bottom:-30px;font-family:var(--font-head);font-size:120px;font-weight:800;color:rgba(255,255,255,0.025);letter-spacing:-3px;pointer-events:none;line-height:1;}
+.dash-hero h1{font-family:var(--font-head);font-size:52px;font-weight:800;letter-spacing:-2px;line-height:1;margin-bottom:8px;}
+.dash-hero h1 em{color:var(--lime);font-style:normal;}
+.dash-hero p{color:var(--muted);font-size:14px;max-width:380px;line-height:1.6;}
+.level-section{margin-top:24px;max-width:440px;}
+.level-row{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;}
+.level-tag{font-family:var(--font-mono);font-size:11px;letter-spacing:2px;color:var(--lime);background:rgba(200,255,0,0.1);border:1px solid rgba(200,255,0,0.2);border-radius:999px;padding:3px 10px;}
+.level-xp{font-family:var(--font-mono);font-size:11px;color:var(--muted);}
+.level-bar{height:4px;background:var(--dark4);border-radius:2px;overflow:hidden;}
+.level-bar-fill{height:100%;background:linear-gradient(90deg,var(--lime),var(--cyan));border-radius:2px;transition:width .8s cubic-bezier(.4,0,.2,1);box-shadow:0 0 8px rgba(200,255,0,0.4);}
+
+.stats-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:12px;margin-bottom:24px;}
+.stat-card{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:20px;position:relative;overflow:hidden;}
+.stat-card::before{content:'';position:absolute;top:0;right:0;width:60px;height:60px;border-radius:0 14px 0 100%;background:rgba(200,255,0,0.04);}
+.stat-icon{font-size:22px;margin-bottom:10px;}
+.stat-value{font-family:var(--font-head);font-size:28px;font-weight:800;color:var(--lime);letter-spacing:-1px;line-height:1;}
+.stat-label{font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:2px;margin-top:4px;font-family:var(--font-mono);}
+
+/* DAILY */
+.daily-banner{background:linear-gradient(135deg,rgba(200,255,0,0.08),rgba(0,255,224,0.05));border:1px solid rgba(200,255,0,0.2);border-radius:16px;padding:20px 24px;margin-bottom:24px;display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap;}
+.daily-banner h3{font-family:var(--font-head);font-size:18px;font-weight:700;color:var(--lime);margin-bottom:2px;}
+.daily-banner p{font-size:12px;color:var(--muted);}
+
+/* STREAK */
+.streak-banner{background:linear-gradient(135deg,rgba(255,122,0,0.1),rgba(255,59,59,0.05));border:1px solid rgba(255,122,0,0.25);border-radius:16px;padding:16px 24px;margin-bottom:24px;display:flex;align-items:center;gap:16px;flex-wrap:wrap;}
+.streak-days{font-family:var(--font-head);font-size:36px;font-weight:800;color:var(--orange);}
+.streak-info h4{font-family:var(--font-head);font-size:14px;font-weight:700;color:var(--orange);}
+.streak-info p{font-size:11px;color:var(--muted);}
+
+/* ACTIVITY */
+.activity-item{background:var(--dark3);border:1px solid var(--border);border-radius:10px;padding:12px 16px;display:flex;justify-content:space-between;align-items:center;font-size:13px;transition:border-color .2s;}
+.activity-item:hover{border-color:var(--border-accent);}
+.act-time{font-family:var(--font-mono);font-size:10px;color:var(--muted);white-space:nowrap;margin-left:12px;}
+
+/* ═══ MISSIONS ═══ */
+.job-card{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:24px;position:relative;overflow:hidden;display:flex;flex-direction:column;transition:all .25s;}
+.job-card:hover:not(.locked-by-active){transform:translateY(-3px);box-shadow:0 12px 48px rgba(0,0,0,.5);}
+.job-card.locked-by-active{opacity:.45;pointer-events:none;}
+.job-stripe{position:absolute;top:0;left:0;right:0;height:3px;border-radius:16px 16px 0 0;}
+.job-stripe.common{background:var(--muted);}
+.job-stripe.rare{background:var(--cyan);box-shadow:0 0 12px rgba(0,255,224,.4);}
+.job-stripe.epic{background:linear-gradient(90deg,#A855F7,#EC4899);box-shadow:0 0 12px rgba(168,85,247,.4);}
+.job-stripe.legendary{background:linear-gradient(90deg,var(--lime),var(--orange));box-shadow:0 0 12px rgba(200,255,0,.4);}
+.job-rarity-badge{font-family:var(--font-mono);font-size:9px;letter-spacing:3px;text-transform:uppercase;margin-bottom:12px;padding:3px 8px;border-radius:4px;width:fit-content;}
+.job-rarity-badge.common{background:rgba(86,86,112,.15);color:var(--muted);}
+.job-rarity-badge.rare{background:rgba(0,255,224,.1);color:var(--cyan);}
+.job-rarity-badge.epic{background:rgba(168,85,247,.1);color:#A855F7;}
+.job-rarity-badge.legendary{background:rgba(200,255,0,.1);color:var(--lime);}
+.job-icon{font-size:34px;margin-bottom:10px;}
+.job-name{font-family:var(--font-head);font-size:22px;font-weight:700;letter-spacing:-.5px;margin-bottom:6px;}
+.job-desc{font-size:12px;color:var(--muted);line-height:1.6;flex:1;margin-bottom:16px;}
+.job-meta{display:flex;gap:12px;margin-bottom:14px;flex-wrap:wrap;}
+.job-reward{font-family:var(--font-mono);font-size:16px;color:var(--lime);}
+.job-cd{font-family:var(--font-mono);font-size:11px;color:var(--muted);align-self:flex-end;}
+.job-energy{font-family:var(--font-mono);font-size:11px;color:var(--orange);}
+.btn-work{width:100%;background:var(--lime);color:var(--dark);font-family:var(--font-head);font-size:13px;font-weight:800;letter-spacing:2px;text-transform:uppercase;border:none;border-radius:10px;padding:13px;cursor:pointer;transition:all .2s;margin-top:auto;}
+.btn-work:hover:not(:disabled){background:var(--lime2);transform:translateY(-1px);box-shadow:0 4px 20px rgba(200,255,0,.35);}
+.btn-work:disabled{background:var(--dark4);color:var(--muted);cursor:not-allowed;transform:none;box-shadow:none;border:1px solid var(--border);}
+.btn-work.working{background:rgba(255,122,0,.15);color:var(--orange);border:1px solid rgba(255,122,0,.3);cursor:not-allowed;}
+.cd-track{height:2px;background:var(--dark4);border-radius:1px;margin-top:10px;overflow:hidden;}
+.cd-fill{height:100%;background:linear-gradient(90deg,var(--lime),var(--cyan));border-radius:1px;transition:width .5s linear;}
+.job-level-req{font-family:var(--font-mono);font-size:9px;color:rgba(168,85,247,.8);background:rgba(168,85,247,.08);border:1px solid rgba(168,85,247,.2);border-radius:4px;padding:2px 8px;margin-bottom:8px;width:fit-content;}
+.job-locked{opacity:.35;pointer-events:none;}
+
+/* ═══ OBJECTIVES ═══ */
+.obj-card{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:18px 20px;transition:all .2s;position:relative;overflow:hidden;}
+.obj-card.completed{border-color:rgba(0,255,178,.2);background:rgba(0,255,178,.03);}
+.obj-card.completed::after{content:'✓';position:absolute;right:16px;top:50%;transform:translateY(-50%);font-size:22px;color:var(--success);font-weight:700;}
+.obj-header{display:flex;align-items:flex-start;gap:12px;margin-bottom:12px;}
+.obj-icon{font-size:24px;flex-shrink:0;}
+.obj-title{font-family:var(--font-head);font-size:15px;font-weight:700;margin-bottom:2px;}
+.obj-desc{font-size:11px;color:var(--muted);line-height:1.5;}
+.obj-meta{display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;}
+.obj-reward{font-family:var(--font-mono);font-size:13px;color:var(--lime);}
+.obj-prog-text{font-family:var(--font-mono);font-size:10px;color:var(--muted);}
+.obj-bar{height:3px;background:var(--dark4);border-radius:2px;overflow:hidden;}
+.obj-bar-fill{height:100%;background:linear-gradient(90deg,var(--lime),var(--cyan));border-radius:2px;transition:width .5s ease;}
+.obj-category{font-family:var(--font-mono);font-size:9px;letter-spacing:2px;text-transform:uppercase;padding:2px 8px;border-radius:4px;width:fit-content;margin-bottom:10px;}
+.obj-category.daily{background:rgba(0,255,224,.08);color:var(--cyan);}
+.obj-category.weekly{background:rgba(168,85,247,.08);color:var(--purple);}
+.obj-category.achievement{background:rgba(200,255,0,.08);color:var(--lime);}
+.btn-claim-obj{font-family:var(--font-head);font-size:11px;font-weight:700;letter-spacing:1px;text-transform:uppercase;background:var(--success);color:#000;border:none;border-radius:8px;padding:7px 14px;cursor:pointer;transition:all .2s;margin-top:8px;}
+.btn-claim-obj:hover{transform:scale(1.04);}
+
+/* ═══ SHOP ═══ */
+.shop-filters{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:20px;}
+.filter-btn{font-family:var(--font-mono);font-size:11px;letter-spacing:1px;text-transform:uppercase;background:var(--dark3);border:1px solid var(--border);color:var(--muted);padding:7px 14px;border-radius:999px;cursor:pointer;transition:all .2s;}
+.filter-btn:hover{border-color:var(--border-accent);color:var(--text);}
+.filter-btn.active{background:rgba(200,255,0,.1);border-color:rgba(200,255,0,.3);color:var(--lime);}
+.shop-card{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:18px;text-align:center;position:relative;overflow:hidden;transition:all .2s;display:flex;flex-direction:column;}
+.shop-card:hover{border-color:var(--border-accent);transform:translateY(-2px);box-shadow:0 8px 32px rgba(0,0,0,.5);}
+.shop-card.locked-item{opacity:.4;pointer-events:none;}
+.shop-item-icon{font-size:36px;display:block;margin-bottom:8px;}
+.shop-item-name{font-family:var(--font-head);font-size:15px;font-weight:700;margin-bottom:4px;}
+.shop-item-desc{font-size:10px;color:var(--muted);line-height:1.5;margin-bottom:10px;flex:1;}
+.shop-item-price{font-family:var(--font-mono);font-size:17px;color:var(--lime);margin-bottom:10px;}
+.shop-item-cat{font-family:var(--font-mono);font-size:8px;letter-spacing:2px;text-transform:uppercase;color:var(--muted);margin-bottom:8px;}
+.shop-item-req{font-family:var(--font-mono);font-size:8px;color:var(--purple);margin-bottom:6px;}
+.btn-buy{width:100%;background:var(--dark3);border:1px solid var(--border-accent);color:var(--lime);font-family:var(--font-head);font-size:11px;font-weight:700;letter-spacing:2px;text-transform:uppercase;border-radius:8px;padding:9px;cursor:pointer;transition:all .2s;margin-top:auto;}
+.btn-buy:hover:not(:disabled){background:var(--lime);color:var(--dark);box-shadow:0 4px 20px rgba(200,255,0,.3);}
+.btn-buy:disabled{opacity:.35;cursor:not-allowed;}
+.owned-badge{position:absolute;top:10px;right:10px;background:var(--success);color:#000;font-size:8px;font-family:var(--font-mono);font-weight:500;letter-spacing:1px;padding:2px 7px;border-radius:4px;}
+.rare-badge{position:absolute;top:10px;left:10px;font-size:8px;font-family:var(--font-mono);letter-spacing:1px;padding:2px 7px;border-radius:4px;}
+.rare-badge.epic{background:rgba(168,85,247,.15);color:#A855F7;border:1px solid rgba(168,85,247,.3);}
+.rare-badge.legendary{background:rgba(200,255,0,.1);color:var(--lime);border:1px solid rgba(200,255,0,.2);}
+
+/* ═══ LEADERBOARD ═══ */
+.lb-item{display:flex;align-items:center;gap:16px;background:var(--card);border:1px solid var(--border);border-radius:12px;padding:16px 20px;transition:all .2s;}
+.lb-item:hover{border-color:var(--border-accent);}
+.lb-item.is-me{border-color:rgba(200,255,0,.3);background:rgba(200,255,0,.03);}
+.lb-pos{font-family:var(--font-head);font-size:24px;font-weight:800;color:var(--muted);min-width:32px;text-align:right;}
+.lb-item:nth-child(1) .lb-pos{color:var(--lime);font-size:28px;}
+.lb-item:nth-child(2) .lb-pos{color:#C0C0C0;}
+.lb-item:nth-child(3) .lb-pos{color:#CD7F32;}
+.lb-medal{font-size:20px;width:24px;text-align:center;}
+.lb-name{flex:1;font-family:var(--font-head);font-size:16px;font-weight:700;}
+.lb-pts{font-family:var(--font-mono);font-size:16px;color:var(--lime);}
+.lb-level{font-family:var(--font-mono);font-size:11px;color:var(--muted);}
+
+/* ═══ PROFILE ═══ */
+.profile-header{background:var(--dark3);border:1px solid var(--border);border-radius:20px;padding:36px;display:flex;gap:28px;align-items:flex-start;margin-bottom:24px;flex-wrap:wrap;position:relative;overflow:hidden;}
+.profile-header::before{content:'';position:absolute;top:0;right:0;width:200px;height:200px;border-radius:50%;background:radial-gradient(circle,rgba(200,255,0,.06) 0%,transparent 70%);}
+.avatar{width:80px;height:80px;border-radius:16px;background:linear-gradient(135deg,var(--lime),var(--cyan));display:flex;align-items:center;justify-content:center;font-family:var(--font-head);font-size:32px;font-weight:800;color:var(--dark);flex-shrink:0;}
+.profile-info h2{font-family:var(--font-head);font-size:32px;font-weight:800;letter-spacing:-.5px;}
+.profile-info .email{color:var(--muted);font-size:13px;font-family:var(--font-mono);margin-top:4px;}
+.rank-badge{display:inline-flex;align-items:center;gap:6px;margin-top:12px;background:rgba(200,255,0,.08);border:1px solid rgba(200,255,0,.2);border-radius:8px;padding:5px 14px;font-family:var(--font-mono);font-size:12px;color:var(--lime);letter-spacing:1px;}
+.achievements-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:10px;}
+.ach-item{background:var(--dark3);border:1px solid var(--border);border-radius:12px;padding:14px;display:flex;align-items:center;gap:12px;}
+.ach-item.unlocked{border-color:rgba(200,255,0,.15);}
+.ach-item.locked{opacity:.3;filter:grayscale(1);}
+.ach-icon{font-size:24px;}
+.ach-name{font-family:var(--font-head);font-size:13px;font-weight:700;margin-bottom:2px;}
+.ach-desc{font-size:10px;color:var(--muted);}
+.inv-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(90px,1fr));gap:8px;}
+.inv-item{background:var(--dark3);border:1px solid var(--border);border-radius:12px;padding:12px 8px;text-align:center;transition:all .2s;}
+.inv-item:hover{border-color:var(--border-accent);}
+.inv-item-icon{font-size:26px;display:block;margin-bottom:4px;}
+.inv-item-qty{font-family:var(--font-head);font-size:16px;color:var(--lime);line-height:1;}
+.inv-item-name{font-size:8px;color:var(--muted);font-family:var(--font-mono);letter-spacing:1px;margin-top:2px;}
+
+/* TRANSFER */
+.transfer-card{max-width:480px;background:var(--card);border:1px solid var(--border);border-radius:16px;padding:32px;}
+.field-label{font-family:var(--font-mono);font-size:10px;color:var(--muted);letter-spacing:2px;text-transform:uppercase;margin-bottom:8px;display:block;}
+.field-input{width:100%;background:var(--dark3);border:1px solid var(--border);border-radius:10px;padding:13px 16px;color:var(--text);font-family:var(--font-body);font-size:14px;outline:none;margin-bottom:16px;transition:border-color .2s,box-shadow .2s;}
+.field-input:focus{border-color:var(--lime);box-shadow:0 0 0 3px rgba(200,255,0,.1);}
+.field-input::placeholder{color:var(--muted);}
+
+/* TOAST */
+#toast-wrap{position:fixed;bottom:24px;right:24px;display:flex;flex-direction:column;gap:8px;z-index:9999;}
+.toast{background:var(--dark3);border:1px solid var(--border);border-radius:12px;padding:13px 18px;font-family:var(--font-mono);font-size:13px;display:flex;align-items:center;gap:10px;min-width:260px;max-width:360px;box-shadow:0 8px 32px rgba(0,0,0,.5);animation:toastIn .3s ease;transition:opacity .3s,transform .3s;}
+.toast.out{opacity:0;transform:translateX(20px);}
+.toast.success{border-color:rgba(0,255,178,.25);}
+.toast.error{border-color:rgba(255,59,59,.25);}
+.toast.info{border-color:rgba(0,255,224,.2);}
+.toast.warning{border-color:rgba(255,122,0,.25);}
+@keyframes toastIn{from{opacity:0;transform:translateX(20px)}to{opacity:1;transform:none}}
+
+/* MODAL */
+.overlay{position:fixed;inset:0;background:rgba(0,0,0,.75);backdrop-filter:blur(6px);z-index:200;display:none;align-items:center;justify-content:center;}
+.overlay.open{display:flex;animation:fadeUp .2s ease;}
+.modal-box{background:var(--dark2);border:1px solid var(--border);border-radius:20px;padding:36px;width:420px;max-width:90vw;position:relative;}
+.modal-box h3{font-family:var(--font-head);font-size:26px;font-weight:700;margin-bottom:6px;}
+.modal-box p{color:var(--muted);font-size:13px;line-height:1.6;margin-bottom:20px;}
+.modal-close{position:absolute;top:14px;right:14px;background:var(--dark3);border:1px solid var(--border);color:var(--muted);width:30px;height:30px;border-radius:8px;cursor:pointer;font-size:14px;display:flex;align-items:center;justify-content:center;transition:all .2s;}
+.modal-close:hover{color:var(--text);border-color:var(--border-accent);}
+
+.ac-notice{background:rgba(255,59,59,.05);border:1px solid rgba(255,59,59,.15);border-radius:10px;padding:10px 14px;margin-top:16px;font-family:var(--font-mono);font-size:10px;color:rgba(255,59,59,.7);letter-spacing:.5px;}
+.info-box{background:rgba(0,255,224,.04);border:1px solid rgba(0,255,224,.12);border-radius:10px;padding:10px 14px;font-family:var(--font-mono);font-size:11px;color:rgba(0,255,224,.7);letter-spacing:.5px;}
+
+/* LEVEL UP ANIMATION */
+.levelup-overlay{position:fixed;inset:0;background:rgba(0,0,0,.8);z-index:9997;display:none;align-items:center;justify-content:center;flex-direction:column;gap:12px;}
+.levelup-overlay.show{display:flex;animation:fadeUp .3s ease;}
+.levelup-num{font-family:var(--font-head);font-size:120px;font-weight:800;color:var(--lime);letter-spacing:-6px;animation:levelPop .5s cubic-bezier(.4,0,.2,1);}
+@keyframes levelPop{0%{transform:scale(0.5);opacity:0}60%{transform:scale(1.1)}100%{transform:scale(1);opacity:1}}
+.levelup-text{font-family:var(--font-head);font-size:22px;font-weight:700;color:var(--text);letter-spacing:4px;text-transform:uppercase;}
+
+/* PRESTIGE */
+.prestige-section{background:linear-gradient(135deg,rgba(255,215,0,.06),rgba(255,122,0,.04));border:1px solid rgba(255,215,0,.2);border-radius:16px;padding:24px;margin-bottom:24px;}
+.prestige-section h3{font-family:var(--font-head);font-size:20px;font-weight:700;color:var(--gold);}
+
+@media(max-width:600px){
+  .auth-box{padding:32px 24px;}
+  .section{padding:20px 16px;}
+  .topbar{padding:0 16px;}
+  .dash-hero{padding:28px 24px;}
+  .dash-hero h1{font-size:36px;}
+  .profile-header{padding:24px;}
+  .topbar-center{gap:6px;}
+}
 </style>
 </head>
 <body>
 
-<div id="auth-overlay">
-  <div class="auth-bg"></div>
-  <div class="auth-card">
-    <div class="auth-logo">
-      <h1>ZOMBIE<br>CRAFT</h1>
-      <p>Survive · Kill · Dominate</p>
-    </div>
+<!-- AUTH -->
+<div id="auth-screen">
+  <div class="auth-grid"></div>
+  <div class="auth-orb auth-orb1"></div>
+  <div class="auth-orb auth-orb2"></div>
+  <div class="auth-box">
+    <div class="auth-wordmark"><span>Skill</span><span>Rush</span></div>
+    <div class="auth-tagline">Trabaja · Sube · Domina · v2</div>
     <div class="auth-tabs">
-      <div class="auth-tab active" id="tab-login" onclick="switchTab('login')">ENTRAR</div>
-      <div class="auth-tab" id="tab-reg" onclick="switchTab('reg')">REGISTRO</div>
+      <div class="auth-tab active" onclick="switchAuth('login')">Entrar</div>
+      <div class="auth-tab" onclick="switchAuth('register')">Registro</div>
     </div>
-    <input class="auth-input" id="inp-user" placeholder="Nombre de usuario (3-16 chars)" style="display:none" maxlength="16">
-    <input class="auth-input" id="inp-email" type="email" placeholder="Email">
-    <input class="auth-input" id="inp-pass" type="password" placeholder="Contraseña">
-    <button class="btn-auth" id="auth-btn" onclick="doAuth()">ENTRAR</button>
-    <div id="auth-err"></div>
+    <div class="auth-form">
+      <input type="text" id="auth-username" placeholder="Nombre de usuario" style="display:none" maxlength="20" autocomplete="off">
+      <input type="email" id="auth-email" placeholder="Email" autocomplete="email">
+      <input type="password" id="auth-password" placeholder="Contraseña (mín. 6 caracteres)" autocomplete="current-password">
+      <button class="btn-primary" onclick="handleAuth()" id="auth-btn">ENTRAR</button>
+    </div>
+    <div id="auth-error"></div>
   </div>
 </div>
 
-<div id="lobby-overlay">
-  <div class="lobby-topbar">
-    <div class="lobby-logo">⬛ ZOMBIECRAFT</div>
-    <div style="display:flex;align-items:center;gap:10px;">
-      <span style="font-size:11px;color:#2a7a2a;letter-spacing:2px;" id="lb-username">JUGADOR</span>
-      <span class="lobby-pts">🧠 <span id="lb-pts">0</span></span>
-      <span class="lobby-pts" style="color:#ff6400;border-color:rgba(255,100,0,.3)">💀 <span id="lb-kills">0</span></span>
-      <button class="btn-sm" onclick="showSec('shop')">TIENDA</button>
-      <button class="btn-sm" onclick="showSec('ranking')">RANKING</button>
-      <button class="btn-sm" onclick="doLogout()">SALIR</button>
+<!-- LEVEL UP OVERLAY -->
+<div class="levelup-overlay" id="levelup-overlay" onclick="this.classList.remove('show')">
+  <div class="levelup-text">¡NIVEL ALCANZADO!</div>
+  <div class="levelup-num" id="levelup-num">10</div>
+  <div style="font-family:var(--font-mono);font-size:13px;color:var(--muted)">Toca para continuar</div>
+</div>
+
+<!-- APP -->
+<div id="app">
+  <div class="topbar">
+    <div style="display:flex;align-items:center;">
+      <div class="topbar-logo"><span>Skill</span>Rush <span class="topbar-v2">v2</span></div>
+    </div>
+    <div class="topbar-center">
+      <div class="pts-pill">
+        <div class="dot"></div>
+        <span class="pts-num" id="topbar-pts">0</span>
+        <span class="pts-lbl">pts</span>
+      </div>
+      <div class="energy-pill" title="Energía — se recarga 1 cada 5 minutos">
+        <span class="e-icon">⚡</span>
+        <span class="e-num" id="topbar-energy">10</span>
+        <span class="e-max">/20</span>
+      </div>
+      <div class="active-job-pill" id="active-job-pill">
+        <div class="pulse"></div>
+        <span id="active-job-text">trabajando...</span>
+      </div>
+    </div>
+    <div class="topbar-right">
+      <span class="topbar-user" id="topbar-user"></span>
+      <button class="btn-logout" onclick="logout()">Salir</button>
     </div>
   </div>
-  <div class="lobby-body">
-    <div style="display:flex;flex-direction:column;gap:14px;">
-      <div class="lobby-panel" id="sec-rooms">
-        <h3>SALAS ACTIVAS</h3>
-        <div id="rooms-list"><div style="color:#2a5a2a;font-size:12px;">Cargando salas...</div></div>
-        <button class="btn-create" style="margin-top:12px" onclick="createRoom()">+ CREAR NUEVA SALA</button>
-      </div>
-      <div class="lobby-panel" id="sec-shop" style="display:none">
-        <h3>ARMERÍA</h3>
-        <div class="shop-grid" id="shop-grid"></div>
-      </div>
-      <div class="lobby-panel" id="sec-ranking" style="display:none">
-        <h3>TOP JUGADORES</h3>
-        <div id="ranking-list"></div>
+
+  <div class="nav-tabs">
+    <div class="nav-tab active" data-sec="dashboard" onclick="showSection('dashboard',this)">🏠 Inicio</div>
+    <div class="nav-tab" data-sec="missions" onclick="showSection('missions',this)">⚡ Misiones</div>
+    <div class="nav-tab" data-sec="objectives" onclick="showSection('objectives',this)">🎯 Objetivos <span class="nav-badge" id="obj-badge" style="display:none">!</span></div>
+    <div class="nav-tab" data-sec="shop" onclick="showSection('shop',this)">🛍 Tienda</div>
+    <div class="nav-tab" data-sec="leaderboard" onclick="showSection('leaderboard',this)">🏆 Ranking</div>
+    <div class="nav-tab" data-sec="profile" onclick="showSection('profile',this)">👤 Perfil</div>
+    <div class="nav-tab" data-sec="transfer" onclick="showSection('transfer',this)">💸 Transferir</div>
+  </div>
+
+  <!-- DASHBOARD -->
+  <div class="section active" id="section-dashboard">
+    <div class="dash-hero">
+      <h1>HOLA,<br><em id="hero-name">JUGADOR</em></h1>
+      <p>Completa misiones, logra objetivos y domina SkillRush. La economía es dura — solo los constantes llegan arriba.</p>
+      <div class="level-section">
+        <div class="level-row">
+          <span class="level-tag" id="level-tag">NIVEL 1</span>
+          <span class="level-xp" id="level-xp">0 / 500 XP</span>
+        </div>
+        <div class="level-bar"><div class="level-bar-fill" id="level-fill" style="width:0%"></div></div>
       </div>
     </div>
-    <div style="display:flex;flex-direction:column;gap:14px;">
-      <div class="lobby-panel">
-        <h3>CONTROLES</h3>
-        <div style="font-size:11px;color:#2a7a2a;line-height:2;letter-spacing:.5px;">
-          <b style="color:#4aaa4a;">WASD</b> — Mover<br>
-          <b style="color:#4aaa4a;">Ratón</b> — Apuntar<br>
-          <b style="color:#4aaa4a;">Clic izq.</b> — Disparar<br>
-          <b style="color:#4aaa4a;">R</b> — Recargar<br>
-          <b style="color:#4aaa4a;">1-5</b> — Cambiar arma<br>
-          <b style="color:#4aaa4a;">Shift</b> — Correr<br>
-          <b style="color:#4aaa4a;">ESC</b> — Salir<br><br>
-          <b style="color:#ff6400;">Mata zombies → gana puntos</b><br>
-          <span style="font-size:10px;color:#2a5a2a;">Los runners (verde) son rápidos.<br>Los tanks (rojo) son duros. Survrive.</span>
+
+    <div id="streak-section" style="display:none" class="streak-banner">
+      <div class="streak-days" id="streak-days">0</div>
+      <div class="streak-info">
+        <h4>🔥 RACHA ACTIVA</h4>
+        <p id="streak-sub">días consecutivos de login</p>
+      </div>
+    </div>
+
+    <div class="daily-banner" id="daily-banner">
+      <div>
+        <h3>🎁 BONUS DIARIO</h3>
+        <p id="daily-sub">Recoge tu recompensa diaria — recompensa escalada con tu racha</p>
+      </div>
+      <button class="btn-primary" style="padding:12px 28px;flex-shrink:0" onclick="claimDaily()">RECLAMAR</button>
+    </div>
+
+    <div class="stats-grid">
+      <div class="stat-card"><div class="stat-icon">🪙</div><div class="stat-value" id="st-pts">0</div><div class="stat-label">Puntos</div></div>
+      <div class="stat-card"><div class="stat-icon">⚡</div><div class="stat-value" id="st-jobs">0</div><div class="stat-label">Trabajos</div></div>
+      <div class="stat-card"><div class="stat-icon">🛒</div><div class="stat-value" id="st-items">0</div><div class="stat-label">Compras</div></div>
+      <div class="stat-card"><div class="stat-icon">🏅</div><div class="stat-value" id="st-rank">#—</div><div class="stat-label">Ranking</div></div>
+      <div class="stat-card"><div class="stat-icon">🎯</div><div class="stat-value" id="st-objs">0</div><div class="stat-label">Objetivos</div></div>
+      <div class="stat-card"><div class="stat-icon">🔥</div><div class="stat-value" id="st-streak">0</div><div class="stat-label">Racha</div></div>
+    </div>
+
+    <div style="font-family:var(--font-head);font-size:16px;font-weight:700;letter-spacing:1px;color:var(--muted);text-transform:uppercase;margin-bottom:14px">Objetivos activos</div>
+    <div id="dash-objectives" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:10px;margin-bottom:24px"></div>
+
+    <div style="font-family:var(--font-head);font-size:16px;font-weight:700;letter-spacing:1px;color:var(--muted);text-transform:uppercase;margin-bottom:14px">Actividad reciente</div>
+    <div id="activity-log" style="display:flex;flex-direction:column;gap:8px"></div>
+  </div>
+
+  <!-- MISSIONS -->
+  <div class="section" id="section-missions">
+    <div class="section-title">MISIONES <span class="accent">⚡</span></div>
+    <div class="section-sub">Cada trabajo consume energía ⚡. Se recarga 1 por cada 5 minutos. Misiones de nivel alto requieren nivel mínimo.</div>
+    <div class="ac-notice" style="margin-bottom:20px;max-width:600px">🛡 ANTICHEAT ACTIVO — Todas las acciones se verifican en el servidor. Cooldowns y energía se comprueban en transacción.</div>
+    <div class="grid-2" id="jobs-grid"></div>
+  </div>
+
+  <!-- OBJECTIVES -->
+  <div class="section" id="section-objectives">
+    <div class="section-title">OBJETIVOS <span class="accent">🎯</span></div>
+    <div class="section-sub">Completa objetivos para ganar recompensas extra y XP. Se renuevan diariamente y semanalmente.</div>
+    <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:20px" id="obj-filter-bar">
+      <button class="filter-btn active" onclick="filterObj('all',this)">Todos</button>
+      <button class="filter-btn" onclick="filterObj('daily',this)">Diarios</button>
+      <button class="filter-btn" onclick="filterObj('weekly',this)">Semanales</button>
+      <button class="filter-btn" onclick="filterObj('achievement',this)">Logros</button>
+    </div>
+    <div id="objectives-grid" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:12px"></div>
+  </div>
+
+  <!-- SHOP -->
+  <div class="section" id="section-shop">
+    <div class="section-title">TIENDA <span class="accent">🛍</span></div>
+    <div class="section-sub">115 artículos disponibles. Algunos requieren nivel o prestaciones previas. Invierte sabiamente.</div>
+    <div class="shop-filters" id="shop-filter-bar">
+      <button class="filter-btn active" onclick="filterShop('all',this)">Todos</button>
+      <button class="filter-btn" onclick="filterShop('consumable',this)">⚗ Consumibles</button>
+      <button class="filter-btn" onclick="filterShop('tool',this)">🔧 Herramientas</button>
+      <button class="filter-btn" onclick="filterShop('boost',this)">🚀 Boosts</button>
+      <button class="filter-btn" onclick="filterShop('prestige',this)">💎 Prestigio</button>
+      <button class="filter-btn" onclick="filterShop('utility',this)">🛡 Utilidad</button>
+      <button class="filter-btn" onclick="filterShop('cosmetic',this)">🎨 Cosméticos</button>
+    </div>
+    <div class="grid-3" id="shop-grid"></div>
+  </div>
+
+  <!-- LEADERBOARD -->
+  <div class="section" id="section-leaderboard">
+    <div class="section-title">TOP 20 <span class="accent">🏆</span></div>
+    <div class="section-sub">Los jugadores más ricos del servidor.</div>
+    <div id="lb-list" style="display:flex;flex-direction:column;gap:8px"></div>
+  </div>
+
+  <!-- PROFILE -->
+  <div class="section" id="section-profile">
+    <div class="section-title">MI PERFIL <span class="accent">👤</span></div>
+    <div class="profile-header">
+      <div class="avatar" id="profile-avatar">?</div>
+      <div class="profile-info">
+        <h2 id="profile-name">—</h2>
+        <div class="email" id="profile-email">—</div>
+        <div class="rank-badge">⭐ <span id="profile-rank">Sin rango</span></div>
+        <div class="level-section" style="margin-top:16px">
+          <div class="level-row">
+            <span class="level-tag" id="p-level-tag">NIVEL 1</span>
+            <span class="level-xp" id="p-level-xp">0 / 500 XP</span>
+          </div>
+          <div class="level-bar"><div class="level-bar-fill" id="p-level-fill" style="width:0%"></div></div>
         </div>
       </div>
-      <div class="lobby-panel">
-        <h3>MIS STATS</h3>
-        <div id="my-stats" style="font-size:12px;color:#4a8a4a;line-height:2;"></div>
-      </div>
+    </div>
+
+    <div id="prestige-section" style="display:none" class="prestige-section">
+      <h3>👑 SECCIÓN PRESTIGIO</h3>
+      <p style="color:var(--muted);font-size:12px;margin-top:6px">Has alcanzado el nivel 50. Puedes hacer Prestigio para reiniciar con bonificaciones permanentes.</p>
+      <button class="btn-primary" style="margin-top:14px;max-width:260px" onclick="doPrestige()">HACER PRESTIGIO ×</button>
+    </div>
+
+    <div style="font-family:var(--font-head);font-size:16px;font-weight:700;letter-spacing:1px;color:var(--muted);text-transform:uppercase;margin-bottom:14px;margin-top:8px">Inventario (<span id="inv-count">0</span> tipos)</div>
+    <div class="inv-grid" id="inv-grid"></div>
+
+    <div style="font-family:var(--font-head);font-size:16px;font-weight:700;letter-spacing:1px;color:var(--muted);text-transform:uppercase;margin:24px 0 14px">Logros</div>
+    <div class="achievements-grid" id="achievements-grid"></div>
+  </div>
+
+  <!-- TRANSFER -->
+  <div class="section" id="section-transfer">
+    <div class="section-title">TRANSFERIR <span class="accent">💸</span></div>
+    <div class="section-sub">Envía puntos a otro jugador. Comisión del 5% en cada transferencia.</div>
+    <div class="transfer-card">
+      <div class="info-box" style="margin-bottom:20px">💡 Comisión del 5% aplicada automáticamente. Mínimo 50 pts por transferencia. Máximo 3 transferencias por hora.</div>
+      <label class="field-label">Email del destinatario</label>
+      <input class="field-input" type="email" id="t-email" placeholder="jugador@correo.com">
+      <label class="field-label">Cantidad de puntos</label>
+      <input class="field-input" type="number" id="t-amount" placeholder="100" min="50" max="9999999">
+      <button class="btn-primary" onclick="doTransfer()">ENVIAR PUNTOS →</button>
+      <div class="ac-notice">Los puntos transferidos (+ comisión) se descuentan inmediatamente y no pueden recuperarse.</div>
     </div>
   </div>
 </div>
 
-<div id="game-canvas">
-  <canvas id="c"></canvas>
-</div>
+<div id="toast-wrap"></div>
 
-<div id="hud">
-  <div id="hud-top">
-    <div class="hud-box">
-      <div style="font-size:9px;letter-spacing:3px;color:#2a7a2a;margin-bottom:4px;">VIDA</div>
-      <div style="display:flex;gap:2px;" id="hp-bars"></div>
+<!-- BUY MODAL -->
+<div class="overlay" id="buy-modal">
+  <div class="modal-box">
+    <button class="modal-close" onclick="closeModal('buy-modal')">✕</button>
+    <h3 id="m-name">Artículo</h3>
+    <p id="m-desc">Descripción</p>
+    <div style="display:flex;align-items:center;gap:10px;margin-bottom:24px">
+      <span style="font-size:32px" id="m-icon"></span>
+      <span style="font-family:var(--font-head);font-size:36px;font-weight:800;color:var(--lime)" id="m-price"></span>
+      <span style="color:var(--muted);font-size:13px">puntos</span>
     </div>
-    <div id="hud-wave">OLEADA <span id="wave-num">1</span></div>
-    <div class="hud-box" style="text-align:right">
-      <div style="font-size:9px;letter-spacing:3px;color:#2a7a2a;margin-bottom:2px;">PUNTOS</div>
-      <div style="font-size:18px;font-weight:900;color:#00ff41;" id="score-display">0</div>
-      <div style="font-size:10px;color:#ff6400;letter-spacing:2px;">💀 <span id="kills-display">0</span></div>
-    </div>
-  </div>
-  <div id="hud-bottom">
-    <div class="hud-box" style="font-size:11px;" id="players-hud"></div>
-    <div class="hud-box">
-      <div style="font-size:9px;letter-spacing:3px;color:#2a7a2a;margin-bottom:2px;">MUNICIÓN</div>
-      <div style="font-size:16px;font-weight:900;color:#00ff41;" id="ammo-display">15 / 60</div>
-      <div style="font-size:9px;color:#4a8a4a;letter-spacing:2px;margin-top:2px;" id="weapon-name">PISTOLA</div>
-    </div>
+    <div id="m-note" style="font-family:var(--font-mono);font-size:11px;color:var(--muted);margin-bottom:16px"></div>
+    <button class="btn-primary" onclick="confirmBuy()">CONFIRMAR COMPRA</button>
   </div>
 </div>
-
-<div id="crosshair">
-  <svg width="24" height="24" viewBox="0 0 24 24">
-    <line x1="12" y1="2" x2="12" y2="8" stroke="#00ff41" stroke-width="1.5"/>
-    <line x1="12" y1="16" x2="12" y2="22" stroke="#00ff41" stroke-width="1.5"/>
-    <line x1="2" y1="12" x2="8" y2="12" stroke="#00ff41" stroke-width="1.5"/>
-    <line x1="16" y1="12" x2="22" y2="12" stroke="#00ff41" stroke-width="1.5"/>
-    <circle cx="12" cy="12" r="1.5" fill="#00ff41"/>
-  </svg>
-</div>
-
-<canvas id="minimap" width="140" height="140"></canvas>
-<div id="wave-announce"></div>
-
-<div id="game-over-screen">
-  <h2>💀 MUERTO</h2>
-  <p style="font-size:13px;color:#4a8a4a;letter-spacing:2px;">Los zombies te han alcanzado</p>
-  <div id="go-stats" style="background:#080d08;border:1px solid #1a3a1a;border-radius:2px;padding:20px 32px;display:grid;grid-template-columns:repeat(3,1fr);gap:20px;text-align:center;"></div>
-  <div style="display:flex;gap:12px;margin-top:8px;">
-    <button class="btn-create" style="min-width:160px;" onclick="restartGame()">↩ REINTENTAR</button>
-    <button class="btn-sm" style="padding:12px 24px;" onclick="goLobby()">LOBBY</button>
-  </div>
-</div>
-
-<div id="ctrl-hint">
-  <h3>🎮 CONTROLES</h3>
-  <div style="background:#080d08;border:1px solid #1a3a1a;border-radius:2px;padding:24px 32px;min-width:320px;">
-    <div class="ctrl-row"><span class="ctrl-key">WASD</span><span class="ctrl-desc">Mover</span></div>
-    <div class="ctrl-row"><span class="ctrl-key">Ratón</span><span class="ctrl-desc">Apuntar / girar</span></div>
-    <div class="ctrl-row"><span class="ctrl-key">Clic izq.</span><span class="ctrl-desc">Disparar</span></div>
-    <div class="ctrl-row"><span class="ctrl-key">R</span><span class="ctrl-desc">Recargar</span></div>
-    <div class="ctrl-row"><span class="ctrl-key">1-5</span><span class="ctrl-desc">Cambiar arma</span></div>
-    <div class="ctrl-row"><span class="ctrl-key">Shift</span><span class="ctrl-desc">Correr</span></div>
-    <div class="ctrl-row"><span class="ctrl-key">ESC</span><span class="ctrl-desc">Salir al lobby</span></div>
-  </div>
-  <button class="btn-create" style="margin-top:16px;min-width:200px;" onclick="lockPointer()">▶ COMENZAR</button>
-</div>
-
-<div id="lock-hint">Haz clic para capturar el ratón y empezar</div>
-<div class="toast-wrap" id="toast-wrap"></div>
 
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
 import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword,
-  onAuthStateChanged, signOut, setPersistence, browserLocalPersistence }
+         onAuthStateChanged, signOut, setPersistence, browserLocalPersistence }
   from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
-import { getDatabase, ref, set, get, update, onValue, push,
-  runTransaction, remove } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js";
+import { getDatabase, ref, set, get, update, onValue,
+         serverTimestamp, runTransaction }
+  from "https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js";
 
 const FB = {
   apiKey:"AIzaSyC2xQewrid8QiWfFy_RVdG3mHt05QYIdPA",
   authDomain:"champdrop-b74e4.firebaseapp.com",
   databaseURL:"https://champdrop-b74e4-default-rtdb.firebaseio.com",
-  projectId:"champdrop-b74e4",storageBucket:"champdrop-b74e4.firebasestorage.app",
-  messagingSenderId:"25739034626",appId:"1:25739034626:web:ae0a15d05f6775da58271b"
+  projectId:"champdrop-b74e4",
+  storageBucket:"champdrop-b74e4.firebasestorage.app",
+  messagingSenderId:"25739034626",
+  appId:"1:25739034626:web:ae0a15d05f6775da58271b"
 };
-const fbApp = initializeApp(FB);
-const auth = getAuth(fbApp);
-const db = getDatabase(fbApp);
+const fireApp = initializeApp(FB);
+const auth = getAuth(fireApp);
+const db = getDatabase(fireApp);
 setPersistence(auth, browserLocalPersistence);
 
-// ══════════════════════════════════════════
-// ANTICHEAT — validación server-side real
-// ══════════════════════════════════════════
-const AC = {
-  killLog: [],
-  scoreLog: [],
-  violations: 0,
-  MAX_KPM: 50,
-  MAX_SPM: 15000,
-  MIN_KILL_GAP_MS: 150,
-  MAX_SINGLE_SCORE: 500,
-  MAX_KILLS_PER_GAME: 600,
-
-  reset() { this.killLog=[]; this.scoreLog=[]; this.violations=0; },
-
-  registerKill(ts) {
-    this.killLog.push(ts);
-    const cutoff = ts - 60000;
-    this.killLog = this.killLog.filter(t=>t>cutoff);
-    if(this.killLog.length > this.MAX_KPM) {
-      this.flag('KPM_EXCEED', { kpm: this.killLog.length }); return false;
-    }
-    const last = this.killLog.slice(-2);
-    if(last.length===2 && last[1]-last[0] < this.MIN_KILL_GAP_MS) { this.violations++; return false; }
-    return true;
-  },
-
-  registerScore(delta, ts) {
-    if(delta < 0 || delta > this.MAX_SINGLE_SCORE) { this.flag('SCORE_INVALID',{delta}); return false; }
-    this.scoreLog.push({delta,ts});
-    const cutoff = ts - 60000;
-    this.scoreLog = this.scoreLog.filter(e=>e.ts>cutoff);
-    const total = this.scoreLog.reduce((s,e)=>s+e.delta,0);
-    if(total > this.MAX_SPM) { this.flag('SPM_EXCEED',{spm:total}); return false; }
-    return true;
-  },
-
-  validateFinalScore(kills, score, wave, timeSec) {
-    if(kills > this.MAX_KILLS_PER_GAME) return { ok:false, reason:'MAX_KILLS' };
-    if(kills < 0 || score < 0 || wave < 1) return { ok:false, reason:'NEGATIVE_VALUES' };
-    const minTimeForKills = kills * (this.MIN_KILL_GAP_MS/1000);
-    if(timeSec < minTimeForKills && kills > 10) return { ok:false, reason:'KILL_SPEED' };
-    const avgPPK = kills > 0 ? score/kills : 0;
-    if(avgPPK > this.MAX_SINGLE_SCORE * 3) return { ok:false, reason:'SCORE_PER_KILL' };
-    const maxKillsForWave = wave * 15 + 30;
-    if(kills > maxKillsForWave) return { ok:false, reason:'WAVE_RATIO' };
-    return { ok:true };
-  },
-
-  async flag(reason, data) {
-    this.violations++;
-    const uid = G.userId;
-    if(!uid) return;
-    try {
-      await push(ref(db,`zc_anticheat/reports/${uid}`),{
-        reason, data, ts:Date.now(), score:G.score, kills:G.kills, wave:G.wave
-      });
-      await runTransaction(ref(db,`zc_anticheat/violations/${uid}`), cur => {
-        const n = (cur||0)+1;
-        if(n >= 6) {
-          set(ref(db,`zc_anticheat/bans/${uid}`),{reason,at:Date.now(),violations:n});
-          update(ref(db,`zc_users/${uid}`),{banned:true,banReason:reason});
-        }
-        return n;
-      });
-    } catch(e){}
-    if(this.violations >= 6) { toast('🚫 Cuenta baneada por actividad inusual.','err'); setTimeout(doLogout,3000); }
-  },
-
-  async checkBan(uid) {
-    const s = await get(ref(db,`zc_anticheat/bans/${uid}`));
-    return s.exists();
-  }
-};
-
-// ══════════════════════════════════════════
-// WEAPONS & SHOP
-// ══════════════════════════════════════════
-const WEAPONS = {
-  pistol:  { name:'Pistola',   damage:25, rpm:180, mag:15, reserve:60,  spread:.04, auto:false },
-  shotgun: { name:'Escopeta',  damage:20, rpm:60,  mag:8,  reserve:32,  spread:.2,  auto:false, pellets:6 },
-  smg:     { name:'SMG',       damage:18, rpm:600, mag:32, reserve:128, spread:.08, auto:true  },
-  rifle:   { name:'Rifle',     damage:55, rpm:120, mag:20, reserve:80,  spread:.02, auto:true  },
-  minigun: { name:'Minigun',   damage:22, rpm:800, mag:100,reserve:300, spread:.12, auto:true  },
-};
-
-const SHOP = [
-  {id:'shotgun',  icon:'🔫', name:'Escopeta',     price:500,  reqKills:10,  desc:'6 perdigones'},
-  {id:'smg',      icon:'🔫', name:'SMG',           price:1200, reqKills:30,  desc:'600 RPM auto'},
-  {id:'rifle',    icon:'🔫', name:'Rifle Asalto',  price:2500, reqKills:60,  desc:'Alto daño'},
-  {id:'minigun',  icon:'🔫', name:'Minigun',       price:8000, reqKills:200, desc:'800 RPM bestia'},
-  {id:'hp_kit',   icon:'💊', name:'Kit Médico ×3', price:300,  reqKills:0,   desc:'+50 HP'},
-  {id:'ammo',     icon:'📦', name:'Munición Extra', price:150,  reqKills:0,   desc:'Recarga todo'},
-  {id:'speed',    icon:'⚡', name:'Speed Boost',   price:600,  reqKills:20,  desc:'+30% vel 5min'},
-  {id:'dmg',      icon:'💥', name:'Daño x2',       price:1000, reqKills:50,  desc:'x2 daño 3min'},
-  {id:'shield',   icon:'🛡️', name:'Escudo Extra',  price:800,  reqKills:30,  desc:'+100 HP bonus'},
-  {id:'nuke',     icon:'☢️', name:'Nuke',          price:5000, reqKills:100, desc:'Mata todo zombie'},
+// ════════════════════ JOBS ════════════════════
+const JOBS = [
+  {id:'repartidor',  icon:'🚲', name:'Repartidor',      desc:'Reparte pedidos por la ciudad. El trabajo más básico.',      reward:35,  cooldown:90,   energy:1, rarity:'common',    minLevel:1},
+  {id:'cajero',      icon:'🏪', name:'Cajero',          desc:'Atiende la caja registradora durante horas.',               reward:45,  cooldown:120,  energy:1, rarity:'common',    minLevel:1},
+  {id:'barista',     icon:'☕', name:'Barista',          desc:'Prepara cafés para clientes exigentes.',                    reward:60,  cooldown:150,  energy:1, rarity:'common',    minLevel:1},
+  {id:'limpiador',   icon:'🧹', name:'Limpiador',       desc:'Mantén los edificios limpios. Sin glamour pero paga.',      reward:40,  cooldown:100,  energy:1, rarity:'common',    minLevel:1},
+  {id:'conductor',   icon:'🚗', name:'Conductor',       desc:'Lleva pasajeros por la ciudad. Propinas ocasionales.',      reward:70,  cooldown:180,  energy:2, rarity:'common',    minLevel:2},
+  {id:'cocinero',    icon:'👨‍🍳', name:'Cocinero',        desc:'Prepara platos en un restaurante concurrido.',             reward:90,  cooldown:200,  energy:2, rarity:'common',    minLevel:3},
+  {id:'tutor',       icon:'📚', name:'Tutor',           desc:'Da clases particulares de matemáticas.',                   reward:110, cooldown:240,  energy:2, rarity:'rare',      minLevel:4},
+  {id:'fotografo',   icon:'📷', name:'Fotógrafo',       desc:'Fotografía eventos sociales y bodas.',                     reward:130, cooldown:300,  energy:2, rarity:'rare',      minLevel:5},
+  {id:'dev',         icon:'💻', name:'Freelance Dev',   desc:'Desarrolla una web para un cliente en pánico.',            reward:160, cooldown:360,  energy:3, rarity:'rare',      minLevel:6},
+  {id:'diseñador',   icon:'🎨', name:'Diseñador',       desc:'Crea identidad visual para una startup.',                  reward:140, cooldown:320,  energy:2, rarity:'rare',      minLevel:6},
+  {id:'streamer',    icon:'🎮', name:'Streamer',        desc:'Haz directo y acumula donaciones virtuales.',              reward:200, cooldown:420,  energy:3, rarity:'rare',      minLevel:7},
+  {id:'consultor',   icon:'📊', name:'Consultor',       desc:'Asesora a una empresa sobre eficiencia operativa.',        reward:240, cooldown:480,  energy:3, rarity:'epic',      minLevel:8},
+  {id:'trader',      icon:'📈', name:'Day Trader',      desc:'Aprovecha las oscilaciones del mercado. Alto riesgo.',    reward:320, cooldown:600,  energy:4, rarity:'epic',      minLevel:10},
+  {id:'abogado',     icon:'⚖️', name:'Abogado',         desc:'Defiende un caso complicado en los tribunales.',          reward:350, cooldown:660,  energy:4, rarity:'epic',      minLevel:10},
+  {id:'medico',      icon:'🏥', name:'Médico',          desc:'Atiende pacientes en urgencias bajo presión.',            reward:400, cooldown:720,  energy:4, rarity:'epic',      minLevel:12},
+  {id:'nft',         icon:'🖼️', name:'Artista NFT',     desc:'Crea una colección viral. Millones en juego.',            reward:360, cooldown:600,  energy:3, rarity:'epic',      minLevel:11},
+  {id:'influencer',  icon:'📱', name:'Influencer',      desc:'Negocia un contrato de patrocinio lucrativo.',            reward:280, cooldown:540,  energy:3, rarity:'epic',      minLevel:9},
+  {id:'arquitecto',  icon:'🏗️', name:'Arquitecto',      desc:'Diseña el edificio del año en tiempo récord.',           reward:460, cooldown:900,  energy:4, rarity:'legendary', minLevel:15},
+  {id:'ceo',         icon:'🏢', name:'CEO',             desc:'Dirige una startup multimillonaria durante un día.',      reward:600, cooldown:1200, energy:5, rarity:'legendary', minLevel:20},
+  {id:'astronauta',  icon:'🚀', name:'Astronauta',      desc:'Misión espacial de alto riesgo. El universo no espera.', reward:900, cooldown:1800, energy:6, rarity:'legendary', minLevel:25},
+  {id:'cuantitativo',icon:'🧮', name:'Quant Trader',   desc:'Algoritmos de alta frecuencia. Dinero real.',            reward:750, cooldown:1500, energy:5, rarity:'legendary', minLevel:22},
+  {id:'director',    icon:'🎬', name:'Director',        desc:'Dirige un blockbuster en tiempo récord.',                reward:550, cooldown:1100, energy:5, rarity:'legendary', minLevel:18},
 ];
 
-// ══════════════════════════════════════════
-// GAME STATE
-// ══════════════════════════════════════════
-const G = {
-  running:false, userId:null, username:null, userData:null, roomId:null,
-  score:0, kills:0, wave:1, hp:100, maxHp:100,
-  ammo:15, reserve:60, reloading:false, reloadTimer:0, weapon:'pistol',
-  perks:{}, inventory:[],
-  startTime:0, lastShot:0, sessionToken:null,
-  zombies:[], bullets:[], particles:[],
-  map:[], MAP_W:40, MAP_H:40,
-  camX:20, camY:20, camYaw:0,
-  keys:{}, running_spd:false,
-  waveActive:false, waveTotal:0, waveLeft:0, waveSpawned:0, spawnTimer:0, nextWaveTimer:0,
-  players:{}, syncIv:null,
-  shake:0, flash:0, hitMark:0,
-  screenW:0, screenH:0,
+// ════════════════════ 115 SHOP ITEMS ════════════════════
+const ITEMS = [
+  // CONSUMABLES (25)
+  {id:'cafe',         icon:'☕', name:'Café Exprés',     cat:'consumable', desc:'Reduce cooldown de trabajos comunes en 15s.',              price:80,    effect:'cd_reduce_common',   reqLevel:1},
+  {id:'energia_bar',  icon:'🍫', name:'Barra Energía',  cat:'consumable', desc:'Recupera 2 puntos de energía al instante.',                price:120,   effect:'energy_restore_2',   reqLevel:1},
+  {id:'vitamin',      icon:'💊', name:'Vitaminas',      cat:'consumable', desc:'Recupera 5 puntos de energía al instante.',                price:280,   effect:'energy_restore_5',   reqLevel:3},
+  {id:'redbull',      icon:'🥤', name:'Red Bull Pro',   cat:'consumable', desc:'Recupera energía máxima (+20 por 1 hora).',               price:500,   effect:'energy_restore_max', reqLevel:5},
+  {id:'snack',        icon:'🍕', name:'Snack Rápido',   cat:'consumable', desc:'+5% recompensa en el próximo trabajo.',                   price:60,    effect:'next_boost_5',       reqLevel:1},
+  {id:'coffee_pro',   icon:'☕', name:'Café Pro',        cat:'consumable', desc:'Reduce cooldown de todos los trabajos en 30s.',           price:200,   effect:'cd_reduce_all',      reqLevel:4},
+  {id:'elixir',       icon:'🧪', name:'Elíxir Raro',    cat:'consumable', desc:'+20% recompensa en los próximos 3 trabajos.',             price:450,   effect:'boost_x3_20',        reqLevel:8},
+  {id:'pocion_xp',    icon:'🔮', name:'Poción XP',      cat:'consumable', desc:'+100 XP instantáneo.',                                    price:300,   effect:'xp_100',             reqLevel:3},
+  {id:'turbo',        icon:'⚡', name:'Turbo Shot',     cat:'consumable', desc:'Reduce todos los cooldowns activos a 0.',                 price:1200,  effect:'reset_all_cd',       reqLevel:10},
+  {id:'mapa_secreto', icon:'🗺️', name:'Mapa Secreto',  cat:'consumable', desc:'Revela un trabajo especial oculto por 1 hora.',           price:800,   effect:'reveal_job',         reqLevel:12},
+  {id:'dado_suerte',  icon:'🎲', name:'Dado de Suerte', cat:'consumable', desc:'50% ganar x2, 30% normal, 20% perder energía.',          price:150,   effect:'gamble',             reqLevel:2},
+  {id:'cerveza',      icon:'🍺', name:'Cerveza Artesana',cat:'consumable', desc:'+10% recompensas en trabajos comunes por 1h.',           price:100,   effect:'common_boost_1h',    reqLevel:1},
+  {id:'energia_max',  icon:'⚡', name:'Mega Energy',    cat:'consumable', desc:'Recupera 10 puntos de energía al instante.',              price:600,   effect:'energy_restore_10',  reqLevel:7},
+  {id:'tiempo_libre', icon:'🏖️', name:'Día Libre',     cat:'consumable', desc:'Cooldowns reducidos en 50% durante 2 horas.',             price:700,   effect:'halfcd_2h',          reqLevel:9},
+  {id:'chip_focus',   icon:'🧠', name:'Chip de Foco',   cat:'consumable', desc:'+15% recompensa en trabajos tech por 3h.',                price:550,   effect:'tech_boost_3h',      reqLevel:8},
+  {id:'moneda_oro',   icon:'🪙', name:'Moneda de Oro',  cat:'consumable', desc:'Venta inmediata por 200 puntos.',                        price:150,   effect:'sell_200',           reqLevel:1},
+  {id:'amuleto',      icon:'🧿', name:'Amuleto',        cat:'consumable', desc:'Protege la energía en el siguiente trabajo fallido.',    price:350,   effect:'energy_protect',     reqLevel:6},
+  {id:'boost_daily',  icon:'🌅', name:'Boost Diario',   cat:'consumable', desc:'+50% al próximo bonus diario.',                          price:250,   effect:'daily_boost_50',     reqLevel:4},
+  {id:'recall',       icon:'🔁', name:'Token Recall',   cat:'consumable', desc:'Recupera el coste de la última compra (sin artículo).',  price:900,   effect:'recall_last',        reqLevel:10},
+  {id:'jugo_verde',   icon:'🥤', name:'Jugo Verde',     cat:'consumable', desc:'+3 energía máxima permanente (1 vez por cuenta).',       price:2000,  effect:'perm_energy_3',      reqLevel:15},
+  {id:'sprint_token', icon:'🏃', name:'Sprint Token',   cat:'consumable', desc:'Siguiente trabajo no consume energía.',                  price:400,   effect:'free_energy_job',    reqLevel:5},
+  {id:'donut',        icon:'🍩', name:'Donut Especial', cat:'consumable', desc:'+5% ganancias en el trabajo de CEO.',                    price:180,   effect:'ceo_next_5',         reqLevel:1},
+  {id:'suero_trabajo',icon:'💉', name:'Suero Trabajo',  cat:'consumable', desc:'+30% recompensa en el próximo trabajo.',                 price:650,   effect:'next_boost_30',      reqLevel:9},
+  {id:'ticket_loto',  icon:'🎟️', name:'Ticket Lotería', cat:'consumable', desc:'1/10 probabilidad de ganar 5000 pts.',                  price:300,   effect:'lottery',            reqLevel:3},
+  {id:'multi_boost',  icon:'🌟', name:'Multi Boost',    cat:'consumable', desc:'+10% en todos los trabajos durante 30 minutos.',         price:1500,  effect:'all_boost_30m',      reqLevel:12},
+
+  // TOOLS (25)
+  {id:'bicicleta',    icon:'🚲', name:'Bicicleta',      cat:'tool', desc:'+20% recompensa como Repartidor y Conductor.',              price:200,   effect:'delivery_boost',     reqLevel:1},
+  {id:'laptop',       icon:'💻', name:'Laptop Básico',  cat:'tool', desc:'+10% en trabajos tech (Dev, Diseñador, Consultor).',        price:400,   effect:'tech_boost_10',      reqLevel:3},
+  {id:'laptop_pro',   icon:'🖥️', name:'Laptop Pro',    cat:'tool', desc:'+20% en trabajos tech. Reemplaza Laptop Básico.',           price:1200,  effect:'tech_boost_20',      reqLevel:8},
+  {id:'camara_dslr',  icon:'📷', name:'Cámara DSLR',   cat:'tool', desc:'+25% recompensa como Fotógrafo y Director.',               price:600,   effect:'photo_boost',        reqLevel:5},
+  {id:'smartphone',   icon:'📱', name:'Smartphone Pro', cat:'tool', desc:'+15% como Streamer e Influencer.',                         price:350,   effect:'social_boost',       reqLevel:4},
+  {id:'micro',        icon:'🎙️', name:'Micrófono Pro',  cat:'tool', desc:'+20% como Streamer. Recompensas de chat.',                 price:500,   effect:'stream_boost',       reqLevel:6},
+  {id:'tablet',       icon:'📲', name:'Tablet Pro',     cat:'tool', desc:'+15% como Diseñador y Arquitecto.',                        price:800,   effect:'design_boost',       reqLevel:7},
+  {id:'maletin',      icon:'💼', name:'Maletín',        cat:'tool', desc:'+10% como Consultor y Abogado.',                           price:700,   effect:'consult_boost',      reqLevel:6},
+  {id:'bisturi',      icon:'🔬', name:'Instrumental Médico',cat:'tool', desc:'+20% como Médico.',                                   price:1000,  effect:'medic_boost',        reqLevel:10},
+  {id:'martillo',     icon:'🔨', name:'Set Herramientas',cat:'tool', desc:'-30s de cooldown en todos los trabajos comunes.',         price:300,   effect:'cd_common_30',       reqLevel:2},
+  {id:'cafetera',     icon:'☕', name:'Cafetera Prof.',  cat:'tool', desc:'+25% como Barista. Genera ingresos pasivos mínimos.',     price:450,   effect:'barista_boost',      reqLevel:3},
+  {id:'bloomberg',    icon:'📊', name:'Terminal Bloomberg',cat:'tool', desc:'+30% como Day Trader y Quant Trader.',                  price:2500,  effect:'trading_boost',      reqLevel:12},
+  {id:'traje_lujo',   icon:'👔', name:'Traje de Lujo',  cat:'tool', desc:'+15% como CEO. Mejora imagen en el ranking.',             price:1500,  effect:'ceo_boost',          reqLevel:15},
+  {id:'casco',        icon:'🪖', name:'Casco Espacial', cat:'tool', desc:'+20% como Astronauta. Requerido para misión avanzada.',   price:3000,  effect:'astro_boost',        reqLevel:22},
+  {id:'toga',         icon:'⚖️', name:'Toga Legal',     cat:'tool', desc:'+20% como Abogado.',                                     price:1200,  effect:'law_boost',          reqLevel:9},
+  {id:'dron',         icon:'🚁', name:'Dron Pro',       cat:'tool', desc:'+15% como Fotógrafo. Acceso a misiones aéreas.',          price:900,   effect:'drone_boost',        reqLevel:8},
+  {id:'oficina',      icon:'🏢', name:'Oficina Virtual',cat:'tool', desc:'-60s cooldown en Consultor y CEO.',                       price:2000,  effect:'office_cd',          reqLevel:14},
+  {id:'servidores',   icon:'🖧', name:'Servidores Cloud',cat:'tool', desc:'+25% en Dev y Quant Trader.',                            price:1800,  effect:'cloud_boost',        reqLevel:11},
+  {id:'cocina_pro',   icon:'🍳', name:'Cocina Pro',     cat:'tool', desc:'+20% como Cocinero.',                                    price:400,   effect:'cook_boost',         reqLevel:3},
+  {id:'guitarra',     icon:'🎸', name:'Guitarra',       cat:'tool', desc:'Cosmético + +5% en todos los trabajos creativos.',       price:600,   effect:'creative_boost_5',   reqLevel:4},
+  {id:'calculadora',  icon:'🧮', name:'Calculadora Pro',cat:'tool', desc:'+15% como Quant Trader.',                                price:700,   effect:'quant_boost',        reqLevel:10},
+  {id:'impresora3d',  icon:'🖨️', name:'Impresora 3D',  cat:'tool', desc:'+20% como Arquitecto. Genera planos.',                   price:2200,  effect:'arch_boost',         reqLevel:16},
+  {id:'vehiculo',     icon:'🚗', name:'Coche Propio',   cat:'tool', desc:'+30% como Conductor. -2 energía en Conductor.',          price:1600,  effect:'driver_boost',       reqLevel:5},
+  {id:'guitarra_elec',icon:'🎸', name:'Guitarra Eléctrica',cat:'tool', desc:'+10% en todos los trabajos creativos.',               price:1000,  effect:'creative_boost_10',  reqLevel:8},
+  {id:'megafono',     icon:'📢', name:'Megáfono',       cat:'tool', desc:'+10% como Influencer y Streamer.',                       price:450,   effect:'influence_boost',    reqLevel:5},
+
+  // BOOSTS (20)
+  {id:'xpboost',      icon:'⚡', name:'XP Boost ×2',    cat:'boost', desc:'Dobla el XP ganado en las próximas 24 horas.',          price:400,   effect:'xp_boost_24h',       reqLevel:2},
+  {id:'xpboost3',     icon:'⚡', name:'XP Boost ×3',    cat:'boost', desc:'Triplica el XP ganado durante 12 horas.',               price:900,   effect:'xp_boost3_12h',      reqLevel:7},
+  {id:'pts_boost10',  icon:'📈', name:'+10% Ganancias', cat:'boost', desc:'+10% en todos los trabajos de forma permanente.',       price:3000,  effect:'perm_pts_10',        reqLevel:10},
+  {id:'pts_boost5',   icon:'📈', name:'+5% Ganancias',  cat:'boost', desc:'+5% en todos los trabajos de forma permanente.',        price:1200,  effect:'perm_pts_5',         reqLevel:5},
+  {id:'cd_boost',     icon:'⏱️', name:'-10% Cooldown',  cat:'boost', desc:'Reduce todos los cooldowns en 10% permanentemente.',    price:2000,  effect:'perm_cd_10',         reqLevel:8},
+  {id:'energy_boost', icon:'🔋', name:'+2 Energía Max', cat:'boost', desc:'+2 a tu energía máxima de forma permanente.',           price:1500,  effect:'perm_energy_2',      reqLevel:6},
+  {id:'daily_bonus',  icon:'🎁', name:'Bono Diario ×2', cat:'boost', desc:'Dobla tu bono diario permanentemente.',                 price:5000,  effect:'perm_daily_2x',      reqLevel:15},
+  {id:'streak_pro',   icon:'🔥', name:'Streak Protect', cat:'boost', desc:'Protege tu racha diaria si fallas un día.',             price:800,   effect:'streak_protect',     reqLevel:4},
+  {id:'passive_inc',  icon:'💰', name:'Ingreso Pasivo',  cat:'boost', desc:'Gana 5 pts cada hora automáticamente.',                price:2500,  effect:'passive_5h',         reqLevel:12},
+  {id:'passive_pro',  icon:'💰', name:'Ingreso Pasivo Pro',cat:'boost', desc:'Gana 15 pts cada hora automáticamente.',             price:7000,  effect:'passive_15h',        reqLevel:18},
+  {id:'tax_reduce',   icon:'🧾', name:'Reducción Fiscal',cat:'boost', desc:'Reduce la comisión de transferencia al 2%.',           price:1800,  effect:'tax_2',              reqLevel:10},
+  {id:'job_unlock',   icon:'🔓', name:'Acceso Anticipado',cat:'boost', desc:'Desbloquea trabajos 2 niveles antes.',                 price:3500,  effect:'early_jobs_2',       reqLevel:8},
+  {id:'mentor',       icon:'🎓', name:'Mentoría',        cat:'boost', desc:'+20% XP en todos los trabajos permanentemente.',       price:4000,  effect:'perm_xp_20',         reqLevel:12},
+  {id:'xp_crit',      icon:'🎯', name:'XP Crítico',      cat:'boost', desc:'10% probabilidad de ×5 XP en cualquier trabajo.',      price:2200,  effect:'xp_crit_10',         reqLevel:9},
+  {id:'regen_boost',  icon:'⚡', name:'Regen Rápida',    cat:'boost', desc:'Energía se recarga 2x más rápido (permanente).',       price:3200,  effect:'perm_regen_2x',      reqLevel:11},
+  {id:'reward_cap',   icon:'🏆', name:'Sin Techo',       cat:'boost', desc:'Elimina el límite de recompensa por nivel bajo.',      price:6000,  effect:'remove_reward_cap',  reqLevel:20},
+  {id:'vip_status',   icon:'💫', name:'VIP Status',      cat:'boost', desc:'+15% en todas las ganancias. Insignia especial.',      price:10000, effect:'vip_15',             reqLevel:25},
+  {id:'arbitrage',    icon:'⚖️', name:'Arbitraje',       cat:'boost', desc:'+5% al recibir puntos transferidos.',                  price:1400,  effect:'receive_boost_5',    reqLevel:8},
+  {id:'compound',     icon:'📊', name:'Interés Compuesto',cat:'boost', desc:'Cada 24h, +0.5% de tus puntos totales.',              price:8000,  effect:'compound_05',        reqLevel:22},
+  {id:'momentum',     icon:'🌊', name:'Momentum',        cat:'boost', desc:'Cada trabajo seguido +2% recompensa (máx +20%).',      price:3800,  effect:'momentum_2',         reqLevel:14},
+
+  // PRESTIGE (20)
+  {id:'sports_car',   icon:'🏎️', name:'Coche Deportivo',cat:'prestige', desc:'Lujo puro. Demuestra tu riqueza.',                   price:2000,  effect:'prestige',           reqLevel:5},
+  {id:'crown',        icon:'👑', name:'Corona Real',    cat:'prestige', desc:'Símbolo de poder. Solo los mejores.',                 price:5000,  effect:'prestige',           reqLevel:10},
+  {id:'diamond',      icon:'💎', name:'Diamante',       cat:'prestige', desc:'El artículo más raro. Exclusivo.',                   price:10000, effect:'prestige',           reqLevel:15},
+  {id:'yacht',        icon:'⛵', name:'Yate',           cat:'prestige', desc:'Vida de lujo en alta mar.',                          price:15000, effect:'prestige',           reqLevel:20},
+  {id:'mansion',      icon:'🏰', name:'Mansión',        cat:'prestige', desc:'Una propiedad que todos envidian.',                  price:25000, effect:'prestige',           reqLevel:25},
+  {id:'jet',          icon:'✈️', name:'Jet Privado',    cat:'prestige', desc:'Viaja donde quieras, cuando quieras.',               price:40000, effect:'prestige',           reqLevel:30},
+  {id:'isla',         icon:'🏝️', name:'Isla Privada',  cat:'prestige', desc:'Tu propio paraíso. Inaccesible para otros.',         price:75000, effect:'prestige',           reqLevel:35},
+  {id:'spaceship',    icon:'🚀', name:'Nave Espacial',  cat:'prestige', desc:'El colmo del prestigio intergaláctico.',             price:150000,effect:'prestige',           reqLevel:40},
+  {id:'rolex',        icon:'⌚', name:'Reloj de Oro',   cat:'prestige', desc:'Clásico intemporal. Caro y exclusivo.',              price:3500,  effect:'prestige',           reqLevel:8},
+  {id:'trofeo',       icon:'🏆', name:'Trofeo Oro',     cat:'prestige', desc:'Premio al campeón del servidor.',                    price:8000,  effect:'prestige',           reqLevel:12},
+  {id:'piscina',      icon:'🏊', name:'Piscina Privada',cat:'prestige', desc:'Símbolo de éxito máximo.',                          price:20000, effect:'prestige',           reqLevel:22},
+  {id:'pintura',      icon:'🖼️', name:'Obra de Arte',  cat:'prestige', desc:'Inversión artística millonaria.',                   price:12000, effect:'prestige',           reqLevel:16},
+  {id:'robot_mayord', icon:'🤖', name:'Robot Mayordomo',cat:'prestige', desc:'Automatiza tareas cotidianas. +passive 1pt/h.',     price:18000, effect:'prestige_passive_1', reqLevel:20},
+  {id:'cripto_wallet',icon:'₿',  name:'Cripto Wallet',  cat:'prestige', desc:'500 BTC virtuales. Status definitivo.',             price:50000, effect:'prestige',           reqLevel:30},
+  {id:'galeria',      icon:'🎨', name:'Galería de Arte',cat:'prestige', desc:'Colección de obras únicas.',                        price:30000, effect:'prestige',           reqLevel:28},
+  {id:'hotel',        icon:'🏨', name:'Hotel 5 Estrellas',cat:'prestige', desc:'Ingresos pasivos virtuales +5pt/h.',               price:60000, effect:'prestige_passive_5', reqLevel:32},
+  {id:'banco',        icon:'🏦', name:'Banco Propio',   cat:'prestige', desc:'Posees una institución financiera.',                price:100000,effect:'prestige_passive_10',reqLevel:38},
+  {id:'medalla_pres', icon:'🥇', name:'Medalla Prestigio',cat:'prestige', desc:'Otorgada por lograr Prestigio x1.',              price:0,     effect:'prestige_medal',     reqLevel:1},
+  {id:'unicornio',    icon:'🦄', name:'Unicornio NFT',  cat:'prestige', desc:'El NFT más raro del servidor. 1 de 1.',             price:200000,effect:'prestige',           reqLevel:45},
+  {id:'arte_generativo',icon:'🤖',name:'Arte Generativo',cat:'prestige', desc:'IA crea arte único para tu perfil.',               price:7500,  effect:'prestige',           reqLevel:11},
+
+  // UTILITY (15)
+  {id:'shield',       icon:'🛡️', name:'Escudo Anti-Robo',cat:'utility', desc:'Protección visual en el perfil.',                   price:750,   effect:'protection',         reqLevel:3},
+  {id:'xp_shield',    icon:'🛡️', name:'Escudo de XP',   cat:'utility', desc:'Evita perder XP en apuestas fallidas.',              price:500,   effect:'xp_protect',         reqLevel:4},
+  {id:'banco_pts',    icon:'🏦', name:'Bóveda',          cat:'utility', desc:'Guarda hasta 500 pts en la bóveda (no transferibles).',price:1000,effect:'vault_500',          reqLevel:7},
+  {id:'seguro',       icon:'📋', name:'Seguro',          cat:'utility', desc:'Si pierdes ≥500 pts en 1h, se reembolsa el 30%.',    price:600,   effect:'insurance_30',       reqLevel:5},
+  {id:'calculadora2', icon:'📱', name:'App Finanzas',    cat:'utility', desc:'Muestra el historial detallado de ganancias.',       price:200,   effect:'finance_tracker',    reqLevel:1},
+  {id:'agenda',       icon:'📅', name:'Agenda Digital',  cat:'utility', desc:'Notificación cuando un cooldown termina.',           price:300,   effect:'cd_notify',          reqLevel:2},
+  {id:'vpn',          icon:'🔒', name:'VPN Pro',         cat:'utility', desc:'Oculta tus puntos en el ranking público.',           price:1200,  effect:'hide_pts',           reqLevel:8},
+  {id:'password_mgr', icon:'🔑', name:'Gestor Claves',   cat:'utility', desc:'+5% probabilidad de éxito en trabajos de riesgo.',   price:400,   effect:'risk_boost_5',       reqLevel:3},
+  {id:'robot_worker', icon:'🤖', name:'Bot de Trabajo',  cat:'utility', desc:'Completa automáticamente 1 trabajo común al día.',   price:5000,  effect:'auto_work_1',        reqLevel:18},
+  {id:'multi_acc',    icon:'👥', name:'Multi-Cuenta',    cat:'utility', desc:'Permite enviar 5 transferencias por hora.',          price:2500,  effect:'transfer_x5',        reqLevel:12},
+  {id:'recall_token', icon:'🔄', name:'Token Anulación', cat:'utility', desc:'Cancela la última compra y recupera el 80%.',        price:3000,  effect:'refund_80',          reqLevel:10},
+  {id:'encriptador',  icon:'🔐', name:'Encriptador',     cat:'utility', desc:'Añade capa de seguridad a tus transferencias.',      price:700,   effect:'transfer_secure',    reqLevel:5},
+  {id:'tiempo_conge', icon:'❄️', name:'Congelador Cd',  cat:'utility', desc:'Pausa todos los cooldowns por 30 minutos.',          price:1800,  effect:'freeze_cd_30m',      reqLevel:9},
+  {id:'spy_glass',    icon:'🔭', name:'Catalejo',        cat:'utility', desc:'Ve los puntos de cualquier jugador en el ranking.',  price:400,   effect:'spy_pts',            reqLevel:3},
+  {id:'auto_daily',   icon:'🔔', name:'Recordatorio',    cat:'utility', desc:'Obtén el bonus diario con un solo clic desde notif.',price:250,   effect:'daily_reminder',     reqLevel:1},
+
+  // COSMETICS (10)
+  {id:'avatar_gold',  icon:'✨', name:'Marco Dorado',    cat:'cosmetic', desc:'Marco brillante para tu avatar.',                   price:500,   effect:'cosmetic',           reqLevel:5},
+  {id:'avatar_diamond',icon:'💎', name:'Marco Diamante', cat:'cosmetic', desc:'Marco de diamante exclusivo.',                      price:2000,  effect:'cosmetic',           reqLevel:12},
+  {id:'title_boss',   icon:'👑', name:'Título "BOSS"',   cat:'cosmetic', desc:'Título especial bajo tu nombre.',                   price:1000,  effect:'cosmetic',           reqLevel:10},
+  {id:'title_legend', icon:'🏆', name:'Título "LEGEND"', cat:'cosmetic', desc:'Título de leyenda. Solo para los mejores.',         price:5000,  effect:'cosmetic',           reqLevel:20},
+  {id:'aura_lime',    icon:'🌟', name:'Aura Verde',      cat:'cosmetic', desc:'Aura verde neón alrededor de tu perfil.',           price:800,   effect:'cosmetic',           reqLevel:6},
+  {id:'aura_cyan',    icon:'💫', name:'Aura Cyan',       cat:'cosmetic', desc:'Aura cyan para los más fríos.',                     price:800,   effect:'cosmetic',           reqLevel:6},
+  {id:'badge_whale',  icon:'🐋', name:'Insignia Ballena',cat:'cosmetic', desc:'Mostrada cuando tienes +10000 pts.',                price:3000,  effect:'cosmetic',           reqLevel:15},
+  {id:'badge_grind',  icon:'⚙️', name:'Insignia Grinder',cat:'cosmetic', desc:'Mostrada tras completar 100 trabajos.',            price:1500,  effect:'cosmetic',           reqLevel:10},
+  {id:'banner_flame', icon:'🔥', name:'Banner Llamas',   cat:'cosmetic', desc:'Fondo especial en tu tarjeta de perfil.',           price:600,   effect:'cosmetic',           reqLevel:5},
+  {id:'sound_pack',   icon:'🔊', name:'Pack Sonidos',    cat:'cosmetic', desc:'Efectos de sonido al completar trabajos.',          price:200,   effect:'cosmetic',           reqLevel:1},
+];
+
+// ════════════════════ OBJECTIVES ════════════════════
+const OBJECTIVES = [
+  // DAILY
+  {id:'d_work3',     cat:'daily',   icon:'⚡', title:'Trabajador Diario',    desc:'Completa 3 trabajos hoy.',                            target:3,   stat:'dailyJobs',      reward:100, xp:50},
+  {id:'d_work5',     cat:'daily',   icon:'💪', title:'Súper Activo',         desc:'Completa 5 trabajos hoy.',                            target:5,   stat:'dailyJobs',      reward:200, xp:100},
+  {id:'d_earn500',   cat:'daily',   icon:'💰', title:'500 Pts en el Día',    desc:'Gana 500 puntos en trabajos hoy.',                    target:500, stat:'dailyEarned',    reward:150, xp:75},
+  {id:'d_earn1000',  cat:'daily',   icon:'🤑', title:'Ganador del Día',      desc:'Gana 1000 puntos en trabajos hoy.',                   target:1000,stat:'dailyEarned',    reward:350, xp:150},
+  {id:'d_rare',      cat:'daily',   icon:'🌊', title:'Misión Rara',          desc:'Completa 1 trabajo raro o superior.',                 target:1,   stat:'dailyRare',      reward:120, xp:60},
+  {id:'d_shop',      cat:'daily',   icon:'🛒', title:'Ir de Compras',        desc:'Compra 1 artículo en la tienda hoy.',                 target:1,   stat:'dailyBought',    reward:80,  xp:40},
+  // WEEKLY
+  {id:'w_work25',    cat:'weekly',  icon:'🏭', title:'Empleado de la Semana',desc:'Completa 25 trabajos esta semana.',                   target:25,  stat:'weeklyJobs',     reward:800, xp:300},
+  {id:'w_earn5000',  cat:'weekly',  icon:'💎', title:'5000 Pts Semanales',   desc:'Gana 5000 puntos en trabajos esta semana.',            target:5000,stat:'weeklyEarned',   reward:1000,xp:400},
+  {id:'w_epic',      cat:'weekly',  icon:'⚡', title:'Épico Semanal',        desc:'Completa 3 trabajos épicos o legendarios.',            target:3,   stat:'weeklyEpic',     reward:600, xp:250},
+  {id:'w_shop3',     cat:'weekly',  icon:'🛍️', title:'Comprador Ávido',     desc:'Compra 5 artículos en la tienda esta semana.',         target:5,   stat:'weeklyBought',   reward:500, xp:200},
+  // ACHIEVEMENTS
+  {id:'a_jobs10',    cat:'achievement',icon:'🥉', title:'Primerizo',         desc:'Completa tu primer trabajo. Luego 10 en total.',       target:10,  stat:'jobsCompleted',  reward:250, xp:100},
+  {id:'a_jobs50',    cat:'achievement',icon:'🥈', title:'Veterano',          desc:'Completa 50 trabajos en total.',                       target:50,  stat:'jobsCompleted',  reward:600, xp:250},
+  {id:'a_jobs100',   cat:'achievement',icon:'🥇', title:'Centenario',        desc:'Completa 100 trabajos en total.',                      target:100, stat:'jobsCompleted',  reward:1500,xp:500},
+  {id:'a_jobs250',   cat:'achievement',icon:'👑', title:'Leyenda del Trabajo',desc:'Completa 250 trabajos en total.',                    target:250, stat:'jobsCompleted',  reward:4000,xp:1000},
+  {id:'a_earn1000',  cat:'achievement',icon:'💰', title:'Primer Millar',     desc:'Acumula 1000 puntos en total.',                        target:1000,stat:'totalEarned',    reward:200, xp:100},
+  {id:'a_earn10000', cat:'achievement',icon:'💎', title:'10K Club',          desc:'Acumula 10,000 puntos en total.',                      target:10000,stat:'totalEarned',   reward:1000,xp:400},
+  {id:'a_earn100k',  cat:'achievement',icon:'🏆', title:'100K Club',         desc:'Acumula 100,000 puntos en total.',                     target:100000,stat:'totalEarned',  reward:5000,xp:1500},
+  {id:'a_level5',    cat:'achievement',icon:'⭐', title:'Nivel 5',           desc:'Alcanza el nivel 5.',                                  target:5,   stat:'level',          reward:200, xp:50},
+  {id:'a_level10',   cat:'achievement',icon:'🌟', title:'Nivel 10',          desc:'Alcanza el nivel 10.',                                 target:10,  stat:'level',          reward:500, xp:100},
+  {id:'a_level20',   cat:'achievement',icon:'💫', title:'Nivel 20',          desc:'Alcanza el nivel 20.',                                 target:20,  stat:'level',          reward:2000,xp:400},
+  {id:'a_buy5',      cat:'achievement',icon:'🛒', title:'Comprador',         desc:'Compra 5 artículos en total.',                         target:5,   stat:'itemsBought',    reward:300, xp:100},
+  {id:'a_buy20',     cat:'achievement',icon:'🛍️', title:'Coleccionista',    desc:'Compra 20 artículos en total.',                        target:20,  stat:'itemsBought',    reward:800, xp:300},
+  {id:'a_streak7',   cat:'achievement',icon:'🔥', title:'Racha 7 Días',      desc:'Consigue una racha de 7 días consecutivos.',           target:7,   stat:'maxStreak',      reward:700, xp:200},
+  {id:'a_streak30',  cat:'achievement',icon:'🌋', title:'Racha 30 Días',     desc:'Consigue una racha de 30 días consecutivos.',          target:30,  stat:'maxStreak',      reward:3000,xp:800},
+  {id:'a_legendary', cat:'achievement',icon:'🚀', title:'Trabajo Legendario',desc:'Completa tu primer trabajo legendario.',              target:1,   stat:'legendaryDone',  reward:500, xp:200},
+];
+
+// ════════════════════ RANKS ════════════════════
+const RANKS = [
+  {min:0,     name:'Rookie',       icon:'🥉'},
+  {min:200,   name:'Aprendiz',     icon:'📗'},
+  {min:600,   name:'Trabajador',   icon:'👷'},
+  {min:1500,  name:'Profesional',  icon:'💼'},
+  {min:3500,  name:'Experto',      icon:'🎯'},
+  {min:7000,  name:'Emprendedor',  icon:'📊'},
+  {min:15000, name:'Ejecutivo',    icon:'👔'},
+  {min:30000, name:'Director',     icon:'🏢'},
+  {min:60000, name:'Millonario',   icon:'💰'},
+  {min:150000,name:'Leyenda',      icon:'🏆'},
+  {min:500000,name:'DIOS',         icon:'⚡'},
+];
+
+// ════════════════════ STATE ════════════════════
+let CU = null, UD = {}, CDS = {}, PENDING_BUY = null, CD_INTERVAL = null;
+let ACTIVE_SHOP_FILTER = 'all', ACTIVE_OBJ_FILTER = 'all';
+let PREV_LEVEL = 1;
+
+// ════════════════════ AUTH ════════════════════
+window.switchAuth = mode => {
+  document.querySelectorAll('.auth-tab').forEach((t,i)=>t.classList.toggle('active',mode==='login'?i===0:i===1));
+  document.getElementById('auth-username').style.display = mode==='register'?'block':'none';
+  document.getElementById('auth-btn').textContent = mode==='register'?'CREAR CUENTA':'ENTRAR';
+  document.getElementById('auth-error').textContent='';
 };
 
-// ══════════════════════════════════════════
-// AUTH
-// ══════════════════════════════════════════
-let authMode = 'login';
-window.switchTab = m => {
-  authMode = m;
-  document.getElementById('tab-login').classList.toggle('active', m==='login');
-  document.getElementById('tab-reg').classList.toggle('active', m==='reg');
-  document.getElementById('inp-user').style.display = m==='reg'?'block':'none';
-  document.getElementById('auth-btn').textContent = m==='reg'?'CREAR CUENTA':'ENTRAR';
-};
-
-window.doAuth = async () => {
-  const email = document.getElementById('inp-email').value.trim();
-  const pass  = document.getElementById('inp-pass').value;
-  const uname = document.getElementById('inp-user').value.trim();
-  const errEl = document.getElementById('auth-err');
-  errEl.textContent = '';
-  if(!email||!pass){errEl.textContent='Rellena los campos';return;}
+window.handleAuth = async () => {
+  const mode  = document.querySelector('.auth-tab.active').textContent.trim()==='Entrar'?'login':'register';
+  const email = document.getElementById('auth-email').value.trim();
+  const pass  = document.getElementById('auth-password').value;
+  const uname = document.getElementById('auth-username').value.trim();
+  const errEl = document.getElementById('auth-error');
+  errEl.textContent='';
+  if(!email||!pass){errEl.textContent='Rellena todos los campos.';return;}
+  if(mode==='register'&&!uname){errEl.textContent='Elige un nombre de usuario.';return;}
+  if(mode==='register'&&uname.length<3){errEl.textContent='Nombre mínimo 3 caracteres.';return;}
   const btn=document.getElementById('auth-btn'); btn.disabled=true; btn.textContent='...';
   try {
-    if(authMode==='reg'){
-      if(uname.length<3){errEl.textContent='Nombre mín. 3 chars';btn.disabled=false;btn.textContent='CREAR CUENTA';return;}
-      const cr = await createUserWithEmailAndPassword(auth,email,pass);
-      await set(ref(db,`zc_users/${cr.user.uid}`),{
-        username:uname, email, points:0, kills:0, totalKills:0,
-        wave:0, gamesPlayed:0, inventory:{}, createdAt:Date.now(), banned:false
+    if(mode==='register'){
+      const cr=await createUserWithEmailAndPassword(auth,email,pass);
+      await set(ref(db,`usuarios/${cr.user.uid}`),{
+        username:uname,email,points:0,totalEarned:0,jobsCompleted:0,itemsBought:0,
+        level:1,xp:0,inventory:{},activity:[],dailyLastClaim:0,
+        activeJob:null,createdAt:Date.now(),streak:0,maxStreak:0,lastLoginDate:0,
+        energy:10,energyMax:10,lastEnergyRegen:Date.now(),
+        objectives:{},prestigeCount:0,legendaryDone:0,
+        dailyJobs:0,dailyEarned:0,dailyRare:0,dailyBought:0,dailyReset:0,
+        weeklyJobs:0,weeklyEarned:0,weeklyEpic:0,weeklyBought:0,weeklyReset:0,
+        cooldowns:{}
       });
     } else {
       await signInWithEmailAndPassword(auth,email,pass);
     }
-  } catch(e){
-    const M={'auth/email-already-in-use':'Email ya en uso.','auth/invalid-email':'Email inválido.',
+  } catch(e) {
+    const M={'auth/email-already-in-use':'Email ya registrado.','auth/invalid-email':'Email inválido.',
       'auth/wrong-password':'Contraseña incorrecta.','auth/user-not-found':'Usuario no encontrado.',
-      'auth/weak-password':'Contraseña mín. 6 chars.','auth/invalid-credential':'Credenciales incorrectas.'};
-    errEl.textContent=M[e.code]||e.message;
-    btn.disabled=false; btn.textContent=authMode==='reg'?'CREAR CUENTA':'ENTRAR';
+      'auth/weak-password':'Contraseña mínimo 6 caracteres.','auth/invalid-credential':'Credenciales incorrectas.',
+      'auth/too-many-requests':'Demasiados intentos. Espera.'};
+    errEl.textContent=M[e.code]||('Error: '+e.message);
+    btn.disabled=false; btn.textContent=mode==='register'?'CREAR CUENTA':'ENTRAR';
   }
 };
 
-onAuthStateChanged(auth, async user=>{
+window.logout = async () => {
+  if(CD_INTERVAL) clearInterval(CD_INTERVAL);
+  await signOut(auth);
+  document.getElementById('app').classList.remove('visible');
+  document.getElementById('app').style.display='none';
+  document.getElementById('auth-screen').classList.remove('hidden');
+  document.getElementById('auth-btn').disabled=false;
+  document.getElementById('auth-btn').textContent='ENTRAR';
+};
+
+onAuthStateChanged(auth, user=>{
   if(user){
-    G.userId = user.uid;
-    const banned = await AC.checkBan(user.uid);
-    if(banned){document.getElementById('auth-err').textContent='🚫 Cuenta baneada por trampas.';await signOut(auth);return;}
-    const snap = await get(ref(db,`zc_users/${user.uid}`));
-    G.userData = snap.val()||{};
-    if(G.userData.banned){document.getElementById('auth-err').textContent='🚫 Cuenta baneada.';await signOut(auth);return;}
-    G.username = G.userData.username||user.email.split('@')[0];
-    document.getElementById('auth-overlay').style.display='none';
-    document.getElementById('lobby-overlay').classList.add('show');
-    loadLobby();
+    CU=user; loadCooldowns(); subscribeUser(user.uid);
+    document.getElementById('auth-screen').classList.add('hidden');
+    document.getElementById('app').style.display='block';
+    setTimeout(()=>document.getElementById('app').classList.add('visible'),50);
+    // Email index
+    const encoded=btoa(user.email.toLowerCase()).replace(/=/g,'').replace(/\+/g,'_').replace(/\//g,'-');
+    update(ref(db,'email_index'),{[encoded]:user.uid});
+    setTimeout(()=>applyPendingCredits(user.uid),2000);
   } else {
-    G.userId=null; G.userData=null;
-    document.getElementById('auth-overlay').style.display='flex';
-    document.getElementById('lobby-overlay').classList.remove('show');
+    CU=null; UD={};
+    document.getElementById('app').classList.remove('visible');
+    document.getElementById('app').style.display='none';
+    document.getElementById('auth-screen').classList.remove('hidden');
   }
 });
 
-window.doLogout = async () => { if(G.roomId)await leaveRoom(); stopGame(); await signOut(auth); };
-
-// ══════════════════════════════════════════
-// LOBBY
-// ══════════════════════════════════════════
-function loadLobby(){
-  document.getElementById('lb-username').textContent = (G.username||'?').toUpperCase();
-  document.getElementById('lb-pts').textContent = (G.userData.points||0).toLocaleString();
-  document.getElementById('lb-kills').textContent = (G.userData.totalKills||0).toLocaleString();
-  document.getElementById('my-stats').innerHTML =
-    `<div>🧠 Puntos: <b style="color:#00ff41">${(G.userData.points||0).toLocaleString()}</b></div>
-    <div>💀 Kills: <b style="color:#ff6400">${G.userData.totalKills||0}</b></div>
-    <div>🌊 Oleada máx: <b style="color:#00ff41">${G.userData.wave||0}</b></div>
-    <div>🎮 Partidas: <b style="color:#4a8a4a">${G.userData.gamesPlayed||0}</b></div>`;
-  renderShop();
-  subRooms();
-  loadRanking();
-}
-
-function subRooms(){
-  onValue(ref(db,'zc_rooms'), snap=>{
-    const data = snap.val()||{};
-    const list = document.getElementById('rooms-list');
-    const rooms = Object.entries(data).filter(([,r])=>r&&r.active);
-    if(!rooms.length){list.innerHTML='<div style="color:#2a5a2a;font-size:12px;padding:8px 0">Sin salas. ¡Crea una!</div>';return;}
-    list.innerHTML=rooms.map(([id,r])=>`
-      <div class="room-item" onclick="joinRoom('${id}')">
-        <div>
-          <div style="font-size:13px;font-weight:700;color:#80c080;">${esc(r.name||'Sala')}</div>
-          <div style="font-size:10px;color:#2a5a2a;margin-top:3px;">👥 ${r.pCount||1}/4 · W${r.wave||1} · ${esc(r.host||'?')}</div>
-        </div>
-        <div class="room-status ${r.status==='playing'?'playing':'waiting'}">${r.status==='playing'?'EN JUEGO':'ESPERANDO'}</div>
-      </div>`).join('');
+function subscribeUser(uid){
+  onValue(ref(db,`usuarios/${uid}`),snap=>{
+    const prev=UD;
+    UD=snap.val()||{};
+    // level up animation
+    const newLvl=UD.level||1;
+    if(CU&&newLvl>PREV_LEVEL&&PREV_LEVEL>0){
+      showLevelUp(newLvl);
+    }
+    PREV_LEVEL=newLvl;
+    checkDailyWeeklyReset(uid);
+    renderAll();
   });
 }
 
-async function loadRanking(){
-  const snap = await get(ref(db,'zc_ranking'));
-  const data = snap.val()||{};
-  const sorted = Object.values(data).sort((a,b)=>b.points-a.points).slice(0,20);
-  document.getElementById('ranking-list').innerHTML = sorted.map((p,i)=>`
-    <div class="lb-item">
-      <div class="lb-pos">${i+1}</div>
-      <div style="flex:1;font-size:12px;color:#80c080;">${esc(p.username||'?')}</div>
-      <div style="text-align:right">
-        <div style="font-size:12px;color:#00ff41;font-weight:700;">${(p.points||0).toLocaleString()}</div>
-        <div style="font-size:10px;color:#ff6400;">💀${p.kills||0} W${p.wave||0}</div>
-      </div>
-    </div>`).join('');
+// ════════════════════ RESET DAILY/WEEKLY ════════════════════
+async function checkDailyWeeklyReset(uid){
+  if(!UD) return;
+  const now=Date.now();
+  const startOfDay=new Date(); startOfDay.setHours(0,0,0,0);
+  const startOfWeek=new Date(); startOfWeek.setDate(startOfWeek.getDate()-startOfWeek.getDay()); startOfWeek.setHours(0,0,0,0);
+  const updates={};
+  if((UD.dailyReset||0)<startOfDay.getTime()){
+    updates.dailyJobs=0; updates.dailyEarned=0; updates.dailyRare=0; updates.dailyBought=0;
+    updates.dailyReset=startOfDay.getTime();
+  }
+  if((UD.weeklyReset||0)<startOfWeek.getTime()){
+    updates.weeklyJobs=0; updates.weeklyEarned=0; updates.weeklyEpic=0; updates.weeklyBought=0;
+    updates.weeklyReset=startOfWeek.getTime();
+  }
+  if(Object.keys(updates).length>0) await update(ref(db,`usuarios/${uid}`),updates);
 }
 
-function renderShop(){
-  const inv = G.userData.inventory||{};
-  const kills = G.userData.totalKills||0;
-  const pts = G.userData.points||0;
-  document.getElementById('shop-grid').innerHTML = SHOP.map(item=>{
-    const owned=inv[item.id], locked=kills<item.reqKills, afford=pts>=item.price;
-    return `<div class="shop-item ${locked?'locked':''} ${owned?'owned':''}" onclick="${locked?'':`buyItem('${item.id}')`}">
-      <span style="font-size:22px;">${item.icon}</span>
-      <div style="font-size:10px;color:#80c080;letter-spacing:1px;margin-top:4px;">${item.name}</div>
-      <div style="font-size:9px;color:#2a5a2a;margin-top:2px;">${item.desc}</div>
-      ${locked?`<div style="font-size:9px;color:#4a4a4a;margin-top:4px;">🔒 ${item.reqKills} kills</div>`:
-        owned?'<div style="color:#00ff41;font-size:9px;margin-top:4px;">✓ OK</div>':
-        `<div style="font-size:12px;font-weight:700;margin-top:4px;color:${afford?'#00ff41':'#ff4444'}">${item.price} pts</div>`}
+// ════════════════════ RENDER ════════════════════
+function renderAll(){
+  if(!CU) return;
+  const pts=UD.points||0, uname=UD.username||CU.email.split('@')[0];
+  const lvl=UD.level||1, xp=UD.xp||0, xpMax=lvl*500;
+  const pct=Math.min(100,(xp/xpMax)*100);
+  const energyState=getEnergyState();
+
+  document.getElementById('topbar-pts').textContent=pts.toLocaleString();
+  document.getElementById('topbar-user').textContent=uname.toUpperCase();
+  document.getElementById('topbar-energy').textContent=energyState.energy;
+  document.querySelector('.energy-pill .e-max').textContent='/' + energyState.max;
+
+  const pill=document.getElementById('active-job-pill');
+  const activeJob=UD.activeJob||null;
+  if(activeJob){const j=JOBS.find(j=>j.id===activeJob);document.getElementById('active-job-text').textContent=j?`${j.icon} ${j.name}`:'trabajando...';pill.classList.add('show');}
+  else pill.classList.remove('show');
+
+  document.getElementById('hero-name').textContent=uname.toUpperCase();
+  ['level-fill','p-level-fill'].forEach(id=>{const el=document.getElementById(id);if(el)el.style.width=pct+'%';});
+  ['level-tag','p-level-tag'].forEach(id=>{const el=document.getElementById(id);if(el)el.textContent='NIVEL '+lvl;});
+  ['level-xp','p-level-xp'].forEach(id=>{const el=document.getElementById(id);if(el)el.textContent=xp+' / '+xpMax+' XP';});
+
+  document.getElementById('st-pts').textContent=pts.toLocaleString();
+  document.getElementById('st-jobs').textContent=(UD.jobsCompleted||0).toLocaleString();
+  document.getElementById('st-items').textContent=(UD.itemsBought||0).toLocaleString();
+  document.getElementById('st-streak').textContent=(UD.streak||0);
+
+  const canDaily=Date.now()-(UD.dailyLastClaim||0)>86400000;
+  document.getElementById('daily-banner').style.display=canDaily?'flex':'none';
+
+  const streak=UD.streak||0;
+  document.getElementById('streak-section').style.display=streak>1?'flex':'none';
+  document.getElementById('streak-days').textContent=streak;
+
+  const rank=getrank(pts);
+  document.getElementById('profile-name').textContent=uname;
+  document.getElementById('profile-email').textContent=CU.email;
+  document.getElementById('profile-avatar').textContent=uname[0].toUpperCase();
+  document.getElementById('profile-rank').textContent=rank.icon+' '+rank.name;
+  document.getElementById('prestige-section').style.display=lvl>=50?'block':'none';
+
+  const claimedObjs=Object.entries(UD.objectives||{}).filter(([,v])=>v===true).length;
+  document.getElementById('st-objs').textContent=claimedObjs;
+
+  const pendingObjs=OBJECTIVES.filter(o=>!isObjClaimed(o.id)&&getObjProgress(o)>=o.target).length;
+  const badge=document.getElementById('obj-badge');
+  badge.style.display=pendingObjs>0?'inline':'none';
+  badge.textContent=pendingObjs;
+
+  renderActivity();
+  renderJobs();
+  renderShop();
+  renderInventory();
+  renderAchievements();
+  renderObjectives();
+  renderDashObjectives();
+  renderLeaderboard();
+}
+
+function getEnergyState(state=UD, now=Date.now()){
+  const baseEnergy = state.energy != null ? state.energy : 0;
+  const bonusMax = (state.energyBonusUntil && state.energyBonusUntil > now) ? 20 : 0;
+  const permanentMax = ((state.inventory && state.inventory.perm_energy_2) || (state.inventory && state.inventory.energy_boost)) ? 2 : 0;
+  const maxE = (state.energyMax || 20) + bonusMax + permanentMax;
+  const regenMultiplier = state.inventory && state.inventory.regen_boost ? 2 : 1;
+  const regenMs = Math.floor(300000 / regenMultiplier);
+  const elapsed = Math.max(0, now - (state.lastEnergyRegen || now));
+  const gained = Math.floor(elapsed / regenMs);
+  return {energy: Math.min(maxE, baseEnergy + gained), max: maxE, regenMs, gained};
+}
+
+function getCurrentEnergy(state=UD, now=Date.now()){
+  return getEnergyState(state, now).energy;
+}
+
+function consumeEnergy(current, amount, now=Date.now()){
+  const energyState = getEnergyState(current, now);
+  if(amount > energyState.energy) return false;
+  current.energy = energyState.energy - amount;
+  current.lastEnergyRegen = now;
+  return true;
+}
+
+function restoreEnergy(current, amount, now=Date.now()){
+  const energyState = getEnergyState(current, now);
+  current.energy = Math.min(energyState.max, energyState.energy + amount);
+  current.lastEnergyRegen = now;
+}
+
+function getrank(pts){let r=RANKS[0];for(const rk of RANKS)if(pts>=rk.min)r=rk;return r;}
+
+function isObjClaimed(id){return (UD.objectives||{})[id]===true;}
+function getObjProgress(obj){
+  const s=obj.stat;
+  if(s==='jobsCompleted') return UD.jobsCompleted||0;
+  if(s==='totalEarned')   return UD.totalEarned||0;
+  if(s==='itemsBought')   return UD.itemsBought||0;
+  if(s==='level')         return UD.level||1;
+  if(s==='maxStreak')     return UD.maxStreak||0;
+  if(s==='legendaryDone') return UD.legendaryDone||0;
+  if(s==='dailyJobs')     return UD.dailyJobs||0;
+  if(s==='dailyEarned')   return UD.dailyEarned||0;
+  if(s==='dailyRare')     return UD.dailyRare||0;
+  if(s==='dailyBought')   return UD.dailyBought||0;
+  if(s==='weeklyJobs')    return UD.weeklyJobs||0;
+  if(s==='weeklyEarned')  return UD.weeklyEarned||0;
+  if(s==='weeklyEpic')    return UD.weeklyEpic||0;
+  if(s==='weeklyBought')  return UD.weeklyBought||0;
+  return 0;
+}
+
+function renderObjectives(){
+  const grid=document.getElementById('objectives-grid');
+  const filtered=OBJECTIVES.filter(o=>ACTIVE_OBJ_FILTER==='all'||o.cat===ACTIVE_OBJ_FILTER);
+  grid.innerHTML=filtered.map(o=>{
+    const prog=getObjProgress(o);
+    const claimed=isObjClaimed(o.id);
+    const done=prog>=o.target&&!claimed;
+    const pct=Math.min(100,(prog/o.target)*100);
+    return `<div class="obj-card ${claimed?'completed':''}">
+      <div class="obj-category ${o.cat}">${o.cat.toUpperCase()}</div>
+      <div class="obj-header">
+        <div class="obj-icon">${o.icon}</div>
+        <div><div class="obj-title">${o.title}</div><div class="obj-desc">${o.desc}</div></div>
+      </div>
+      <div class="obj-meta">
+        <span class="obj-reward">🪙 +${o.reward} pts · ⭐ +${o.xp} XP</span>
+        <span class="obj-prog-text">${claimed?'COMPLETADO':prog+' / '+o.target}</span>
+      </div>
+      ${!claimed?`<div class="obj-bar"><div class="obj-bar-fill" style="width:${pct}%"></div></div>`:''}
+      ${done?`<button class="btn-claim-obj" onclick="claimObjective('${o.id}')">RECLAMAR RECOMPENSA</button>`:''}
     </div>`;
   }).join('');
 }
 
-window.buyItem = async id => {
-  const item=SHOP.find(i=>i.id===id); if(!item)return;
-  if((G.userData.points||0)<item.price){toast('Sin puntos','err');return;}
-  if((G.userData.totalKills||0)<item.reqKills){toast('Necesitas más kills','err');return;}
-  await runTransaction(ref(db,`zc_users/${G.userId}`),cur=>{
-    if(!cur)return cur;
-    if((cur.points||0)<item.price)return;
-    cur.points=(cur.points||0)-item.price;
-    if(!cur.inventory)cur.inventory={};
-    cur.inventory[id]=true;
-    return cur;
+function renderDashObjectives(){
+  const el=document.getElementById('dash-objectives');
+  const active=OBJECTIVES.filter(o=>!isObjClaimed(o.id)).slice(0,4);
+  if(!active.length){el.innerHTML='<div style="color:var(--muted);font-size:13px">¡Todos los objetivos activos completados!</div>';return;}
+  el.innerHTML=active.map(o=>{
+    const prog=getObjProgress(o),pct=Math.min(100,(prog/o.target)*100),done=prog>=o.target;
+    return `<div class="obj-card ${done?'completed':''}" style="cursor:pointer" onclick="showSection('objectives',document.querySelector('[data-sec=objectives]'))">
+      <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px">
+        <span style="font-size:18px">${o.icon}</span>
+        <span style="font-family:var(--font-head);font-size:13px;font-weight:700">${o.title}</span>
+        <span style="font-family:var(--font-mono);font-size:10px;color:var(--lime);margin-left:auto">+${o.reward}</span>
+      </div>
+      <div style="font-size:10px;color:var(--muted);margin-bottom:6px">${prog} / ${o.target}</div>
+      <div class="obj-bar"><div class="obj-bar-fill" style="width:${pct}%"></div></div>
+    </div>`;
+  }).join('');
+}
+
+window.filterObj = (cat,btn)=>{
+  ACTIVE_OBJ_FILTER=cat;
+  document.querySelectorAll('#obj-filter-bar .filter-btn').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+  renderObjectives();
+};
+
+window.claimObjective = async id=>{
+  if(!CU) return;
+  const obj=OBJECTIVES.find(o=>o.id===id);
+  if(!obj||isObjClaimed(id)) return;
+  const prog=getObjProgress(obj);
+  if(prog<obj.target){toast('Objetivo no completado aún.','error');return;}
+  const uid=CU.uid;
+  const acts=UD.activity?[...Object.values(UD.activity)]:[];
+  acts.push({text:`🎯 Objetivo "${obj.title}" completado! +${obj.reward} pts`,ts:Date.now()});
+  if(acts.length>20)acts.splice(0,acts.length-20);
+  const newXP=(UD.xp||0)+obj.xp;
+  const newLevel=Math.floor(newXP/500)+1;
+  await update(ref(db,`usuarios/${uid}`),{
+    points:(UD.points||0)+obj.reward,
+    totalEarned:(UD.totalEarned||0)+obj.reward,
+    xp:newXP,level:newLevel,
+    [`objectives/${id}`]:true,
+    activity:acts,
   });
-  G.userData.points-=item.price;
-  if(!G.userData.inventory)G.userData.inventory={};
-  G.userData.inventory[id]=true;
-  document.getElementById('lb-pts').textContent=G.userData.points.toLocaleString();
-  renderShop(); toast(`${item.icon} ${item.name} desbloqueado!`);
+  const uname=UD.username||CU.email.split('@')[0];
+  await update(ref(db,`leaderboard/${uid}`),{username:uname,points:(UD.points||0)+obj.reward,level:newLevel});
+  toast(`🎯 ${obj.icon} +${obj.reward} pts!`,'success');
 };
 
-window.showSec = s => {
-  ['rooms','shop','ranking'].forEach(k=>document.getElementById('sec-'+k).style.display=k===s?'block':'none');
-};
-
-// ══════════════════════════════════════════
-// ROOMS
-// ══════════════════════════════════════════
-window.createRoom = async () => {
-  const roomId = push(ref(db,'zc_rooms')).key;
-  G.roomId = roomId;
-  await set(ref(db,`zc_rooms/${roomId}`),{
-    name:`Sala de ${G.username}`, host:G.username, hostId:G.userId,
-    active:true, status:'waiting', wave:1, pCount:1, createdAt:Date.now(),
-    players:{[G.userId]:{username:G.username,score:0,kills:0,hp:100}}
-  });
-  startGame(roomId);
-};
-
-window.joinRoom = async roomId => {
-  const snap=await get(ref(db,`zc_rooms/${roomId}`));
-  if(!snap.exists()){toast('Sala no encontrada','err');return;}
-  const room=snap.val();
-  const pc=Object.keys(room.players||{}).length;
-  if(pc>=4){toast('Sala llena','err');return;}
-  G.roomId=roomId;
-  await update(ref(db,`zc_rooms/${roomId}/players/${G.userId}`),{username:G.username,score:0,kills:0,hp:100});
-  await update(ref(db,`zc_rooms/${roomId}`),{pCount:pc+1});
-  startGame(roomId);
-};
-
-async function leaveRoom(){
-  if(!G.roomId)return;
-  await remove(ref(db,`zc_rooms/${G.roomId}/players/${G.userId}`));
-  const snap=await get(ref(db,`zc_rooms/${G.roomId}/players`));
-  const rem=snap.val()||{};
-  if(!Object.keys(rem).length) await update(ref(db,`zc_rooms/${G.roomId}`),{active:false});
-  else await update(ref(db,`zc_rooms/${G.roomId}`),{pCount:Object.keys(rem).length});
-  G.roomId=null;
+function renderActivity(){
+  const el=document.getElementById('activity-log');
+  const acts=UD.activity?Object.values(UD.activity).slice(-8).reverse():[];
+  if(!acts.length){el.innerHTML='<div style="color:var(--muted);font-size:13px;padding:12px 0">Aún sin actividad — ¡completa tu primera misión!</div>';return;}
+  el.innerHTML=acts.map(a=>`<div class="activity-item"><span>${escapeHtml(a.text)}</span><span class="act-time">${timeAgo(a.ts)}</span></div>`).join('');
 }
 
-// ══════════════════════════════════════════
-// 3D ENGINE — RAYCASTING
-// ══════════════════════════════════════════
-const C = document.getElementById('c');
-const ctx = C.getContext('2d');
-const MM = document.getElementById('minimap');
-const mctx = MM.getContext('2d');
-let RAF = null, prevT = 0;
-
-function startGame(roomId){
-  document.getElementById('lobby-overlay').classList.remove('show');
-  document.getElementById('game-canvas').classList.add('show');
-  document.getElementById('hud').style.display='block';
-  document.getElementById('crosshair').style.display='block';
-  document.getElementById('minimap').style.display='block';
-  document.getElementById('ctrl-hint').classList.add('show');
-  document.getElementById('lock-hint').style.display='block';
-
-  G.running=true; G.score=0; G.kills=0; G.wave=1;
-  G.hp=100; G.maxHp=100; G.ammo=15; G.reserve=60;
-  G.reloading=false; G.weapon='pistol'; G.bullets=[];
-  G.particles=[]; G.zombies=[]; G.keys={};
-  G.camX=20; G.camY=20; G.camYaw=0;
-  G.shake=0; G.flash=0; G.hitMark=0;
-  G.waveActive=false; G.spawnTimer=0; G.nextWaveTimer=0;
-  G.startTime=Date.now(); G.roomId=roomId;
-  G.sessionToken=Math.random().toString(36).slice(2)+Date.now().toString(36);
-  G.inventory=Object.keys(G.userData.inventory||{});
-  G.perks={};
-  AC.reset();
-
-  C.width=G.screenW=window.innerWidth;
-  C.height=G.screenH=window.innerHeight;
-
-  genMap();
-  startWave(1);
-  updateHPBar();
-  updateAmmoHUD();
-
-  onValue(ref(db,`zc_rooms/${roomId}/players`),snap=>{ G.players=snap.val()||{}; });
-  G.syncIv=setInterval(syncServer,2500);
-  prevT=performance.now();
-  RAF=requestAnimationFrame(loop);
-}
-
-function genMap(){
-  const W=G.MAP_W, H=G.MAP_H;
-  G.map=Array.from({length:H},()=>Array(W).fill(0));
-  for(let i=0;i<W;i++){G.map[0][i]=1;G.map[H-1][i]=1;}
-  for(let i=0;i<H;i++){G.map[i][0]=1;G.map[i][W-1]=1;}
-  const rng=(a,b)=>Math.floor(Math.random()*(b-a+1))+a;
-  for(let n=0;n<35;n++){
-    const x=rng(3,W-5),y=rng(3,H-5),w=rng(1,5),h=rng(1,5);
-    for(let dy=0;dy<h;dy++)for(let dx=0;dx<w;dx++){
-      if(x+dx<W-2&&y+dy<H-2)G.map[y+dy][x+dx]=1;
-    }
-  }
-  // Clear spawn
-  for(let dy=-4;dy<=4;dy++)for(let dx=-4;dx<=4;dx++){
-    const mx=20+dx,my=20+dy;
-    if(mx>=0&&mx<W&&my>=0&&my<H)G.map[my][mx]=0;
-  }
-}
-
-function startWave(n){
-  G.wave=n;
-  const count=6+n*5;
-  G.waveTotal=count; G.waveLeft=count; G.waveSpawned=0;
-  G.waveActive=true;
-  showAnnounce(`OLEADA ${n}`,'#ff6400');
-  document.getElementById('wave-num').textContent=n;
-  if(G.roomId) update(ref(db,`zc_rooms/${G.roomId}`),{wave:n,status:'playing'});
-}
-
-function spawnZombie(){
-  if(G.waveSpawned>=G.waveTotal)return;
-  const S=G.MAP_W; let x,y,tries=0;
-  do {
-    const side=Math.floor(Math.random()*4);
-    if(side===0){x=Math.random()*S;y=1;}
-    else if(side===1){x=S-2;y=Math.random()*S;}
-    else if(side===2){x=Math.random()*S;y=S-2;}
-    else{x=1;y=Math.random()*S;}
-    tries++;
-  } while(isWall(x,y)&&tries<30);
-  const type=G.wave>3?(Math.random()<.15?'tank':Math.random()<.2?'runner':'normal'):'normal';
-  const hp=(type==='tank'?120:50)+(G.wave-1)*15;
-  G.zombies.push({
-    x,y,hp,maxHp:hp,
-    speed:(type==='runner'?.02:type==='tank'?.006:.012)+(G.wave*.001),
-    type, id:Math.random().toString(36).slice(2),
-    lastAtk:0, phase:Math.random()*Math.PI*2,
-    dmg:type==='tank'?30:type==='runner'?12:18,
-    size:type==='tank'?.65:.38
-  });
-  G.waveSpawned++;
-}
-
-function loop(ts){
-  if(!G.running)return;
-  RAF=requestAnimationFrame(loop);
-  const dt=Math.min((ts-prevT)/1000,.05); prevT=ts;
-  tick(dt); draw();
-}
-
-function tick(dt){
-  movePlayer(dt);
-  tickZombies(dt);
-  tickBullets(dt);
-  tickParticles(dt);
-  tickReload(dt);
-  tickWave(dt);
-  if(G.shake>0)G.shake=Math.max(0,G.shake-dt*8);
-  if(G.flash>0)G.flash=Math.max(0,G.flash-dt*3);
-  if(G.hitMark>0)G.hitMark=Math.max(0,G.hitMark-dt*5);
-}
-
-function movePlayer(dt){
-  const spd=(G.running_spd?6:4)*(G.perks.speed?1.3:1);
-  let dx=0,dy=0;
-  const yaw=G.camYaw;
-  if(G.keys['w']||G.keys['arrowup'])   {dx+=Math.cos(yaw)*spd*dt;dy+=Math.sin(yaw)*spd*dt;}
-  if(G.keys['s']||G.keys['arrowdown']) {dx-=Math.cos(yaw)*spd*dt;dy-=Math.sin(yaw)*spd*dt;}
-  if(G.keys['a']||G.keys['arrowleft']) {dx+=Math.cos(yaw-Math.PI/2)*spd*dt;dy+=Math.sin(yaw-Math.PI/2)*spd*dt;}
-  if(G.keys['d']||G.keys['arrowright']){dx+=Math.cos(yaw+Math.PI/2)*spd*dt;dy+=Math.sin(yaw+Math.PI/2)*spd*dt;}
-  const r=.3;
-  const nx=G.camX+dx, ny=G.camY+dy;
-  if(!isWall(nx+r,G.camY)&&!isWall(nx-r,G.camY))G.camX=nx;
-  if(!isWall(G.camX,ny+r)&&!isWall(G.camX,ny-r))G.camY=ny;
-  G.camX=Math.max(.5,Math.min(G.MAP_W-.5,G.camX));
-  G.camY=Math.max(.5,Math.min(G.MAP_H-.5,G.camY));
-}
-
-function isWall(x,y){
-  const mx=Math.floor(x),my=Math.floor(y);
-  if(mx<0||my<0||mx>=G.MAP_W||my>=G.MAP_H)return true;
-  return G.map[my]?.[mx]===1;
-}
-
-function tickZombies(dt){
+function renderJobs(){
+  const grid=document.getElementById('jobs-grid');
   const now=Date.now();
-  for(const z of G.zombies){
-    z.phase+=dt*(z.type==='runner'?8:4);
-    const dx=G.camX-z.x, dy=G.camY-z.y;
-    const d=Math.sqrt(dx*dx+dy*dy);
-    if(d>.4){
-      const sp=z.speed*60*dt;
-      const nx=z.x+(dx/d)*sp, ny=z.y+(dy/d)*sp;
-      if(!isWall(nx+z.size,z.y)&&!isWall(nx-z.size,z.y))z.x=nx;
-      if(!isWall(z.x,ny+z.size)&&!isWall(z.x,ny-z.size))z.y=ny;
-    } else if(now-z.lastAtk>900){
-      z.lastAtk=now;
-      const dmg=z.dmg*(G.perks.shield?.6:1);
-      G.hp=Math.max(0,G.hp-dmg);
-      G.flash=.7; G.shake=.4;
-      updateHPBar();
-      if(G.hp<=0)die();
-    }
-  }
+  const inv=UD.inventory||{};
+  const activeJob=UD.activeJob||null;
+  const lvl=UD.level||1;
+  const energyState=getEnergyState();
+  const currentEnergy=energyState.energy;
+
+  grid.innerHTML=JOBS.map(job=>{
+    const last=(UD.cooldowns&&UD.cooldowns[job.id])||CDS['cd_'+job.id]||0;
+    const elapsed=(now-last)/1000;
+    let cdThis=job.cooldown;
+    // CD reductions from items
+    if(inv.cd_boost || inv.perm_cd_10) cdThis=Math.floor(cdThis*0.9);
+    if((job.id==='repartidor'||job.id==='cajero'||job.id==='barista')&&inv.martillo) cdThis=Math.max(0,cdThis-30);
+    if((job.id==='consultor'||job.id==='ceo')&&inv.oficina) cdThis=Math.max(0,cdThis-60);
+    if(UD.tempCdAllUntil && Date.now() < UD.tempCdAllUntil) cdThis=Math.max(0, cdThis - (UD.tempCdAllReduction||0));
+    if(UD.tempCdCommonUntil && Date.now() < UD.tempCdCommonUntil && job.rarity==='common') cdThis=Math.max(0, cdThis - (UD.tempCdCommonReduction||0));
+    const ready=elapsed>=cdThis;
+    const rem=ready?0:Math.ceil(cdThis-elapsed);
+    const fpct=ready?100:Math.floor((elapsed/cdThis)*100);
+    const isActive=activeJob===job.id;
+    const otherActive=activeJob&&activeJob!==job.id;
+    const locked=lvl<job.minLevel&&!inv.job_unlock&&!(inv.job_unlock&&lvl>=(job.minLevel-2));
+    const freeCost=((UD.freeEnergyJobs||0)>0);
+    const jobCost=freeCost?0:job.energy;
+    const energyLock=!freeCost&&jobCost>currentEnergy;
+
+    let btnText,btnClass='btn-work',btnDisabled=false;
+    if(locked)           {btnText='🔒 LVL '+job.minLevel;btnDisabled=true;}
+    else if(isActive)    {btnText='⏳ EN CURSO...';btnClass='btn-work working';btnDisabled=true;}
+    else if(!ready)      {btnText='⏳ '+fmt(rem);btnDisabled=true;}
+    else if(otherActive) {btnText='BLOQUEADO';btnDisabled=true;}
+    else if(energyLock)  {btnText='⚡ ENERGÍA';btnDisabled=true;}
+    else                 {btnText='TRABAJAR';}
+
+    return `<div class="job-card ${(otherActive&&!isActive)||locked?'locked-by-active':''}">
+      <div class="job-stripe ${job.rarity}"></div>
+      <div class="job-rarity-badge ${job.rarity}">${job.rarity.toUpperCase()}</div>
+      ${locked?`<div class="job-level-req">🔒 REQUIERE NIVEL ${job.minLevel}</div>`:''}
+      <div class="job-icon">${job.icon}</div>
+      <div class="job-name">${job.name}</div>
+      <div class="job-desc">${job.desc}</div>
+      <div class="job-meta">
+        <span class="job-reward">🪙 +${computeReward(job)}</span>
+        <span class="job-cd">⏱ ${fmt(cdThis)}</span>
+        <span class="job-energy">⚡ ${jobCost}</span>
+      </div>
+      <button class="${btnClass}" id="btn-${job.id}" ${btnDisabled?'disabled':''} onclick="doJob('${job.id}')">
+        ${btnText}
+      </button>
+      <div class="cd-track" id="bar-${job.id}" style="display:${ready&&!isActive?'none':'block'}">
+        <div class="cd-fill" id="fill-${job.id}" style="width:${isActive?0:fpct}%"></div>
+      </div>
+    </div>`;
+  }).join('');
+  startTimers();
 }
 
-function tickBullets(dt){
-  for(let i=G.bullets.length-1;i>=0;i--){
-    const b=G.bullets[i];
-    b.x+=b.dx*dt*28; b.y+=b.dy*dt*28; b.life-=dt;
-    if(b.life<=0||isWall(b.x,b.y)){
-      G.bullets.splice(i,1); mkParticles(b.x,b.y,3,'#556655'); continue;
-    }
-    let hit=false;
-    for(let j=G.zombies.length-1;j>=0;j--){
-      const z=G.zombies[j];
-      if(Math.sqrt((b.x-z.x)**2+(b.y-z.y)**2)<z.size+.25){
-        const dmg=b.dmg*(G.perks.dmg?2:1);
-        z.hp-=dmg; G.hitMark=.2;
-        mkParticles(z.x,z.y,10,'#ff3333');
-        G.bullets.splice(i,1); hit=true;
-        if(z.hp<=0)killZombie(z,j);
-        break;
+function computeReward(job){
+  const inv=UD.inventory||{};
+  let r=job.reward;
+  // perm boosts
+  if(inv.pts_boost5)  r=Math.floor(r*1.05);
+  if(inv.pts_boost10) r=Math.floor(r*1.10);
+  if(inv.vip_status)  r=Math.floor(r*1.15);
+  if(inv.momentum){
+    const streak=UD.momentumStreak||0;
+    r=Math.floor(r*(1+Math.min(0.2,streak*0.02)));
+  }
+  // tool boosts
+  if(inv.laptop&&(job.id==='dev'||job.id==='streamer'))  r=Math.floor(r*1.10);
+  if(inv.laptop_pro&&['dev','diseñador','consultor'].includes(job.id)) r=Math.floor(r*1.20);
+  if(inv.bloomberg&&['trader','cuantitativo'].includes(job.id)) r=Math.floor(r*1.30);
+  if(inv.traje_lujo&&job.id==='ceo')    r=Math.floor(r*1.15);
+  if(inv.casco&&job.id==='astronauta')  r=Math.floor(r*1.20);
+  if(inv.cafetera&&job.id==='barista')  r=Math.floor(r*1.25);
+  if(inv.bicicleta&&['repartidor','conductor'].includes(job.id)) r=Math.floor(r*1.20);
+  if(inv.camara_dslr&&['fotografo','director'].includes(job.id)) r=Math.floor(r*1.25);
+  if(inv.smartphone&&['streamer','influencer'].includes(job.id)) r=Math.floor(r*1.15);
+  if(inv.micro&&job.id==='streamer')    r=Math.floor(r*1.20);
+  if(inv.bisturi&&job.id==='medico')    r=Math.floor(r*1.20);
+  if(inv.servidores&&['dev','cuantitativo'].includes(job.id)) r=Math.floor(r*1.25);
+  if(inv.toga&&job.id==='abogado')      r=Math.floor(r*1.20);
+  if(inv.vehiculo&&job.id==='conductor') r=Math.floor(r*1.30);
+  if(inv.impresora3d&&job.id==='arquitecto') r=Math.floor(r*1.20);
+  if(inv.cocina_pro&&job.id==='cocinero')   r=Math.floor(r*1.20);
+  const now=Date.now();
+  if(UD.activeAllBoostUntil && UD.activeAllBoostUntil > now) r=Math.floor(r*1.10);
+  if(UD.tempCommonBoostUntil && UD.tempCommonBoostUntil > now && job.rarity==='common') r=Math.floor(r*1.10);
+  if(UD.nextRewardBoost && (!UD.nextRewardJob || UD.nextRewardJob===job.id)) r=Math.floor(r*(1 + UD.nextRewardBoost/100));
+  return r;
+}
+
+function renderShop(){
+  const grid=document.getElementById('shop-grid');
+  const inv=UD.inventory||{};
+  const pts=UD.points||0, lvl=UD.level||1;
+  const items=ACTIVE_SHOP_FILTER==='all'?ITEMS:ITEMS.filter(i=>i.cat===ACTIVE_SHOP_FILTER);
+  grid.innerHTML=items.map(item=>{
+    const owned=inv[item.id]||0;
+    const afford=pts>=item.price;
+    const lvlOk=lvl>=item.reqLevel;
+    const locked=!lvlOk;
+    const rarity=item.price>=50000?'legendary':item.price>=5000?'epic':'';
+    return `<div class="shop-card ${locked?'locked-item':''}">
+      ${owned?`<div class="owned-badge">×${owned}</div>`:''}
+      ${rarity?`<div class="rare-badge ${rarity}">${rarity.toUpperCase()}</div>`:''}
+      <div class="shop-item-cat">${catEmoji(item.cat)} ${item.cat.toUpperCase()}</div>
+      <span class="shop-item-icon">${item.icon}</span>
+      <div class="shop-item-name">${item.name}</div>
+      <div class="shop-item-desc">${item.desc}</div>
+      ${locked?`<div class="shop-item-req">🔒 Requiere nivel ${item.reqLevel}</div>`:''}
+      <div class="shop-item-price">${item.price===0?'GRATIS':'🪙 '+item.price.toLocaleString()}</div>
+      <button class="btn-buy" ${(afford&&lvlOk&&item.price!==0)||item.price===0?'':'disabled'} onclick="openBuyModal('${item.id}')">
+        ${!afford&&item.price>0?'SIN FONDOS':locked?'BLOQUEADO':'COMPRAR'}
+      </button>
+    </div>`;
+  }).join('');
+}
+function catEmoji(c){return{consumable:'⚗',tool:'🔧',boost:'🚀',prestige:'💎',utility:'🛡',cosmetic:'🎨'}[c]||'🛍';}
+
+window.filterShop=(cat,btn)=>{
+  ACTIVE_SHOP_FILTER=cat;
+  document.querySelectorAll('#shop-filter-bar .filter-btn').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+  renderShop();
+};
+
+function renderInventory(){
+  const grid=document.getElementById('inv-grid');
+  const inv=UD.inventory||{};
+  const entries=Object.entries(inv).filter(([,v])=>v>0);
+  document.getElementById('inv-count').textContent=entries.length;
+  if(!entries.length){grid.innerHTML='<div style="color:var(--muted);font-size:13px">Tu inventario está vacío. ¡Visita la tienda!</div>';return;}
+  grid.innerHTML=entries.map(([id,qty])=>{
+    const item=ITEMS.find(i=>i.id===id);
+    if(!item)return '';
+    const canUse=item.cat==='consumable' && item.effect;
+    return `<div class="inv-item">
+      <span class="inv-item-icon">${item.icon}</span>
+      <div class="inv-item-qty">${qty}</div>
+      <div class="inv-item-name">${item.name}</div>
+      ${canUse?`<button class="btn-buy" style="margin-top:8px;font-size:10px;padding:8px;" onclick="useInventoryItem('${id}')">USAR</button>`:''}
+    </div>`;
+  }).join('');
+}
+
+const ACHIEVEMENTS_DEF=[
+  {id:'first_job',   icon:'🎉', name:'Primer Trabajo',  desc:'Completa tu primer trabajo.',        cond:ud=>ud.jobsCompleted>=1},
+  {id:'level5',      icon:'⭐', name:'Nivel 5',          desc:'Alcanza el nivel 5.',                cond:ud=>ud.level>=5},
+  {id:'level10',     icon:'🌟', name:'Nivel 10',         desc:'Alcanza el nivel 10.',               cond:ud=>ud.level>=10},
+  {id:'level20',     icon:'💫', name:'Nivel 20',         desc:'Alcanza el nivel 20.',               cond:ud=>ud.level>=20},
+  {id:'jobs50',      icon:'🏭', name:'50 Trabajos',      desc:'Completa 50 trabajos.',              cond:ud=>ud.jobsCompleted>=50},
+  {id:'earn1k',      icon:'💰', name:'1K Ganado',        desc:'Gana 1000 pts en total.',            cond:ud=>ud.totalEarned>=1000},
+  {id:'earn10k',     icon:'💎', name:'10K Ganado',       desc:'Gana 10000 pts en total.',           cond:ud=>ud.totalEarned>=10000},
+  {id:'collector',   icon:'🛒', name:'Coleccionista',    desc:'Compra 10 artículos.',               cond:ud=>ud.itemsBought>=10},
+  {id:'streak7',     icon:'🔥', name:'Racha 7 Días',     desc:'7 días seguidos de login.',          cond:ud=>ud.maxStreak>=7},
+  {id:'legendary',   icon:'🚀', name:'Trabajo Legendario',desc:'Completa un trabajo legendario.',  cond:ud=>ud.legendaryDone>=1},
+  {id:'rich',        icon:'🤑', name:'Rico',             desc:'Acumula 50000 pts.',                 cond:ud=>(ud.points||0)>=50000},
+  {id:'prestige1',   icon:'👑', name:'Prestigio',        desc:'Haz Prestigio por primera vez.',     cond:ud=>(ud.prestigeCount||0)>=1},
+];
+
+function renderAchievements(){
+  const grid=document.getElementById('achievements-grid');
+  grid.innerHTML=ACHIEVEMENTS_DEF.map(a=>{
+    const unlocked=a.cond(UD);
+    return `<div class="ach-item ${unlocked?'unlocked':'locked'}">
+      <div class="ach-icon">${a.icon}</div>
+      <div><div class="ach-name">${a.name}</div><div class="ach-desc">${a.desc}</div></div>
+    </div>`;
+  }).join('');
+}
+
+async function renderLeaderboard(){
+  try {
+    const snap=await get(ref(db,'leaderboard'));
+    const data=snap.val()||{};
+    const sorted=Object.entries(data).map(([uid,e])=>({uid,username:e.username||'Anónimo',points:e.points||0,level:e.level||1}))
+      .sort((a,b)=>b.points-a.points).slice(0,20);
+    const myPos=sorted.findIndex(e=>e.uid===CU?.uid)+1;
+    document.getElementById('st-rank').textContent=myPos?'#'+myPos:'#—';
+    const medals=['🥇','🥈','🥉'];
+    document.getElementById('lb-list').innerHTML=sorted.map((e,i)=>`
+      <div class="lb-item ${e.uid===CU?.uid?'is-me':''}">
+        <div class="lb-pos">${i+1}</div>
+        <span class="lb-medal">${medals[i]||''}</span>
+        <div class="lb-name">${e.uid===CU?.uid?'⭐ ':''} ${escapeHtml(e.username)}</div>
+        <div style="flex:0"></div>
+        <div class="lb-level">LVL ${e.level}</div>
+        <div class="lb-pts">${e.points.toLocaleString()}</div>
+      </div>`).join('')||'<div style="color:var(--muted);padding:16px 0">No hay datos aún.</div>';
+  } catch(e){document.getElementById('lb-list').innerHTML='<div style="color:var(--muted);padding:16px 0">No se pudo cargar el ranking.</div>';}
+}
+
+// ════════════════════ DO JOB ════════════════════
+window.doJob = async jobId=>{
+  if(!CU) return;
+  const job=JOBS.find(j=>j.id===jobId);
+  if(!job) return;
+  const uid=CU.uid;
+  try {
+    const result=await runTransaction(ref(db,`usuarios/${uid}`),current=>{
+      if(!current) return current;
+      const now=Date.now();
+      const inv=current.inventory||{};
+      const cooldowns=current.cooldowns||{};
+      const last=cooldowns[jobId]||0;
+      const lvl=current.level||1;
+      // Level check
+      if(lvl<job.minLevel&&!inv.job_unlock) return; // ABORT
+      // Energy check — DESHABILITADO (siempre disponible)
+      // CD check
+      let cdThis=job.cooldown;
+      if(inv.cd_boost || inv.perm_cd_10) cdThis=Math.floor(cdThis*0.9);
+      if((jobId==='repartidor'||jobId==='cajero'||jobId==='barista')&&inv.martillo) cdThis=Math.max(0,cdThis-30);
+      if((jobId==='consultor'||jobId==='ceo')&&inv.oficina) cdThis=Math.max(0,cdThis-60);
+      if(current.tempCdAllUntil && now < current.tempCdAllUntil) cdThis=Math.max(0, cdThis - (current.tempCdAllReduction||0));
+      if(current.tempCdCommonUntil && now < current.tempCdCommonUntil && job.rarity==='common') cdThis=Math.max(0, cdThis - (current.tempCdCommonReduction||0));
+      if((now-last)/1000<cdThis) return; // ABORT
+      // Reward
+      let reward=job.reward;
+      if(inv.pts_boost5)  reward=Math.floor(reward*1.05);
+      if(inv.pts_boost10) reward=Math.floor(reward*1.10);
+      if(inv.vip_status)  reward=Math.floor(reward*1.15);
+      // tool boosts
+      if(inv.laptop&&(jobId==='dev'||jobId==='streamer'))  reward=Math.floor(reward*1.10);
+      if(inv.laptop_pro&&['dev','diseñador','consultor'].includes(jobId)) reward=Math.floor(reward*1.20);
+      if(inv.bloomberg&&['trader','cuantitativo'].includes(jobId)) reward=Math.floor(reward*1.30);
+      if(inv.traje_lujo&&jobId==='ceo')    reward=Math.floor(reward*1.15);
+      if(inv.casco&&jobId==='astronauta')  reward=Math.floor(reward*1.20);
+      if(inv.bicicleta&&['repartidor','conductor'].includes(jobId)) reward=Math.floor(reward*1.20);
+      if(inv.camara_dslr&&['fotografo','director'].includes(jobId)) reward=Math.floor(reward*1.25);
+      if(inv.bloomberg&&['trader','cuantitativo'].includes(jobId)) reward=Math.floor(reward*1.30);
+      if(inv.toga&&jobId==='abogado')      reward=Math.floor(reward*1.20);
+      if(inv.bisturi&&jobId==='medico')    reward=Math.floor(reward*1.20);
+      if(inv.servidores&&['dev','cuantitativo'].includes(jobId)) reward=Math.floor(reward*1.25);
+      if(inv.vehiculo&&jobId==='conductor') reward=Math.floor(reward*1.30);
+      if(inv.cocina_pro&&jobId==='cocinero') reward=Math.floor(reward*1.20);
+      if(inv.impresora3d&&jobId==='arquitecto') reward=Math.floor(reward*1.20);
+      if(inv.smartphone&&['streamer','influencer'].includes(jobId)) reward=Math.floor(reward*1.15);
+      if(inv.micro&&jobId==='streamer') reward=Math.floor(reward*1.20);
+      // XP
+      let xpGain=Math.floor(reward/4);
+      if(inv.xpboost)  xpGain*=2;
+      if(inv.xpboost3) xpGain*=3;
+      if(inv.mentor)   xpGain=Math.floor(xpGain*1.20);
+      if(inv.xp_crit&&Math.random()<0.10) xpGain*=5;
+      const newXP=(current.xp||0)+xpGain;
+      const newLevel=Math.floor(newXP/500)+1;
+      const energyState = getEnergyState(current, now);
+      const energyCost = ((current.freeEnergyJobs||0) > 0) ? 0 : job.energy;
+      if(energyCost > energyState.energy) return;
+      if(energyCost > 0){
+        current.energy = Math.max(0, energyState.energy - energyCost);
+      } else {
+        current.freeEnergyJobs = Math.max(0, (current.freeEnergyJobs||0) - 1);
       }
-    }
-    if(hit)break;
-  }
-}
-
-function killZombie(z,idx){
-  const now=Date.now();
-  if(!AC.registerKill(now))return;
-  G.zombies.splice(idx,1);
-  G.waveLeft--;
-  G.kills++;
-  const base=z.type==='tank'?150:z.type==='runner'?80:50;
-  const pts=base*Math.ceil(G.wave/2);
-  if(!AC.registerScore(pts,now))return;
-  G.score+=pts;
-  mkParticles(z.x,z.y,25,'#ff6600');
-  document.getElementById('kills-display').textContent=G.kills;
-  document.getElementById('score-display').textContent=G.score.toLocaleString();
-  toast(`+${pts}`);
-  if(G.waveLeft<=0&&G.waveSpawned>=G.waveTotal)endWave();
-}
-
-function tickWave(dt){
-  if(!G.waveActive){
-    G.nextWaveTimer-=dt;
-    if(G.nextWaveTimer<=0)startWave(G.wave+1);
-    return;
-  }
-  const rate=.8+G.wave*.25;
-  G.spawnTimer-=dt;
-  if(G.spawnTimer<=0&&G.waveSpawned<G.waveTotal){
-    spawnZombie(); G.spawnTimer=1/rate;
-  }
-}
-
-function endWave(){
-  G.waveActive=false; G.nextWaveTimer=10;
-  const bonus=G.wave*120;
-  G.score+=bonus;
-  G.hp=Math.min(G.maxHp,G.hp+25);
-  document.getElementById('score-display').textContent=G.score.toLocaleString();
-  updateHPBar();
-  showAnnounce(`OLEADA ${G.wave} OK!\n+${bonus} pts`,'#00ff41');
-  toast(`🌊 +${bonus} pts`);
-}
-
-function tickParticles(dt){
-  for(let i=G.particles.length-1;i>=0;i--){
-    const p=G.particles[i];
-    p.x+=p.vx*dt; p.y+=p.vy*dt; p.life-=dt;
-    if(p.life<=0)G.particles.splice(i,1);
-  }
-}
-
-function tickReload(dt){
-  if(!G.reloading)return;
-  G.reloadTimer-=dt;
-  if(G.reloadTimer<=0){
-    G.reloading=false;
-    const w=WEAPONS[G.weapon];
-    const need=w.mag-G.ammo, take=Math.min(need,G.reserve);
-    G.ammo+=take; G.reserve-=take;
-    updateAmmoHUD();
-  }
-}
-
-function mkParticles(x,y,n,color){
-  for(let i=0;i<n;i++){
-    const a=Math.random()*Math.PI*2, sp=Math.random()*2.5+.5;
-    G.particles.push({x,y,vx:Math.cos(a)*sp,vy:Math.sin(a)*sp,life:.25+Math.random()*.4,color,size:Math.random()*3+1});
-  }
-}
-
-// ══════════════════════════════════════════
-// RENDERER
-// ══════════════════════════════════════════
-function draw(){
-  const W=G.screenW, H=G.screenH;
-  ctx.clearRect(0,0,W,H);
-  ctx.save();
-  if(G.shake>.01){ctx.translate((Math.random()-.5)*G.shake*8,(Math.random()-.5)*G.shake*6);}
-
-  // Sky
-  ctx.fillStyle='#06100a'; ctx.fillRect(0,0,W,H/2);
-  // Ground
-  ctx.fillStyle='#04090a'; ctx.fillRect(0,H/2,W,H/2);
-
-  const FOV=Math.PI/2.4;
-  const RAYS=Math.floor(W/2);
-  const zBuf=new Float32Array(RAYS);
-
-  // Walls via raycasting
-  for(let r=0;r<RAYS;r++){
-    const angle=G.camYaw-FOV/2+(r/RAYS)*FOV;
-    const cx=Math.cos(angle), cy=Math.sin(angle);
-    let d=0; const step=.04;
-    while(d<22){
-      d+=step;
-      if(isWall(G.camX+cx*d, G.camY+cy*d))break;
-    }
-    const corr=Math.max(.1,d*Math.cos(angle-G.camYaw));
-    zBuf[r]=corr;
-    const wh=Math.min(H,H/corr);
-    const bright=Math.max(.04,1-corr/12);
-    const g=Math.floor(bright*120);
-    ctx.fillStyle=`rgb(${Math.floor(g*.35)},${g},${Math.floor(g*.35)})`;
-    ctx.fillRect(r*2,(H-wh)/2,2,wh);
-    // Floor shade
-    ctx.fillStyle=`rgba(0,${Math.floor(g*.4)},0,.15)`;
-    ctx.fillRect(r*2,H/2+wh/2,2,2);
-  }
-
-  // Sprites — sorted back to front
-  const sortedZ=[...G.zombies].sort((a,b)=>{
-    return((b.x-G.camX)**2+(b.y-G.camY)**2)-((a.x-G.camX)**2+(a.y-G.camY)**2);
-  });
-  for(const z of sortedZ){
-    const dx=z.x-G.camX, dy=z.y-G.camY;
-    const dist=Math.sqrt(dx*dx+dy*dy);
-    if(dist<.3)continue;
-    let ang=Math.atan2(dy,dx)-G.camYaw;
-    while(ang>Math.PI)ang-=Math.PI*2;
-    while(ang<-Math.PI)ang+=Math.PI*2;
-    if(Math.abs(ang)>FOV*.6)continue;
-    const sx=((ang/FOV)+.5)*W;
-    const sh=Math.min(H*1.3,H/dist);
-    const sw=sh*.55;
-    if(sx+sw/2<0||sx-sw/2>W)continue;
-    const tx=Math.floor(sx-sw/2);
-    const topY=(H-sh)/2;
-    const bob=Math.sin(z.phase)*3;
-    const sh2=Math.max(0,1-dist/12);
-    const bodyR=z.type==='tank'?180:30, bodyG=z.type==='runner'?200:150, bodyB=30;
-
-    for(let sx2=0;sx2<sw;sx2++){
-      const px=tx+sx2;
-      if(px<0||px>=W)continue;
-      const ri=Math.floor(px/2);
-      if(ri<0||ri>=RAYS||zBuf[ri]<dist)continue;
-      const t=sx2/sw;
-      // Body
-      ctx.fillStyle=`rgb(${Math.floor(bodyR*sh2)},${Math.floor(bodyG*sh2)},${Math.floor(bodyB*sh2)})`;
-      ctx.fillRect(px,topY+bob,1,sh*.65);
-      // Head
-      ctx.fillStyle=`rgb(${Math.floor(80*sh2)},${Math.floor(100*sh2)},${Math.floor(70*sh2)})`;
-      ctx.fillRect(px,topY-sh*.1+bob,1,sh*.22);
-    }
-    // HP bar
-    if(dist<7){
-      const bw=Math.max(6,sw);
-      ctx.fillStyle='#111'; ctx.fillRect(tx,topY-14+bob,bw,4);
-      ctx.fillStyle=z.hp/z.maxHp>.5?'#00ff41':z.hp/z.maxHp>.25?'#ff8800':'#ff2222';
-      ctx.fillRect(tx,topY-14+bob,bw*(z.hp/z.maxHp),4);
-    }
-  }
-
-  // Particles as 2D projected points
-  for(const p of G.particles){
-    const dx=p.x-G.camX, dy=p.y-G.camY;
-    const d=Math.sqrt(dx*dx+dy*dy);
-    if(d<.1)continue;
-    let a=Math.atan2(dy,dx)-G.camYaw;
-    while(a>Math.PI)a-=Math.PI*2;
-    while(a<-Math.PI)a+=Math.PI*2;
-    if(Math.abs(a)>FOV*.7)continue;
-    ctx.globalAlpha=Math.min(1,p.life*3);
-    ctx.fillStyle=p.color;
-    ctx.beginPath();
-    ctx.arc(((a/FOV)+.5)*W,H/2+(Math.random()-.5)*15,p.size/d,0,Math.PI*2);
-    ctx.fill();
-    ctx.globalAlpha=1;
-  }
-
-  // Weapon
-  drawGun(W,H);
-
-  // Damage overlay
-  if(G.flash>.01){
-    ctx.fillStyle=`rgba(220,0,0,${G.flash*.35})`;
-    ctx.fillRect(0,0,W,H);
-  }
-
-  // Hit marker X
-  if(G.hitMark>.01){
-    const cx=W/2, cy=H/2, s=11;
-    ctx.strokeStyle=`rgba(255,50,50,${G.hitMark*5})`;
-    ctx.lineWidth=2;
-    ctx.beginPath();
-    ctx.moveTo(cx-s,cy-s);ctx.lineTo(cx+s,cy+s);
-    ctx.moveTo(cx+s,cy-s);ctx.lineTo(cx-s,cy+s);
-    ctx.stroke();
-  }
-
-  ctx.restore();
-  drawMinimap();
-  drawPlayersHUD();
-}
-
-function drawGun(W,H){
-  const bob=Math.sin(Date.now()/200)*(G.keys['w']||G.keys['s']||G.keys['a']||G.keys['d']?4:1);
-  const recoil=Math.max(0,1-(Date.now()-G.lastShot)/180)*18;
-  const x=W*.65, y=H*.7+bob+recoil, s=H*.14;
-  ctx.save();
-  ctx.fillStyle=G.reloading?'#3a6a3a':'#1a4a1a';
-  ctx.beginPath();
-  ctx.roundRect(x-s*.1,y,s*1.5,s*.38,3);
-  ctx.fill();
-  ctx.fillStyle='#0a250a';
-  ctx.fillRect(x+s*1.38,y+s*.08,s*.5,s*.13);
-  ctx.fillStyle='#0d1e0d';
-  ctx.beginPath();
-  ctx.roundRect(x+s*.18,y+s*.33,s*.33,s*.48,2);
-  ctx.fill();
-  ctx.fillStyle='rgba(0,255,65,.15)';
-  ctx.fillRect(x,y,s*.75,2);
-  ctx.restore();
-}
-
-function drawMinimap(){
-  const S=G.MAP_W, mS=MM.width, sc=mS/S;
-  mctx.fillStyle='rgba(0,0,0,.88)'; mctx.fillRect(0,0,mS,mS);
-  for(let y=0;y<S;y++)for(let x=0;x<S;x++){
-    if(G.map[y]?.[x]===1){mctx.fillStyle='#1a4a1a';mctx.fillRect(x*sc,y*sc,sc,sc);}
-  }
-  mctx.fillStyle='#ff3333';
-  for(const z of G.zombies){mctx.beginPath();mctx.arc(z.x*sc,z.y*sc,1.5,0,Math.PI*2);mctx.fill();}
-  mctx.fillStyle='#00ff41';
-  mctx.beginPath();mctx.arc(G.camX*sc,G.camY*sc,3,0,Math.PI*2);mctx.fill();
-  mctx.strokeStyle='#00ff41';mctx.lineWidth=1;
-  mctx.beginPath();
-  mctx.moveTo(G.camX*sc,G.camY*sc);
-  mctx.lineTo((G.camX+Math.cos(G.camYaw)*3.5)*sc,(G.camY+Math.sin(G.camYaw)*3.5)*sc);
-  mctx.stroke();
-}
-
-function drawPlayersHUD(){
-  const el=document.getElementById('players-hud');
-  const rows=Object.values(G.players||{});
-  el.innerHTML='<div style="font-size:9px;letter-spacing:2px;color:#2a5a2a;margin-bottom:5px;">EQUIPO</div>'+
-    rows.map(p=>`<div style="display:flex;gap:8px;color:${p.username===G.username?'#00ff41':'#4a8a4a'};margin-bottom:2px;font-size:10px;">
-      <span>${esc(p.username||'?')}</span><span>${p.score||0}</span><span style="color:#ff6400">💀${p.kills||0}</span></div>`).join('');
-}
-
-// ══════════════════════════════════════════
-// INPUT
-// ══════════════════════════════════════════
-window.addEventListener('keydown',e=>{
-  if(!G.running)return;
-  const k=e.key.toLowerCase();
-  G.keys[k]=true;
-  if(k==='shift')G.running_spd=true;
-  if(k==='r')reload();
-  if(k===' ')e.preventDefault();
-  if(k==='escape'){stopGame();return;}
-  if(k==='1')setWeapon('pistol');
-  if(k==='2')setWeapon('shotgun');
-  if(k==='3')setWeapon('smg');
-  if(k==='4')setWeapon('rifle');
-  if(k==='5')setWeapon('minigun');
-});
-window.addEventListener('keyup',e=>{
-  const k=e.key.toLowerCase();
-  G.keys[k]=false;
-  if(k==='shift')G.running_spd=false;
-});
-window.addEventListener('mousemove',e=>{
-  if(!G.running||!document.pointerLockElement)return;
-  G.camYaw+=e.movementX*.002;
-});
-window.addEventListener('mousedown',e=>{
-  if(!G.running)return;
-  if(e.button!==0)return;
-  if(!document.pointerLockElement){lockPointer();return;}
-  shoot();
-  const w=WEAPONS[G.weapon];
-  if(w.auto){
-    clearInterval(G._autoFire);
-    G._autoFire=setInterval(shoot,60000/w.rpm);
-  }
-});
-window.addEventListener('mouseup',()=>{clearInterval(G._autoFire);});
-document.addEventListener('pointerlockchange',()=>{
-  const locked=!!document.pointerLockElement;
-  document.getElementById('lock-hint').style.display=locked?'none':'block';
-});
-window.lockPointer=()=>{document.getElementById('ctrl-hint').classList.remove('show');C.requestPointerLock();};
-
-function shoot(){
-  if(!G.running||G.reloading)return;
-  const w=WEAPONS[G.weapon]; const now=Date.now();
-  if(now-G.lastShot<60000/w.rpm)return;
-  if(G.ammo<=0){reload();return;}
-  G.lastShot=now; G.ammo--;
-  const pellets=w.pellets||1;
-  for(let i=0;i<pellets;i++){
-    const sp=(Math.random()-.5)*w.spread*2;
-    const a=G.camYaw+sp;
-    G.bullets.push({x:G.camX,y:G.camY,dx:Math.cos(a),dy:Math.sin(a),dmg:w.damage,life:.9});
-  }
-  G.shake=.08;
-  updateAmmoHUD();
-  if(G.ammo===0)reload();
-}
-
-function reload(){
-  if(G.reloading||G.reserve===0||G.ammo===WEAPONS[G.weapon].mag)return;
-  G.reloading=true; G.reloadTimer=2.0;
-  toast('Recargando...');
-}
-
-function setWeapon(wid){
-  if(!hasWeapon(wid)){toast('Arma no desbloqueada','err');return;}
-  if(G.weapon===wid)return;
-  G.weapon=wid;
-  const w=WEAPONS[wid];
-  G.ammo=w.mag; G.reserve=w.reserve; G.reloading=false;
-  updateAmmoHUD();
-}
-
-function hasWeapon(wid){
-  return wid==='pistol'||(G.userData.inventory||{})[wid];
-}
-
-function updateHPBar(){
-  const b=document.getElementById('hp-bars'); b.innerHTML='';
-  for(let i=0;i<10;i++){
-    const d=document.createElement('div');
-    const f=i/10<G.hp/G.maxHp;
-    d.style.cssText=`width:14px;height:12px;background:${f?(G.hp/G.maxHp<.3?'#ff3333':'#00ff41'):'#1a3a1a'};border:1px solid #1a4a1a;border-radius:1px;`;
-    b.appendChild(d);
-  }
-}
-
-function updateAmmoHUD(){
-  document.getElementById('ammo-display').textContent=`${G.ammo} / ${G.reserve}`;
-  document.getElementById('weapon-name').textContent=WEAPONS[G.weapon].name.toUpperCase();
-}
-
-// ══════════════════════════════════════════
-// DEATH / SAVE / SYNC
-// ══════════════════════════════════════════
-function die(){
-  G.running=false;
-  clearInterval(G._autoFire);
-  document.getElementById('game-over-screen').classList.add('show');
-  const t=Math.floor((Date.now()-G.startTime)/1000);
-  document.getElementById('go-stats').innerHTML=`
-    <div><div class="go-stat">${G.score.toLocaleString()}</div><div class="go-label">Puntos</div></div>
-    <div><div class="go-stat">${G.kills}</div><div class="go-label">Kills</div></div>
-    <div><div class="go-stat">${G.wave}</div><div class="go-label">Oleada</div></div>`;
-  saveResults();
-}
-
-async function saveResults(){
-  if(!G.userId)return;
-  const t=Math.floor((Date.now()-G.startTime)/1000);
-  const check=AC.validateFinalScore(G.kills,G.score,G.wave,t);
-  if(!check.ok){
-    toast('Resultados rechazados: '+check.reason,'err');
-    AC.flag(check.reason,{kills:G.kills,score:G.score,wave:G.wave,timeSec:t});
-    return;
-  }
-  const capScore=Math.min(G.score,99999);
-  const capKills=Math.min(G.kills,600);
-  await runTransaction(ref(db,`zc_users/${G.userId}`),cur=>{
-    if(!cur)return cur;
-    cur.totalKills=(cur.totalKills||0)+capKills;
-    cur.points=(cur.points||0)+capScore;
-    cur.gamesPlayed=(cur.gamesPlayed||0)+1;
-    cur.wave=Math.max(cur.wave||0,G.wave);
-    return cur;
-  });
-  await update(ref(db,`zc_ranking/${G.userId}`),{
-    username:G.username,
-    points:(G.userData.points||0)+capScore,
-    kills:(G.userData.totalKills||0)+capKills,
-    wave:Math.max(G.userData.wave||0,G.wave),
-  });
-  G.userData.points=(G.userData.points||0)+capScore;
-  G.userData.totalKills=(G.userData.totalKills||0)+capKills;
-  G.userData.wave=Math.max(G.userData.wave||0,G.wave);
-  toast(`✅ +${capScore} pts guardados`);
-}
-
-async function syncServer(){
-  if(!G.running||!G.roomId||!G.userId)return;
-  update(ref(db,`zc_rooms/${G.roomId}/players/${G.userId}`),{
-    score:G.score,kills:G.kills,hp:G.hp,alive:G.hp>0
-  });
-}
-
-function stopGame(){
-  G.running=false;
-  cancelAnimationFrame(RAF);
-  clearInterval(G.syncIv);
-  clearInterval(G._autoFire);
-  if(document.pointerLockElement)document.exitPointerLock();
-  document.getElementById('game-canvas').classList.remove('show');
-  document.getElementById('hud').style.display='none';
-  document.getElementById('crosshair').style.display='none';
-  document.getElementById('minimap').style.display='none';
-  document.getElementById('lock-hint').style.display='none';
-  document.getElementById('game-over-screen').classList.remove('show');
-  document.getElementById('ctrl-hint').classList.remove('show');
-  document.getElementById('lobby-overlay').classList.add('show');
-  leaveRoom();
-  get(ref(db,`zc_users/${G.userId}`)).then(s=>{G.userData=s.val()||{};loadLobby();});
-}
-
-window.restartGame=()=>{
-  document.getElementById('game-over-screen').classList.remove('show');
-  if(G.roomId)startGame(G.roomId);else goLobby();
+      current.lastEnergyRegen = now;
+      const isRare=['rare','epic','legendary'].includes(job.rarity);
+      const isEpicLeg=['epic','legendary'].includes(job.rarity);
+      const isLegendary=job.rarity==='legendary';
+      const acts=current.activity?[...Object.values(current.activity)]:[];
+      acts.push({text:`${job.icon} Completaste "${job.name}" +${reward} pts`,ts:now});
+      if(acts.length>20)acts.splice(0,acts.length-20);
+      return {
+        ...current,
+        points:(current.points||0)+reward,
+        totalEarned:(current.totalEarned||0)+reward,
+        jobsCompleted:(current.jobsCompleted||0)+1,
+        xp:newXP, level:newLevel,
+        lastEnergyRegen:now,
+        cooldowns:{...cooldowns,[jobId]:now},
+        activity:acts,
+        dailyJobs:(current.dailyJobs||0)+1,
+        dailyEarned:(current.dailyEarned||0)+reward,
+        dailyRare:isRare?(current.dailyRare||0)+1:(current.dailyRare||0),
+        weeklyJobs:(current.weeklyJobs||0)+1,
+        weeklyEarned:(current.weeklyEarned||0)+reward,
+        weeklyEpic:isEpicLeg?(current.weeklyEpic||0)+1:(current.weeklyEpic||0),
+        legendaryDone:isLegendary?(current.legendaryDone||0)+1:(current.legendaryDone||0),
+      };
+    });
+    if(!result.committed){toast('❌ Trabajo bloqueado (cooldown/energía).','error');return;}
+    CDS['cd_'+jobId]=Date.now(); saveCooldowns();
+    const newPts=result.snapshot.val().points||0;
+    const newLvl=result.snapshot.val().level||1;
+    const uname=UD.username||CU.email.split('@')[0];
+    await update(ref(db,`leaderboard/${uid}`),{username:uname,points:newPts,level:newLvl});
+    toast(`${job.icon} +${computeReward(job)} pts`,'success');
+    renderJobs();
+  } catch(err){console.error(err);toast('Error del servidor.','error');}
 };
-window.goLobby=()=>stopGame();
 
-window.addEventListener('resize',()=>{
-  C.width=G.screenW=window.innerWidth;
-  C.height=G.screenH=window.innerHeight;
-});
+// ════════════════════ DAILY ════════════════════
+window.claimDaily = async ()=>{
+  const uid=CU.uid, nowMs=Date.now();
+  if(nowMs-(UD.dailyLastClaim||0)<86400000){toast('Ya reclamaste el bonus hoy.','error');return;}
+  // Streak logic
+  const lastClaim=UD.dailyLastClaim||0;
+  const yesterday=Date.now()-86400000;
+  const streakContinued=lastClaim>yesterday-86400000&&lastClaim<yesterday+86400000;
+  const newStreak=streakContinued?(UD.streak||0)+1:1;
+  const maxStreak=Math.max(newStreak,UD.maxStreak||0);
+  // Bonus scales with streak
+  let bonus=150+Math.floor(Math.random()*100);
+  const useNextDaily=(UD.nextDailyDouble||false);
+  if(UD.perm_daily_2x||UD.inventory?.daily_bonus||useNextDaily) bonus*=2;
+  bonus+=Math.floor(newStreak*10); // +10 per streak day
+  const acts=UD.activity?[...Object.values(UD.activity)]:[];
+  acts.push({text:`🎁 Bonus diario: +${bonus} pts (Racha: ${newStreak}🔥)`,ts:nowMs});
+  if(acts.length>20)acts.splice(0,acts.length-20);
+  const newXP=(UD.xp||0)+50;
+  const newLevel=Math.floor(newXP/500)+1;
+  await update(ref(db,`usuarios/${uid}`),{
+    points:(UD.points||0)+bonus,totalEarned:(UD.totalEarned||0)+bonus,
+    dailyLastClaim:nowMs,streak:newStreak,maxStreak,
+    xp:newXP,level:newLevel,activity:acts,
+    nextDailyDouble:false,
+  });
+  const uname=UD.username||CU.email.split('@')[0];
+  await update(ref(db,`leaderboard/${uid}`),{username:uname,points:(UD.points||0)+bonus,level:newLevel});
+  toast(`🎁 +${bonus} pts! Racha: ${newStreak}🔥`,'success');
+};
 
-// ══════════════════════════════════════════
-// HUD EXTRAS
-// ══════════════════════════════════════════
-function showAnnounce(txt, color='#ff6400'){
-  const el=document.getElementById('wave-announce');
-  el.style.color=color; el.style.display='block';
-  el.innerHTML=txt.replace('\n','<br>');
-  setTimeout(()=>el.style.display='none',2800);
+// ════════════════════ SHOP ════════════════════
+window.openBuyModal=itemId=>{
+  const item=ITEMS.find(i=>i.id===itemId);
+  if(!item) return;
+  PENDING_BUY=itemId;
+  document.getElementById('m-name').textContent=item.name;
+  document.getElementById('m-desc').textContent=item.desc;
+  document.getElementById('m-icon').textContent=item.icon;
+  document.getElementById('m-price').textContent=item.price.toLocaleString();
+  const stackable=['cafe','energia_bar','vitamin','redbull','snack','coffee_pro','elixir','pocion_xp','turbo',
+    'dado_suerte','cerveza','energia_max','tiempo_libre','chip_focus','moneda_oro','amuleto','boost_daily',
+    'sprint_token','donut','suero_trabajo','ticket_loto','multi_boost'];
+  const owned=(UD.inventory||{})[itemId]||0;
+  document.getElementById('m-note').textContent=owned>0&&!stackable.includes(itemId)?`Ya tienes ${owned}. Comprar otro.`:'';
+  document.getElementById('buy-modal').classList.add('open');
+};
+
+window.confirmBuy=async()=>{
+  if(!PENDING_BUY||!CU) return;
+  const item=ITEMS.find(i=>i.id===PENDING_BUY);
+  if(!item||(UD.points||0)<item.price){toast('Puntos insuficientes.','error');return;}
+  const uid=CU.uid, inv=UD.inventory||{};
+  const qty=(inv[item.id]||0)+1;
+  const acts=UD.activity?[...Object.values(UD.activity)]:[];
+  acts.push({text:`🛍 Compraste "${item.name}" por ${item.price} pts`,ts:Date.now()});
+  if(acts.length>20)acts.splice(0,acts.length-20);
+  await update(ref(db,`usuarios/${uid}`),{
+    points:(UD.points||0)-item.price,itemsBought:(UD.itemsBought||0)+1,
+    [`inventory/${item.id}`]:qty,activity:acts,
+    dailyBought:(UD.dailyBought||0)+1,weeklyBought:(UD.weeklyBought||0)+1,
+  });
+  const uname=UD.username||CU.email.split('@')[0];
+  await update(ref(db,`leaderboard/${uid}`),{username:uname,points:(UD.points||0)-item.price});
+  closeModal('buy-modal');
+  toast(`${item.icon} Compraste ${item.name}!`,'success');
+};
+
+window.useInventoryItem = async itemId=>{
+  if(!CU) return;
+  const item=ITEMS.find(i=>i.id===itemId);
+  if(!item||!item.effect){toast('No se puede usar este artículo.','error');return;}
+  try{
+    const result=await runTransaction(ref(db,`usuarios/${CU.uid}`),current=>{
+      if(!current) return current;
+      const inv=current.inventory||{};
+      const qty=(inv[itemId]||0);
+      if(qty<=0) return;
+      const now=Date.now();
+      inv[itemId]=qty-1;
+      if(inv[itemId]===0) delete inv[itemId];
+      current.inventory=inv;
+
+      const restore=amount=>{
+        const energyState=getEnergyState(current, now);
+        current.energy=Math.min(energyState.max, energyState.energy + amount);
+        current.lastEnergyRegen=now;
+      };
+      const setBoost=(boost, jobs=1, jobId=null)=>{
+        current.nextRewardBoost=boost;
+        current.remainingBoostJobs=jobs;
+        if(jobId) current.nextRewardJob=jobId;
+      };
+
+      switch(item.effect){
+        case 'energy_restore_2': restore(2); break;
+        case 'energy_restore_5': restore(5); break;
+        case 'energy_restore_10': restore(10); break;
+        case 'energy_restore_max': current.energyBonusUntil=now+3600000; restore(getEnergyState(current,now).max); break;
+        case 'perm_energy_3': current.energyMax=(current.energyMax||20)+3; restore(3); break;
+        case 'free_energy_job': current.freeEnergyJobs=(current.freeEnergyJobs||0)+1; break;
+        case 'next_boost_5': setBoost(5,1); break;
+        case 'next_boost_30': setBoost(30,1); break;
+        case 'boost_x3_20': setBoost(20,3); break;
+        case 'daily_boost_50': current.nextDailyDouble=true; break;
+        case 'all_boost_30m': current.activeAllBoostUntil=now+1800000; break;
+        case 'common_boost_1h': current.tempCommonBoostUntil=now+3600000; current.tempCommonBoostReduction=10; break;
+        case 'cd_reduce_common': current.tempCdCommonUntil=now+3600000; current.tempCdCommonReduction=15; break;
+        case 'cd_reduce_all': current.tempCdAllUntil=now+3600000; current.tempCdAllReduction=30; break;
+        case 'turbo': current.cooldowns={}; break;
+        case 'moneda_oro': current.points=(current.points||0)+200; current.totalEarned=(current.totalEarned||0)+200; break;
+        case 'pocion_xp': current.xp=(current.xp||0)+100; current.level=Math.floor((current.xp||0)/500)+1; break;
+        case 'ticket_loto': if(Math.random()<0.1){ current.points=(current.points||0)+5000; current.totalEarned=(current.totalEarned||0)+5000; } break;
+        case 'dado_suerte': {
+          const roll=Math.random();
+          if(roll<0.5){ current.points=(current.points||0)+500; current.totalEarned=(current.totalEarned||0)+500; }
+          else if(roll<0.8){ current.points=(current.points||0)+150; current.totalEarned=(current.totalEarned||0)+150; }
+          else { current.energy=Math.max(0,(getCurrentEnergy(current,now)||0)-2); current.lastEnergyRegen=now; }
+        } break;
+        case 'suero_trabajo': setBoost(30,1); break;
+        default: break;
+      }
+      const acts=current.activity?[...Object.values(current.activity)]:[];
+      acts.push({text:`🧪 Usaste ${item.name}` ,ts:now});
+      if(acts.length>20)acts.splice(0,acts.length-20);
+      current.activity=acts;
+      return current;
+    });
+    if(!result.committed){toast('No se pudo usar el artículo.','error');return;}
+    toast(`Usaste ${item.name}!`,'success');
+    renderAll();
+  } catch(e){console.error(e);toast('Error al usar el artículo.','error');}
+};
+
+// ════════════════════ PRESTIGE ════════════════════
+window.doPrestige=async()=>{
+  if(!CU||!UD) return;
+  if((UD.level||1)<50){toast('Necesitas nivel 50 para hacer Prestigio.','error');return;}
+  if(!confirm('¿Seguro? Perderás puntos y nivel, pero ganarás bonificaciones permanentes.')) return;
+  const uid=CU.uid, pCount=(UD.prestigeCount||0)+1;
+  await update(ref(db,`usuarios/${uid}`),{
+    points:Math.floor((UD.points||0)*0.1),
+    xp:0,level:1,prestigeCount:pCount,
+    [`inventory/pts_boost5`]:pCount,
+  });
+  toast(`👑 ¡Prestigio ${pCount} alcanzado! +${pCount*5}% ganancias permanentes.`,'success');
+};
+
+// ════════════════════ TRANSFER ════════════════════
+window.doTransfer=async()=>{
+  if(!CU) return;
+  const email=document.getElementById('t-email').value.trim().toLowerCase();
+  const amount=parseInt(document.getElementById('t-amount').value)||0;
+  if(!email){toast('Introduce un email.','error');return;}
+  if(amount<50){toast('Mínimo 50 puntos por transferencia.','error');return;}
+  if(amount>9999999){toast('Cantidad demasiado alta.','error');return;}
+  if(email===CU.email.toLowerCase()){toast('No puedes transferirte a ti mismo.','error');return;}
+  if((UD.points||0)<Math.ceil(amount*1.05)){toast('Puntos insuficientes (incluye comisión 5%).','error');return;}
+  const lastTrans=parseInt(localStorage.getItem('sr_last_transfer')||'0');
+  if(Date.now()-lastTrans<30000){toast('Espera 30s entre transferencias.','error');return;}
+  const lbSnap=await get(ref(db,'leaderboard')); const lbData=lbSnap.val()||{};
+  const idxSnap=await get(ref(db,'email_index')); const idx=idxSnap.val()||{};
+  const encoded=btoa(email).replace(/=/g,'').replace(/\+/g,'_').replace(/\//g,'-');
+  const toUid=idx[encoded];
+  if(!toUid||toUid===CU.uid){toast('Usuario no encontrado.','error');return;}
+  const toEntry=lbData[toUid];
+  if(!toEntry){toast('El destinatario aún no aparece en el ranking.','error');return;}
+  const commission=Math.ceil(amount*0.05);
+  const total=amount+commission;
+  const nowMs=Date.now(), uname=UD.username||CU.email.split('@')[0];
+  const toName=toEntry.username||email;
+  const myActs=UD.activity?[...Object.values(UD.activity)]:[];
+  myActs.push({text:`💸 Enviaste ${amount} pts a ${toName} (comisión: ${commission} pts)`,ts:nowMs});
+  if(myActs.length>20)myActs.splice(0,myActs.length-20);
+  await update(ref(db,`usuarios/${CU.uid}`),{points:(UD.points||0)-total,activity:myActs});
+  await update(ref(db,`credits/${toUid}`),{[`${nowMs}`]:{from:uname,amount,ts:nowMs}});
+  await update(ref(db,`leaderboard/${CU.uid}`),{username:uname,points:(UD.points||0)-total});
+  localStorage.setItem('sr_last_transfer',String(nowMs));
+  document.getElementById('t-email').value=''; document.getElementById('t-amount').value='';
+  toast(`💸 Enviaste ${amount} pts a ${toName} (comisión: ${commission})`,'success');
+};
+
+async function applyPendingCredits(uid){
+  try{
+    const snap=await get(ref(db,`credits/${uid}`));
+    if(!snap.exists()) return;
+    const credits=snap.val()||{};
+    let total=0; const msgs=[];
+    Object.values(credits).forEach(c=>{total+=c.amount||0;msgs.push({text:`💰 Recibiste ${c.amount} pts de ${c.from}`,ts:c.ts});});
+    if(!total) return;
+    const acts=UD.activity?[...Object.values(UD.activity)]:[];
+    msgs.forEach(m=>acts.push(m));
+    if(acts.length>20)acts.splice(0,acts.length-20);
+    await update(ref(db,`usuarios/${uid}`),{points:(UD.points||0)+total,activity:acts});
+    await set(ref(db,`credits/${uid}`),null);
+    const uname=UD.username||CU.email.split('@')[0];
+    await update(ref(db,`leaderboard/${uid}`),{username:uname,points:(UD.points||0)+total});
+    toast(`💰 Recibiste ${total} pts!`,'success');
+  }catch(e){}
 }
 
-// ══════════════════════════════════════════
-// UTILS
-// ══════════════════════════════════════════
-function esc(s){return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
+// ════════════════════ TIMERS ════════════════════
+function startTimers(){
+  if(CD_INTERVAL) clearInterval(CD_INTERVAL);
+  CD_INTERVAL=setInterval(()=>{
+    const now=Date.now(), inv=UD.inventory||{};
+    const energyState=getEnergyState();
+    const currentEnergy=energyState.energy;
+    const freeCost=((UD.freeEnergyJobs||0)>0);
+    JOBS.forEach(job=>{
+      const last=(UD.cooldowns&&UD.cooldowns[job.id])||CDS['cd_'+job.id]||0;
+      let cdThis=job.cooldown;
+      if(inv.cd_boost || inv.perm_cd_10) cdThis=Math.floor(cdThis*0.9);
+      if((job.id==='repartidor'||job.id==='cajero'||job.id==='barista')&&inv.martillo) cdThis=Math.max(0,cdThis-30);
+      if((job.id==='consultor'||job.id==='ceo')&&inv.oficina) cdThis=Math.max(0,cdThis-60);
+      const elapsed=(now-last)/1000, ready=elapsed>=cdThis;
+      const btn=document.getElementById('btn-'+job.id);
+      const fill=document.getElementById('fill-'+job.id);
+      const bar=document.getElementById('bar-'+job.id);
+      if(!btn) return;
+      const isActive=UD.activeJob===job.id, otherActive=UD.activeJob&&UD.activeJob!==job.id;
+      if(isActive||otherActive) return;
+      const energyCost=freeCost?0:job.energy;
+      const energyLock=!freeCost && energyCost>currentEnergy;
+      const locked=(UD.level||1)<job.minLevel&&!inv.job_unlock;
+      if(locked) return;
+      if(ready && !energyLock){
+        if(btn.disabled&&!btn.classList.contains('working')){
+          btn.disabled=false; btn.textContent='TRABAJAR';
+          btn.classList.remove('working'); if(bar) bar.style.display='none';
+        }
+      } else if(ready && energyLock){
+        btn.disabled=true; btn.textContent='⚡ ENERGÍA';
+      } else {
+        const rem=Math.ceil(cdThis-elapsed);
+        btn.textContent='⏳ '+fmt(rem); btn.disabled=true;
+        if(fill) fill.style.width=Math.floor((elapsed/cdThis)*100)+'%';
+        if(bar)  bar.style.display='block';
+      }
+    });
+    // Update energy display
+    document.getElementById('topbar-energy').textContent=energyState.energy;
+    document.querySelector('.energy-pill .e-max').textContent='/' + energyState.max;
+  },1000);
+}
+
+function showLevelUp(lvl){
+  const ol=document.getElementById('levelup-overlay');
+  document.getElementById('levelup-num').textContent=lvl;
+  ol.classList.add('show');
+  setTimeout(()=>ol.classList.remove('show'),4000);
+}
+
+// ════════════════════ HELPERS ════════════════════
+function saveCooldowns(){localStorage.setItem('sr_cd2',JSON.stringify(CDS));}
+function loadCooldowns(){try{CDS=JSON.parse(localStorage.getItem('sr_cd2'))||{};}catch{CDS={};}}
+window.showSection=(id,tab)=>{
+  document.querySelectorAll('.section').forEach(s=>s.classList.remove('active'));
+  document.querySelectorAll('.nav-tab').forEach(t=>t.classList.remove('active'));
+  document.getElementById('section-'+id).classList.add('active');
+  if(tab) tab.classList.add('active');
+  if(id==='leaderboard') renderLeaderboard();
+};
+window.closeModal=id=>document.getElementById(id).classList.remove('open');
 window.toast=(msg,type='info')=>{
-  const el=document.createElement('div');
-  el.className='toast'+(type==='err'?' err':type==='warn'?' warn':'');
-  el.textContent=msg;
+  const icons={success:'✅',error:'❌',info:'ℹ️',warning:'⚠️'};
+  const el=document.createElement('div'); el.className='toast '+type;
+  el.innerHTML=`<span>${icons[type]}</span><span>${escapeHtml(msg)}</span>`;
   document.getElementById('toast-wrap').appendChild(el);
-  setTimeout(()=>el.remove(),3000);
+  setTimeout(()=>{el.classList.add('out');setTimeout(()=>el.remove(),300);},3500);
 };
+function fmt(s){if(s<60)return s+'s';const m=Math.floor(s/60),r=s%60;return m+'m'+(r?r+'s':'');}
+function timeAgo(ts){const d=(Date.now()-ts)/1000;if(d<60)return 'ahora';if(d<3600)return Math.floor(d/60)+'m';if(d<86400)return Math.floor(d/3600)+'h';return Math.floor(d/86400)+'d';}
+function escapeHtml(s){return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
 </script>
 </body>
 </html>
