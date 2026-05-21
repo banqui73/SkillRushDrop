@@ -3,532 +3,293 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>SkillRush — Trabaja. Sube. Domina.</title>
+<title>SkillRush v2 — Trabaja. Sube. Domina.</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500;600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:ital,wght@0,300;0,400;0,500;0,600;1,400&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
 <style>
-  :root {
-    --lime: #C8FF00;
-    --lime2: #A8E000;
-    --cyan: #00FFE0;
-    --red: #FF3B3B;
-    --orange: #FF7A00;
-    --dark: #080810;
-    --dark2: #0E0E18;
-    --dark3: #14141E;
-    --dark4: #1C1C28;
-    --card: #111118;
-    --border: rgba(255,255,255,0.06);
-    --border-accent: rgba(200,255,0,0.15);
-    --text: #E8E8F4;
-    --muted: #565670;
-    --success: #00FFB2;
-    --font-head: 'Syne', sans-serif;
-    --font-body: 'DM Sans', sans-serif;
-    --font-mono: 'DM Mono', monospace;
-  }
+:root {
+  --lime:#C8FF00; --lime2:#A8E000; --cyan:#00FFE0; --red:#FF3B3B; --orange:#FF7A00;
+  --purple:#A855F7; --pink:#EC4899; --gold:#FFD700; --teal:#00B4D8;
+  --dark:#080810; --dark2:#0E0E18; --dark3:#14141E; --dark4:#1C1C28;
+  --card:#111118; --card2:#0D0D16; --border:rgba(255,255,255,0.06);
+  --border-accent:rgba(200,255,0,0.15); --text:#E8E8F4; --muted:#565670;
+  --success:#00FFB2; --font-head:'Syne',sans-serif;
+  --font-body:'DM Sans',sans-serif; --font-mono:'DM Mono',monospace;
+}
+*{margin:0;padding:0;box-sizing:border-box;} html{scroll-behavior:smooth;}
+body{background:var(--dark);color:var(--text);font-family:var(--font-body);min-height:100vh;overflow-x:hidden;}
+body::after{content:'';position:fixed;inset:0;background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 512 512' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.025'/%3E%3C/svg%3E");pointer-events:none;z-index:9998;mix-blend-mode:overlay;}
+body::before{content:'';position:fixed;inset:0;background:radial-gradient(ellipse 600px 400px at 20% 10%,rgba(200,255,0,0.04) 0%,transparent 70%),radial-gradient(ellipse 500px 500px at 80% 80%,rgba(0,255,224,0.03) 0%,transparent 70%);pointer-events:none;z-index:0;}
+::-webkit-scrollbar{width:3px;} ::-webkit-scrollbar-track{background:var(--dark2);} ::-webkit-scrollbar-thumb{background:var(--lime);border-radius:2px;}
 
-  * { margin:0; padding:0; box-sizing:border-box; }
-  html { scroll-behavior: smooth; }
+/* ═══ AUTH ═══ */
+#auth-screen{position:fixed;inset:0;display:flex;align-items:center;justify-content:center;background:var(--dark);z-index:100;transition:opacity .5s,transform .5s;}
+#auth-screen.hidden{opacity:0;transform:scale(1.04);pointer-events:none;}
+.auth-grid{position:absolute;inset:0;overflow:hidden;background-image:linear-gradient(rgba(200,255,0,0.04) 1px,transparent 1px),linear-gradient(90deg,rgba(200,255,0,0.04) 1px,transparent 1px);background-size:60px 60px;mask-image:radial-gradient(ellipse 70% 70% at 50% 50%,black 40%,transparent 100%);}
+.auth-orb{position:absolute;border-radius:50%;filter:blur(100px);pointer-events:none;}
+.auth-orb1{width:600px;height:600px;background:rgba(200,255,0,0.12);top:-200px;right:-200px;animation:drift 12s ease-in-out infinite;}
+.auth-orb2{width:500px;height:500px;background:rgba(0,255,224,0.08);bottom:-150px;left:-150px;animation:drift 15s ease-in-out infinite reverse;}
+@keyframes drift{0%,100%{transform:translate(0,0)}50%{transform:translate(30px,-40px)}}
+.auth-box{position:relative;z-index:2;width:440px;max-width:92vw;background:rgba(14,14,24,0.9);backdrop-filter:blur(24px);border:1px solid var(--border);border-radius:24px;padding:52px 44px;box-shadow:0 0 0 1px rgba(200,255,0,0.06),0 40px 100px rgba(0,0,0,0.7);}
+.auth-wordmark{display:flex;align-items:baseline;gap:2px;justify-content:center;margin-bottom:6px;}
+.auth-wordmark span:first-child{font-family:var(--font-head);font-size:44px;font-weight:800;letter-spacing:-1px;color:var(--lime);}
+.auth-wordmark span:last-child{font-family:var(--font-head);font-size:44px;font-weight:800;letter-spacing:-1px;color:var(--text);}
+.auth-tagline{text-align:center;font-size:11px;letter-spacing:4px;color:var(--muted);text-transform:uppercase;margin-bottom:40px;font-family:var(--font-mono);}
+.auth-tabs{display:grid;grid-template-columns:1fr 1fr;background:var(--dark3);border-radius:12px;padding:4px;margin-bottom:28px;border:1px solid var(--border);}
+.auth-tab{padding:10px;text-align:center;font-family:var(--font-head);font-size:13px;font-weight:700;letter-spacing:1px;text-transform:uppercase;cursor:pointer;border-radius:9px;color:var(--muted);transition:all .2s;}
+.auth-tab.active{background:var(--lime);color:var(--dark);}
+.auth-form{display:flex;flex-direction:column;gap:12px;}
+.auth-form input{background:var(--dark3);border:1px solid var(--border);border-radius:12px;padding:14px 18px;color:var(--text);font-family:var(--font-body);font-size:14px;outline:none;transition:border-color .2s,box-shadow .2s;}
+.auth-form input:focus{border-color:var(--lime);box-shadow:0 0 0 3px rgba(200,255,0,0.1);}
+.auth-form input::placeholder{color:var(--muted);}
+.btn-primary{background:var(--lime);color:var(--dark);font-family:var(--font-head);font-size:14px;font-weight:800;letter-spacing:2px;text-transform:uppercase;border:none;border-radius:12px;padding:15px;cursor:pointer;transition:all .2s;box-shadow:0 0 24px rgba(200,255,0,0.25);}
+.btn-primary:hover{background:var(--lime2);transform:translateY(-2px);box-shadow:0 6px 32px rgba(200,255,0,0.4);}
+.btn-primary:active{transform:translateY(0);}
+.btn-primary:disabled{opacity:.5;cursor:not-allowed;transform:none;}
+#auth-error{font-size:12px;color:var(--red);text-align:center;min-height:18px;margin-top:8px;font-family:var(--font-mono);}
 
-  body {
-    background: var(--dark);
-    color: var(--text);
-    font-family: var(--font-body);
-    min-height: 100vh;
-    overflow-x: hidden;
-  }
+/* ═══ APP ═══ */
+#app{display:none;min-height:100vh;position:relative;z-index:1;}
+#app.visible{display:block;animation:fadeUp .4s ease;}
+@keyframes fadeUp{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:none}}
 
-  /* GRAIN */
-  body::after {
-    content:'';
-    position:fixed; inset:0;
-    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 512 512' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.03'/%3E%3C/svg%3E");
-    pointer-events:none; z-index:9998; mix-blend-mode: overlay;
-  }
+/* TOPBAR */
+.topbar{position:sticky;top:0;z-index:50;background:rgba(8,8,16,0.92);backdrop-filter:blur(20px);border-bottom:1px solid var(--border);padding:0 28px;height:60px;display:flex;align-items:center;justify-content:space-between;}
+.topbar-logo{font-family:var(--font-head);font-weight:800;font-size:22px;letter-spacing:-.5px;}
+.topbar-logo span{color:var(--lime);}
+.topbar-v2{font-family:var(--font-mono);font-size:9px;color:var(--muted);letter-spacing:2px;margin-left:6px;}
+.topbar-center{display:flex;align-items:center;gap:10px;}
+.pts-pill{display:flex;align-items:center;gap:8px;background:var(--dark3);border:1px solid var(--border-accent);border-radius:999px;padding:7px 16px;}
+.pts-pill .dot{width:7px;height:7px;border-radius:50%;background:var(--lime);box-shadow:0 0 8px rgba(200,255,0,0.8);flex-shrink:0;}
+.pts-pill .pts-num{font-family:var(--font-mono);font-size:15px;font-weight:500;color:var(--lime);}
+.pts-pill .pts-lbl{font-size:10px;color:var(--muted);letter-spacing:2px;text-transform:uppercase;}
+.energy-pill{display:flex;align-items:center;gap:6px;background:var(--dark3);border:1px solid rgba(255,122,0,0.2);border-radius:999px;padding:7px 14px;cursor:pointer;}
+.energy-pill .e-icon{font-size:14px;}
+.energy-pill .e-num{font-family:var(--font-mono);font-size:13px;color:var(--orange);}
+.energy-pill .e-max{font-family:var(--font-mono);font-size:10px;color:var(--muted);}
+.active-job-pill{display:none;align-items:center;gap:8px;background:rgba(255,122,0,0.1);border:1px solid rgba(255,122,0,0.3);border-radius:999px;padding:7px 16px;font-family:var(--font-mono);font-size:12px;color:var(--orange);}
+.active-job-pill.show{display:flex;}
+.active-job-pill .pulse{width:7px;height:7px;border-radius:50%;background:var(--orange);animation:pulseAnim 1s ease-in-out infinite;flex-shrink:0;}
+@keyframes pulseAnim{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.5;transform:scale(.8)}}
+.topbar-right{display:flex;align-items:center;gap:10px;}
+.topbar-user{font-family:var(--font-mono);font-size:11px;color:var(--muted);letter-spacing:1px;}
+.btn-logout{background:transparent;border:1px solid var(--border);color:var(--muted);font-family:var(--font-head);font-size:11px;letter-spacing:1px;text-transform:uppercase;padding:7px 14px;border-radius:8px;cursor:pointer;transition:all .2s;}
+.btn-logout:hover{border-color:rgba(255,59,59,.5);color:var(--red);}
 
-  /* AMBIENT GLOW */
-  body::before {
-    content:'';
-    position:fixed; inset:0;
-    background:
-      radial-gradient(ellipse 600px 400px at 20% 10%, rgba(200,255,0,0.04) 0%, transparent 70%),
-      radial-gradient(ellipse 500px 500px at 80% 80%, rgba(0,255,224,0.03) 0%, transparent 70%);
-    pointer-events:none; z-index:0;
-  }
+/* NAV */
+.nav-tabs{display:flex;gap:0;background:var(--dark2);border-bottom:1px solid var(--border);padding:0 28px;overflow-x:auto;}
+.nav-tabs::-webkit-scrollbar{height:0;}
+.nav-tab{font-family:var(--font-head);font-size:12px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--muted);padding:14px 18px;cursor:pointer;border-bottom:2px solid transparent;white-space:nowrap;transition:all .2s;position:relative;}
+.nav-tab:hover{color:var(--text);}
+.nav-tab.active{color:var(--lime);border-bottom-color:var(--lime);}
+.nav-badge{position:absolute;top:8px;right:6px;background:var(--red);color:#fff;font-size:8px;font-family:var(--font-mono);font-weight:500;padding:1px 5px;border-radius:999px;min-width:16px;text-align:center;}
 
-  ::-webkit-scrollbar { width:3px; }
-  ::-webkit-scrollbar-track { background:var(--dark2); }
-  ::-webkit-scrollbar-thumb { background:var(--lime); border-radius:2px; }
+/* SECTIONS */
+.section{display:none;padding:36px 28px;max-width:1180px;margin:0 auto;}
+.section.active{display:block;animation:fadeUp .3s ease;}
+.section-title{font-family:var(--font-head);font-size:40px;font-weight:800;letter-spacing:-1px;line-height:1;margin-bottom:4px;}
+.section-title .accent{color:var(--lime);}
+.section-sub{font-size:13px;color:var(--muted);margin-bottom:32px;}
 
-  /* ══════════════ AUTH ══════════════ */
-  #auth-screen {
-    position:fixed; inset:0;
-    display:flex; align-items:center; justify-content:center;
-    background:var(--dark); z-index:100;
-    transition: opacity .5s, transform .5s;
-  }
-  #auth-screen.hidden { opacity:0; transform:scale(1.04); pointer-events:none; }
+/* CARD */
+.card{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:24px;transition:border-color .2s,transform .2s,box-shadow .2s;}
+.card:hover{border-color:var(--border-accent);transform:translateY(-2px);box-shadow:0 8px 40px rgba(0,0,0,.5);}
+.grid-2{display:grid;grid-template-columns:repeat(auto-fill,minmax(290px,1fr));gap:14px;}
+.grid-3{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:12px;}
+.grid-4{display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:10px;}
 
-  .auth-grid {
-    position:absolute; inset:0; overflow:hidden;
-    background-image:
-      linear-gradient(rgba(200,255,0,0.04) 1px, transparent 1px),
-      linear-gradient(90deg, rgba(200,255,0,0.04) 1px, transparent 1px);
-    background-size: 60px 60px;
-    mask-image: radial-gradient(ellipse 70% 70% at 50% 50%, black 40%, transparent 100%);
-  }
+/* ═══ DASHBOARD ═══ */
+.dash-hero{background:linear-gradient(135deg,var(--dark3) 0%,#0E0E1A 100%);border:1px solid var(--border);border-radius:20px;padding:44px 40px;margin-bottom:24px;position:relative;overflow:hidden;}
+.dash-hero::before{content:'';position:absolute;top:-80px;right:-80px;width:400px;height:400px;border-radius:50%;background:radial-gradient(circle,rgba(200,255,0,0.08) 0%,transparent 70%);pointer-events:none;}
+.dash-hero::after{content:'SKILLRUSH';position:absolute;right:-10px;bottom:-30px;font-family:var(--font-head);font-size:120px;font-weight:800;color:rgba(255,255,255,0.025);letter-spacing:-3px;pointer-events:none;line-height:1;}
+.dash-hero h1{font-family:var(--font-head);font-size:52px;font-weight:800;letter-spacing:-2px;line-height:1;margin-bottom:8px;}
+.dash-hero h1 em{color:var(--lime);font-style:normal;}
+.dash-hero p{color:var(--muted);font-size:14px;max-width:380px;line-height:1.6;}
+.level-section{margin-top:24px;max-width:440px;}
+.level-row{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;}
+.level-tag{font-family:var(--font-mono);font-size:11px;letter-spacing:2px;color:var(--lime);background:rgba(200,255,0,0.1);border:1px solid rgba(200,255,0,0.2);border-radius:999px;padding:3px 10px;}
+.level-xp{font-family:var(--font-mono);font-size:11px;color:var(--muted);}
+.level-bar{height:4px;background:var(--dark4);border-radius:2px;overflow:hidden;}
+.level-bar-fill{height:100%;background:linear-gradient(90deg,var(--lime),var(--cyan));border-radius:2px;transition:width .8s cubic-bezier(.4,0,.2,1);box-shadow:0 0 8px rgba(200,255,0,0.4);}
 
-  .auth-orb {
-    position:absolute; border-radius:50%; filter:blur(100px); pointer-events:none;
-  }
-  .auth-orb1 { width:600px;height:600px;background:rgba(200,255,0,0.12);top:-200px;right:-200px;animation:drift 12s ease-in-out infinite; }
-  .auth-orb2 { width:500px;height:500px;background:rgba(0,255,224,0.08);bottom:-150px;left:-150px;animation:drift 15s ease-in-out infinite reverse; }
+.stats-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:12px;margin-bottom:24px;}
+.stat-card{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:20px;position:relative;overflow:hidden;}
+.stat-card::before{content:'';position:absolute;top:0;right:0;width:60px;height:60px;border-radius:0 14px 0 100%;background:rgba(200,255,0,0.04);}
+.stat-icon{font-size:22px;margin-bottom:10px;}
+.stat-value{font-family:var(--font-head);font-size:28px;font-weight:800;color:var(--lime);letter-spacing:-1px;line-height:1;}
+.stat-label{font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:2px;margin-top:4px;font-family:var(--font-mono);}
 
-  @keyframes drift {
-    0%,100% { transform:translate(0,0); }
-    50% { transform:translate(30px,-40px); }
-  }
+/* DAILY */
+.daily-banner{background:linear-gradient(135deg,rgba(200,255,0,0.08),rgba(0,255,224,0.05));border:1px solid rgba(200,255,0,0.2);border-radius:16px;padding:20px 24px;margin-bottom:24px;display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap;}
+.daily-banner h3{font-family:var(--font-head);font-size:18px;font-weight:700;color:var(--lime);margin-bottom:2px;}
+.daily-banner p{font-size:12px;color:var(--muted);}
 
-  .auth-box {
-    position:relative; z-index:2;
-    width:440px; max-width:92vw;
-    background:rgba(14,14,24,0.9);
-    backdrop-filter:blur(24px);
-    border:1px solid var(--border);
-    border-radius:24px; padding:52px 44px;
-    box-shadow: 0 0 0 1px rgba(200,255,0,0.06), 0 40px 100px rgba(0,0,0,0.7);
-  }
+/* STREAK */
+.streak-banner{background:linear-gradient(135deg,rgba(255,122,0,0.1),rgba(255,59,59,0.05));border:1px solid rgba(255,122,0,0.25);border-radius:16px;padding:16px 24px;margin-bottom:24px;display:flex;align-items:center;gap:16px;flex-wrap:wrap;}
+.streak-days{font-family:var(--font-head);font-size:36px;font-weight:800;color:var(--orange);}
+.streak-info h4{font-family:var(--font-head);font-size:14px;font-weight:700;color:var(--orange);}
+.streak-info p{font-size:11px;color:var(--muted);}
 
-  .auth-wordmark {
-    display:flex; align-items:baseline; gap:2px; justify-content:center;
-    margin-bottom:6px;
-  }
-  .auth-wordmark span:first-child {
-    font-family:var(--font-head); font-size:44px; font-weight:800;
-    letter-spacing:-1px; color:var(--lime);
-  }
-  .auth-wordmark span:last-child {
-    font-family:var(--font-head); font-size:44px; font-weight:800;
-    letter-spacing:-1px; color:var(--text);
-  }
-  .auth-tagline {
-    text-align:center; font-size:11px; letter-spacing:4px;
-    color:var(--muted); text-transform:uppercase; margin-bottom:40px;
-    font-family:var(--font-mono);
-  }
+/* ACTIVITY */
+.activity-item{background:var(--dark3);border:1px solid var(--border);border-radius:10px;padding:12px 16px;display:flex;justify-content:space-between;align-items:center;font-size:13px;transition:border-color .2s;}
+.activity-item:hover{border-color:var(--border-accent);}
+.act-time{font-family:var(--font-mono);font-size:10px;color:var(--muted);white-space:nowrap;margin-left:12px;}
 
-  .auth-tabs {
-    display:grid; grid-template-columns:1fr 1fr;
-    background:var(--dark3); border-radius:12px; padding:4px; margin-bottom:28px;
-    border:1px solid var(--border);
-  }
-  .auth-tab {
-    padding:10px; text-align:center;
-    font-family:var(--font-head); font-size:13px; font-weight:700; letter-spacing:1px;
-    text-transform:uppercase; cursor:pointer; border-radius:9px; color:var(--muted);
-    transition:all .2s;
-  }
-  .auth-tab.active { background:var(--lime); color:var(--dark); }
+/* ═══ MISSIONS ═══ */
+.job-card{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:24px;position:relative;overflow:hidden;display:flex;flex-direction:column;transition:all .25s;}
+.job-card:hover:not(.locked-by-active){transform:translateY(-3px);box-shadow:0 12px 48px rgba(0,0,0,.5);}
+.job-card.locked-by-active{opacity:.45;pointer-events:none;}
+.job-stripe{position:absolute;top:0;left:0;right:0;height:3px;border-radius:16px 16px 0 0;}
+.job-stripe.common{background:var(--muted);}
+.job-stripe.rare{background:var(--cyan);box-shadow:0 0 12px rgba(0,255,224,.4);}
+.job-stripe.epic{background:linear-gradient(90deg,#A855F7,#EC4899);box-shadow:0 0 12px rgba(168,85,247,.4);}
+.job-stripe.legendary{background:linear-gradient(90deg,var(--lime),var(--orange));box-shadow:0 0 12px rgba(200,255,0,.4);}
+.job-rarity-badge{font-family:var(--font-mono);font-size:9px;letter-spacing:3px;text-transform:uppercase;margin-bottom:12px;padding:3px 8px;border-radius:4px;width:fit-content;}
+.job-rarity-badge.common{background:rgba(86,86,112,.15);color:var(--muted);}
+.job-rarity-badge.rare{background:rgba(0,255,224,.1);color:var(--cyan);}
+.job-rarity-badge.epic{background:rgba(168,85,247,.1);color:#A855F7;}
+.job-rarity-badge.legendary{background:rgba(200,255,0,.1);color:var(--lime);}
+.job-icon{font-size:34px;margin-bottom:10px;}
+.job-name{font-family:var(--font-head);font-size:22px;font-weight:700;letter-spacing:-.5px;margin-bottom:6px;}
+.job-desc{font-size:12px;color:var(--muted);line-height:1.6;flex:1;margin-bottom:16px;}
+.job-meta{display:flex;gap:12px;margin-bottom:14px;flex-wrap:wrap;}
+.job-reward{font-family:var(--font-mono);font-size:16px;color:var(--lime);}
+.job-cd{font-family:var(--font-mono);font-size:11px;color:var(--muted);align-self:flex-end;}
+.job-energy{font-family:var(--font-mono);font-size:11px;color:var(--orange);}
+.btn-work{width:100%;background:var(--lime);color:var(--dark);font-family:var(--font-head);font-size:13px;font-weight:800;letter-spacing:2px;text-transform:uppercase;border:none;border-radius:10px;padding:13px;cursor:pointer;transition:all .2s;margin-top:auto;}
+.btn-work:hover:not(:disabled){background:var(--lime2);transform:translateY(-1px);box-shadow:0 4px 20px rgba(200,255,0,.35);}
+.btn-work:disabled{background:var(--dark4);color:var(--muted);cursor:not-allowed;transform:none;box-shadow:none;border:1px solid var(--border);}
+.btn-work.working{background:rgba(255,122,0,.15);color:var(--orange);border:1px solid rgba(255,122,0,.3);cursor:not-allowed;}
+.cd-track{height:2px;background:var(--dark4);border-radius:1px;margin-top:10px;overflow:hidden;}
+.cd-fill{height:100%;background:linear-gradient(90deg,var(--lime),var(--cyan));border-radius:1px;transition:width .5s linear;}
+.job-level-req{font-family:var(--font-mono);font-size:9px;color:rgba(168,85,247,.8);background:rgba(168,85,247,.08);border:1px solid rgba(168,85,247,.2);border-radius:4px;padding:2px 8px;margin-bottom:8px;width:fit-content;}
+.job-locked{opacity:.35;pointer-events:none;}
 
-  .auth-form { display:flex; flex-direction:column; gap:12px; }
-  .auth-form input {
-    background:var(--dark3); border:1px solid var(--border);
-    border-radius:12px; padding:14px 18px;
-    color:var(--text); font-family:var(--font-body); font-size:14px;
-    outline:none; transition:border-color .2s, box-shadow .2s;
-  }
-  .auth-form input:focus { border-color:var(--lime); box-shadow:0 0 0 3px rgba(200,255,0,0.1); }
-  .auth-form input::placeholder { color:var(--muted); }
+/* ═══ OBJECTIVES ═══ */
+.obj-card{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:18px 20px;transition:all .2s;position:relative;overflow:hidden;}
+.obj-card.completed{border-color:rgba(0,255,178,.2);background:rgba(0,255,178,.03);}
+.obj-card.completed::after{content:'✓';position:absolute;right:16px;top:50%;transform:translateY(-50%);font-size:22px;color:var(--success);font-weight:700;}
+.obj-header{display:flex;align-items:flex-start;gap:12px;margin-bottom:12px;}
+.obj-icon{font-size:24px;flex-shrink:0;}
+.obj-title{font-family:var(--font-head);font-size:15px;font-weight:700;margin-bottom:2px;}
+.obj-desc{font-size:11px;color:var(--muted);line-height:1.5;}
+.obj-meta{display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;}
+.obj-reward{font-family:var(--font-mono);font-size:13px;color:var(--lime);}
+.obj-prog-text{font-family:var(--font-mono);font-size:10px;color:var(--muted);}
+.obj-bar{height:3px;background:var(--dark4);border-radius:2px;overflow:hidden;}
+.obj-bar-fill{height:100%;background:linear-gradient(90deg,var(--lime),var(--cyan));border-radius:2px;transition:width .5s ease;}
+.obj-category{font-family:var(--font-mono);font-size:9px;letter-spacing:2px;text-transform:uppercase;padding:2px 8px;border-radius:4px;width:fit-content;margin-bottom:10px;}
+.obj-category.daily{background:rgba(0,255,224,.08);color:var(--cyan);}
+.obj-category.weekly{background:rgba(168,85,247,.08);color:var(--purple);}
+.obj-category.achievement{background:rgba(200,255,0,.08);color:var(--lime);}
+.btn-claim-obj{font-family:var(--font-head);font-size:11px;font-weight:700;letter-spacing:1px;text-transform:uppercase;background:var(--success);color:#000;border:none;border-radius:8px;padding:7px 14px;cursor:pointer;transition:all .2s;margin-top:8px;}
+.btn-claim-obj:hover{transform:scale(1.04);}
 
-  .btn-primary {
-    background:var(--lime); color:var(--dark);
-    font-family:var(--font-head); font-size:14px; font-weight:800; letter-spacing:2px;
-    text-transform:uppercase; border:none; border-radius:12px; padding:15px;
-    cursor:pointer; transition:all .2s;
-    box-shadow: 0 0 24px rgba(200,255,0,0.25);
-  }
-  .btn-primary:hover { background:var(--lime2); transform:translateY(-2px); box-shadow:0 6px 32px rgba(200,255,0,0.4); }
-  .btn-primary:active { transform:translateY(0); }
-  .btn-primary:disabled { opacity:.5; cursor:not-allowed; transform:none; }
+/* ═══ SHOP ═══ */
+.shop-filters{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:20px;}
+.filter-btn{font-family:var(--font-mono);font-size:11px;letter-spacing:1px;text-transform:uppercase;background:var(--dark3);border:1px solid var(--border);color:var(--muted);padding:7px 14px;border-radius:999px;cursor:pointer;transition:all .2s;}
+.filter-btn:hover{border-color:var(--border-accent);color:var(--text);}
+.filter-btn.active{background:rgba(200,255,0,.1);border-color:rgba(200,255,0,.3);color:var(--lime);}
+.shop-card{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:18px;text-align:center;position:relative;overflow:hidden;transition:all .2s;display:flex;flex-direction:column;}
+.shop-card:hover{border-color:var(--border-accent);transform:translateY(-2px);box-shadow:0 8px 32px rgba(0,0,0,.5);}
+.shop-card.locked-item{opacity:.4;pointer-events:none;}
+.shop-item-icon{font-size:36px;display:block;margin-bottom:8px;}
+.shop-item-name{font-family:var(--font-head);font-size:15px;font-weight:700;margin-bottom:4px;}
+.shop-item-desc{font-size:10px;color:var(--muted);line-height:1.5;margin-bottom:10px;flex:1;}
+.shop-item-price{font-family:var(--font-mono);font-size:17px;color:var(--lime);margin-bottom:10px;}
+.shop-item-cat{font-family:var(--font-mono);font-size:8px;letter-spacing:2px;text-transform:uppercase;color:var(--muted);margin-bottom:8px;}
+.shop-item-req{font-family:var(--font-mono);font-size:8px;color:var(--purple);margin-bottom:6px;}
+.btn-buy{width:100%;background:var(--dark3);border:1px solid var(--border-accent);color:var(--lime);font-family:var(--font-head);font-size:11px;font-weight:700;letter-spacing:2px;text-transform:uppercase;border-radius:8px;padding:9px;cursor:pointer;transition:all .2s;margin-top:auto;}
+.btn-buy:hover:not(:disabled){background:var(--lime);color:var(--dark);box-shadow:0 4px 20px rgba(200,255,0,.3);}
+.btn-buy:disabled{opacity:.35;cursor:not-allowed;}
+.owned-badge{position:absolute;top:10px;right:10px;background:var(--success);color:#000;font-size:8px;font-family:var(--font-mono);font-weight:500;letter-spacing:1px;padding:2px 7px;border-radius:4px;}
+.rare-badge{position:absolute;top:10px;left:10px;font-size:8px;font-family:var(--font-mono);letter-spacing:1px;padding:2px 7px;border-radius:4px;}
+.rare-badge.epic{background:rgba(168,85,247,.15);color:#A855F7;border:1px solid rgba(168,85,247,.3);}
+.rare-badge.legendary{background:rgba(200,255,0,.1);color:var(--lime);border:1px solid rgba(200,255,0,.2);}
 
-  #auth-error {
-    font-size:12px; color:var(--red); text-align:center;
-    min-height:18px; margin-top:8px; font-family:var(--font-mono);
-  }
+/* ═══ LEADERBOARD ═══ */
+.lb-item{display:flex;align-items:center;gap:16px;background:var(--card);border:1px solid var(--border);border-radius:12px;padding:16px 20px;transition:all .2s;}
+.lb-item:hover{border-color:var(--border-accent);}
+.lb-item.is-me{border-color:rgba(200,255,0,.3);background:rgba(200,255,0,.03);}
+.lb-pos{font-family:var(--font-head);font-size:24px;font-weight:800;color:var(--muted);min-width:32px;text-align:right;}
+.lb-item:nth-child(1) .lb-pos{color:var(--lime);font-size:28px;}
+.lb-item:nth-child(2) .lb-pos{color:#C0C0C0;}
+.lb-item:nth-child(3) .lb-pos{color:#CD7F32;}
+.lb-medal{font-size:20px;width:24px;text-align:center;}
+.lb-name{flex:1;font-family:var(--font-head);font-size:16px;font-weight:700;}
+.lb-pts{font-family:var(--font-mono);font-size:16px;color:var(--lime);}
+.lb-level{font-family:var(--font-mono);font-size:11px;color:var(--muted);}
 
-  /* ══════════════ APP ══════════════ */
-  #app { display:none; min-height:100vh; position:relative; z-index:1; }
-  #app.visible { display:block; animation:fadeUp .4s ease; }
-  @keyframes fadeUp { from{opacity:0;transform:translateY(12px)} to{opacity:1;transform:none} }
+/* ═══ PROFILE ═══ */
+.profile-header{background:var(--dark3);border:1px solid var(--border);border-radius:20px;padding:36px;display:flex;gap:28px;align-items:flex-start;margin-bottom:24px;flex-wrap:wrap;position:relative;overflow:hidden;}
+.profile-header::before{content:'';position:absolute;top:0;right:0;width:200px;height:200px;border-radius:50%;background:radial-gradient(circle,rgba(200,255,0,.06) 0%,transparent 70%);}
+.avatar{width:80px;height:80px;border-radius:16px;background:linear-gradient(135deg,var(--lime),var(--cyan));display:flex;align-items:center;justify-content:center;font-family:var(--font-head);font-size:32px;font-weight:800;color:var(--dark);flex-shrink:0;}
+.profile-info h2{font-family:var(--font-head);font-size:32px;font-weight:800;letter-spacing:-.5px;}
+.profile-info .email{color:var(--muted);font-size:13px;font-family:var(--font-mono);margin-top:4px;}
+.rank-badge{display:inline-flex;align-items:center;gap:6px;margin-top:12px;background:rgba(200,255,0,.08);border:1px solid rgba(200,255,0,.2);border-radius:8px;padding:5px 14px;font-family:var(--font-mono);font-size:12px;color:var(--lime);letter-spacing:1px;}
+.achievements-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:10px;}
+.ach-item{background:var(--dark3);border:1px solid var(--border);border-radius:12px;padding:14px;display:flex;align-items:center;gap:12px;}
+.ach-item.unlocked{border-color:rgba(200,255,0,.15);}
+.ach-item.locked{opacity:.3;filter:grayscale(1);}
+.ach-icon{font-size:24px;}
+.ach-name{font-family:var(--font-head);font-size:13px;font-weight:700;margin-bottom:2px;}
+.ach-desc{font-size:10px;color:var(--muted);}
+.inv-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(90px,1fr));gap:8px;}
+.inv-item{background:var(--dark3);border:1px solid var(--border);border-radius:12px;padding:12px 8px;text-align:center;transition:all .2s;}
+.inv-item:hover{border-color:var(--border-accent);}
+.inv-item-icon{font-size:26px;display:block;margin-bottom:4px;}
+.inv-item-qty{font-family:var(--font-head);font-size:16px;color:var(--lime);line-height:1;}
+.inv-item-name{font-size:8px;color:var(--muted);font-family:var(--font-mono);letter-spacing:1px;margin-top:2px;}
 
-  /* TOPBAR */
-  .topbar {
-    position:sticky; top:0; z-index:50;
-    background:rgba(8,8,16,0.92);
-    backdrop-filter:blur(20px);
-    border-bottom:1px solid var(--border);
-    padding:0 28px; height:60px;
-    display:flex; align-items:center; justify-content:space-between;
-  }
-  .topbar-logo {
-    font-family:var(--font-head); font-weight:800; font-size:22px; letter-spacing:-0.5px;
-  }
-  .topbar-logo span { color:var(--lime); }
+/* TRANSFER */
+.transfer-card{max-width:480px;background:var(--card);border:1px solid var(--border);border-radius:16px;padding:32px;}
+.field-label{font-family:var(--font-mono);font-size:10px;color:var(--muted);letter-spacing:2px;text-transform:uppercase;margin-bottom:8px;display:block;}
+.field-input{width:100%;background:var(--dark3);border:1px solid var(--border);border-radius:10px;padding:13px 16px;color:var(--text);font-family:var(--font-body);font-size:14px;outline:none;margin-bottom:16px;transition:border-color .2s,box-shadow .2s;}
+.field-input:focus{border-color:var(--lime);box-shadow:0 0 0 3px rgba(200,255,0,.1);}
+.field-input::placeholder{color:var(--muted);}
 
-  .topbar-center { display:flex; align-items:center; gap:16px; }
+/* TOAST */
+#toast-wrap{position:fixed;bottom:24px;right:24px;display:flex;flex-direction:column;gap:8px;z-index:9999;}
+.toast{background:var(--dark3);border:1px solid var(--border);border-radius:12px;padding:13px 18px;font-family:var(--font-mono);font-size:13px;display:flex;align-items:center;gap:10px;min-width:260px;max-width:360px;box-shadow:0 8px 32px rgba(0,0,0,.5);animation:toastIn .3s ease;transition:opacity .3s,transform .3s;}
+.toast.out{opacity:0;transform:translateX(20px);}
+.toast.success{border-color:rgba(0,255,178,.25);}
+.toast.error{border-color:rgba(255,59,59,.25);}
+.toast.info{border-color:rgba(0,255,224,.2);}
+.toast.warning{border-color:rgba(255,122,0,.25);}
+@keyframes toastIn{from{opacity:0;transform:translateX(20px)}to{opacity:1;transform:none}}
 
-  .pts-pill {
-    display:flex; align-items:center; gap:8px;
-    background:var(--dark3); border:1px solid var(--border-accent);
-    border-radius:999px; padding:7px 16px;
-  }
-  .pts-pill .dot { width:7px;height:7px;border-radius:50%;background:var(--lime);box-shadow:0 0 8px rgba(200,255,0,0.8);flex-shrink:0; }
-  .pts-pill .pts-num { font-family:var(--font-mono); font-size:15px; font-weight:500; color:var(--lime); }
-  .pts-pill .pts-lbl { font-size:10px; color:var(--muted); letter-spacing:2px; text-transform:uppercase; }
+/* MODAL */
+.overlay{position:fixed;inset:0;background:rgba(0,0,0,.75);backdrop-filter:blur(6px);z-index:200;display:none;align-items:center;justify-content:center;}
+.overlay.open{display:flex;animation:fadeUp .2s ease;}
+.modal-box{background:var(--dark2);border:1px solid var(--border);border-radius:20px;padding:36px;width:420px;max-width:90vw;position:relative;}
+.modal-box h3{font-family:var(--font-head);font-size:26px;font-weight:700;margin-bottom:6px;}
+.modal-box p{color:var(--muted);font-size:13px;line-height:1.6;margin-bottom:20px;}
+.modal-close{position:absolute;top:14px;right:14px;background:var(--dark3);border:1px solid var(--border);color:var(--muted);width:30px;height:30px;border-radius:8px;cursor:pointer;font-size:14px;display:flex;align-items:center;justify-content:center;transition:all .2s;}
+.modal-close:hover{color:var(--text);border-color:var(--border-accent);}
 
-  /* ACTIVE JOB INDICATOR */
-  .active-job-pill {
-    display:none; align-items:center; gap:8px;
-    background:rgba(255,122,0,0.1); border:1px solid rgba(255,122,0,0.3);
-    border-radius:999px; padding:7px 16px; font-family:var(--font-mono); font-size:12px; color:var(--orange);
-  }
-  .active-job-pill.show { display:flex; }
-  .active-job-pill .pulse { width:7px;height:7px;border-radius:50%;background:var(--orange);animation:pulseAnim 1s ease-in-out infinite;flex-shrink:0; }
-  @keyframes pulseAnim { 0%,100%{opacity:1;transform:scale(1)} 50%{opacity:.5;transform:scale(.8)} }
+.ac-notice{background:rgba(255,59,59,.05);border:1px solid rgba(255,59,59,.15);border-radius:10px;padding:10px 14px;margin-top:16px;font-family:var(--font-mono);font-size:10px;color:rgba(255,59,59,.7);letter-spacing:.5px;}
+.info-box{background:rgba(0,255,224,.04);border:1px solid rgba(0,255,224,.12);border-radius:10px;padding:10px 14px;font-family:var(--font-mono);font-size:11px;color:rgba(0,255,224,.7);letter-spacing:.5px;}
 
-  .topbar-right { display:flex; align-items:center; gap:10px; }
-  .topbar-user { font-family:var(--font-mono); font-size:11px; color:var(--muted); letter-spacing:1px; }
-  .btn-logout {
-    background:transparent; border:1px solid var(--border); color:var(--muted);
-    font-family:var(--font-head); font-size:11px; letter-spacing:1px; text-transform:uppercase;
-    padding:7px 14px; border-radius:8px; cursor:pointer; transition:all .2s;
-  }
-  .btn-logout:hover { border-color:rgba(255,59,59,.5); color:var(--red); }
+/* LEVEL UP ANIMATION */
+.levelup-overlay{position:fixed;inset:0;background:rgba(0,0,0,.8);z-index:9997;display:none;align-items:center;justify-content:center;flex-direction:column;gap:12px;}
+.levelup-overlay.show{display:flex;animation:fadeUp .3s ease;}
+.levelup-num{font-family:var(--font-head);font-size:120px;font-weight:800;color:var(--lime);letter-spacing:-6px;animation:levelPop .5s cubic-bezier(.4,0,.2,1);}
+@keyframes levelPop{0%{transform:scale(0.5);opacity:0}60%{transform:scale(1.1)}100%{transform:scale(1);opacity:1}}
+.levelup-text{font-family:var(--font-head);font-size:22px;font-weight:700;color:var(--text);letter-spacing:4px;text-transform:uppercase;}
 
-  /* NAV */
-  .nav-tabs {
-    display:flex; gap:0;
-    background:var(--dark2); border-bottom:1px solid var(--border);
-    padding:0 28px; overflow-x:auto;
-  }
-  .nav-tabs::-webkit-scrollbar { height:0; }
-  .nav-tab {
-    font-family:var(--font-head); font-size:12px; font-weight:700; letter-spacing:2px;
-    text-transform:uppercase; color:var(--muted);
-    padding:14px 18px; cursor:pointer; border-bottom:2px solid transparent;
-    white-space:nowrap; transition:all .2s;
-  }
-  .nav-tab:hover { color:var(--text); }
-  .nav-tab.active { color:var(--lime); border-bottom-color:var(--lime); }
+/* PRESTIGE */
+.prestige-section{background:linear-gradient(135deg,rgba(255,215,0,.06),rgba(255,122,0,.04));border:1px solid rgba(255,215,0,.2);border-radius:16px;padding:24px;margin-bottom:24px;}
+.prestige-section h3{font-family:var(--font-head);font-size:20px;font-weight:700;color:var(--gold);}
 
-  /* SECTIONS */
-  .section { display:none; padding:36px 28px; max-width:1100px; margin:0 auto; }
-  .section.active { display:block; animation:fadeUp .3s ease; }
-
-  .section-title {
-    font-family:var(--font-head); font-size:40px; font-weight:800;
-    letter-spacing:-1px; line-height:1; margin-bottom:4px;
-  }
-  .section-title .accent { color:var(--lime); }
-  .section-sub { font-size:13px; color:var(--muted); margin-bottom:32px; }
-
-  /* CARD */
-  .card {
-    background:var(--card); border:1px solid var(--border);
-    border-radius:16px; padding:24px;
-    transition:border-color .2s, transform .2s, box-shadow .2s;
-  }
-  .card:hover { border-color:var(--border-accent); transform:translateY(-2px); box-shadow:0 8px 40px rgba(0,0,0,.5); }
-
-  .grid-2 { display:grid; grid-template-columns:repeat(auto-fill,minmax(290px,1fr)); gap:14px; }
-  .grid-3 { display:grid; grid-template-columns:repeat(auto-fill,minmax(220px,1fr)); gap:14px; }
-
-  /* ════════ DASHBOARD ════════ */
-  .dash-hero {
-    background:linear-gradient(135deg, var(--dark3) 0%, #0E0E1A 100%);
-    border:1px solid var(--border); border-radius:20px;
-    padding:44px 40px; margin-bottom:24px; position:relative; overflow:hidden;
-  }
-  .dash-hero::before {
-    content:''; position:absolute; top:-80px; right:-80px;
-    width:400px; height:400px; border-radius:50%;
-    background:radial-gradient(circle, rgba(200,255,0,0.08) 0%, transparent 70%);
-    pointer-events:none;
-  }
-  .dash-hero::after {
-    content:'SKILLRUSH'; position:absolute; right:-10px; bottom:-30px;
-    font-family:var(--font-head); font-size:120px; font-weight:800;
-    color:rgba(255,255,255,0.025); letter-spacing:-3px; pointer-events:none;
-    line-height:1;
-  }
-  .dash-hero h1 {
-    font-family:var(--font-head); font-size:52px; font-weight:800;
-    letter-spacing:-2px; line-height:1; margin-bottom:8px;
-  }
-  .dash-hero h1 em { color:var(--lime); font-style:normal; }
-  .dash-hero p { color:var(--muted); font-size:14px; max-width:380px; line-height:1.6; }
-
-  .level-section { margin-top:24px; max-width:440px; }
-  .level-row { display:flex; justify-content:space-between; align-items:center; margin-bottom:8px; }
-  .level-tag {
-    font-family:var(--font-mono); font-size:11px; letter-spacing:2px;
-    color:var(--lime); background:rgba(200,255,0,0.1);
-    border:1px solid rgba(200,255,0,0.2); border-radius:999px; padding:3px 10px;
-  }
-  .level-xp { font-family:var(--font-mono); font-size:11px; color:var(--muted); }
-  .level-bar { height:4px; background:var(--dark4); border-radius:2px; overflow:hidden; }
-  .level-bar-fill {
-    height:100%; background:linear-gradient(90deg, var(--lime), var(--cyan));
-    border-radius:2px; transition:width .8s cubic-bezier(.4,0,.2,1);
-    box-shadow:0 0 8px rgba(200,255,0,0.4);
-  }
-
-  .stats-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(170px,1fr)); gap:12px; margin-bottom:24px; }
-  .stat-card {
-    background:var(--card); border:1px solid var(--border); border-radius:14px;
-    padding:20px; position:relative; overflow:hidden;
-  }
-  .stat-card::before {
-    content:''; position:absolute; top:0; right:0;
-    width:60px; height:60px; border-radius:0 14px 0 100%;
-    background:rgba(200,255,0,0.04);
-  }
-  .stat-icon { font-size:22px; margin-bottom:10px; }
-  .stat-value {
-    font-family:var(--font-head); font-size:32px; font-weight:800;
-    color:var(--lime); letter-spacing:-1px; line-height:1;
-  }
-  .stat-label { font-size:11px; color:var(--muted); text-transform:uppercase; letter-spacing:2px; margin-top:4px; font-family:var(--font-mono); }
-
-  /* DAILY */
-  .daily-banner {
-    background:linear-gradient(135deg, rgba(200,255,0,0.08), rgba(0,255,224,0.05));
-    border:1px solid rgba(200,255,0,0.2); border-radius:16px;
-    padding:20px 24px; margin-bottom:24px;
-    display:flex; align-items:center; justify-content:space-between; gap:16px; flex-wrap:wrap;
-  }
-  .daily-banner h3 { font-family:var(--font-head); font-size:18px; font-weight:700; color:var(--lime); margin-bottom:2px; }
-  .daily-banner p { font-size:12px; color:var(--muted); }
-
-  /* ACTIVITY */
-  .activity-item {
-    background:var(--dark3); border:1px solid var(--border); border-radius:10px;
-    padding:12px 16px; display:flex; justify-content:space-between; align-items:center;
-    font-size:13px; transition:border-color .2s;
-  }
-  .activity-item:hover { border-color:var(--border-accent); }
-  .act-time { font-family:var(--font-mono); font-size:10px; color:var(--muted); white-space:nowrap; margin-left:12px; }
-
-  /* ════════ MISSIONS ════════ */
-  .job-card {
-    background:var(--card); border:1px solid var(--border);
-    border-radius:16px; padding:24px; position:relative; overflow:hidden;
-    display:flex; flex-direction:column; transition:all .25s;
-  }
-  .job-card:hover:not(.locked-by-active) { transform:translateY(-3px); box-shadow:0 12px 48px rgba(0,0,0,.5); }
-  .job-card.locked-by-active { opacity:.5; pointer-events:none; }
-
-  .job-stripe {
-    position:absolute; top:0; left:0; right:0; height:3px;
-    border-radius:16px 16px 0 0;
-  }
-  .job-stripe.common { background:var(--muted); }
-  .job-stripe.rare { background:var(--cyan); box-shadow:0 0 12px rgba(0,255,224,.4); }
-  .job-stripe.epic { background:linear-gradient(90deg,#A855F7,#EC4899); box-shadow:0 0 12px rgba(168,85,247,.4); }
-  .job-stripe.legendary { background:linear-gradient(90deg,var(--lime),var(--orange)); box-shadow:0 0 12px rgba(200,255,0,.4); }
-
-  .job-rarity-badge {
-    font-family:var(--font-mono); font-size:9px; letter-spacing:3px; text-transform:uppercase;
-    margin-bottom:12px; padding:3px 8px; border-radius:4px; width:fit-content;
-  }
-  .job-rarity-badge.common { background:rgba(86,86,112,.15); color:var(--muted); }
-  .job-rarity-badge.rare { background:rgba(0,255,224,.1); color:var(--cyan); }
-  .job-rarity-badge.epic { background:rgba(168,85,247,.1); color:#A855F7; }
-  .job-rarity-badge.legendary { background:rgba(200,255,0,.1); color:var(--lime); }
-
-  .job-icon { font-size:34px; margin-bottom:10px; }
-  .job-name { font-family:var(--font-head); font-size:22px; font-weight:700; letter-spacing:-.5px; margin-bottom:6px; }
-  .job-desc { font-size:12px; color:var(--muted); line-height:1.6; flex:1; margin-bottom:16px; }
-  .job-meta { display:flex; gap:12px; margin-bottom:14px; }
-  .job-reward { font-family:var(--font-mono); font-size:16px; color:var(--lime); }
-  .job-cd { font-family:var(--font-mono); font-size:11px; color:var(--muted); align-self:flex-end; }
-
-  .btn-work {
-    width:100%; background:var(--lime); color:var(--dark);
-    font-family:var(--font-head); font-size:13px; font-weight:800; letter-spacing:2px;
-    text-transform:uppercase; border:none; border-radius:10px; padding:13px;
-    cursor:pointer; transition:all .2s; margin-top:auto;
-  }
-  .btn-work:hover:not(:disabled) { background:var(--lime2); transform:translateY(-1px); box-shadow:0 4px 20px rgba(200,255,0,.35); }
-  .btn-work:disabled {
-    background:var(--dark4); color:var(--muted); cursor:not-allowed;
-    transform:none; box-shadow:none; border:1px solid var(--border);
-  }
-  .btn-work.working {
-    background:rgba(255,122,0,.15); color:var(--orange); border:1px solid rgba(255,122,0,.3); cursor:not-allowed;
-  }
-
-  .cd-track { height:2px; background:var(--dark4); border-radius:1px; margin-top:10px; overflow:hidden; }
-  .cd-fill { height:100%; background:linear-gradient(90deg,var(--lime),var(--cyan)); border-radius:1px; transition:width .5s linear; }
-
-  /* ════════ SHOP ════════ */
-  .shop-card {
-    background:var(--card); border:1px solid var(--border);
-    border-radius:16px; padding:24px; text-align:center;
-    position:relative; overflow:hidden; transition:all .2s;
-    display:flex; flex-direction:column;
-  }
-  .shop-card:hover { border-color:var(--border-accent); transform:translateY(-2px); box-shadow:0 8px 32px rgba(0,0,0,.5); }
-  .shop-item-icon { font-size:44px; display:block; margin-bottom:12px; }
-  .shop-item-name { font-family:var(--font-head); font-size:20px; font-weight:700; margin-bottom:6px; }
-  .shop-item-desc { font-size:11px; color:var(--muted); line-height:1.6; margin-bottom:16px; flex:1; }
-  .shop-item-price { font-family:var(--font-mono); font-size:20px; color:var(--lime); margin-bottom:14px; }
-
-  .btn-buy {
-    width:100%; background:var(--dark3); border:1px solid var(--border-accent);
-    color:var(--lime); font-family:var(--font-head); font-size:12px; font-weight:700;
-    letter-spacing:2px; text-transform:uppercase; border-radius:10px; padding:11px;
-    cursor:pointer; transition:all .2s; margin-top:auto;
-  }
-  .btn-buy:hover:not(:disabled) { background:var(--lime); color:var(--dark); box-shadow:0 4px 20px rgba(200,255,0,.3); }
-  .btn-buy:disabled { opacity:.35; cursor:not-allowed; }
-
-  .owned-badge {
-    position:absolute; top:12px; right:12px;
-    background:var(--success); color:#000; font-size:9px;
-    font-family:var(--font-mono); font-weight:500; letter-spacing:1px;
-    padding:3px 8px; border-radius:4px;
-  }
-
-  /* ════════ LEADERBOARD ════════ */
-  .lb-item {
-    display:flex; align-items:center; gap:16px;
-    background:var(--card); border:1px solid var(--border);
-    border-radius:12px; padding:16px 20px; transition:all .2s;
-  }
-  .lb-item:hover { border-color:var(--border-accent); }
-  .lb-item.is-me { border-color:rgba(200,255,0,.3); background:rgba(200,255,0,.03); }
-  .lb-pos {
-    font-family:var(--font-head); font-size:24px; font-weight:800; color:var(--muted);
-    min-width:32px; text-align:right;
-  }
-  .lb-item:nth-child(1) .lb-pos { color:var(--lime); font-size:28px; }
-  .lb-item:nth-child(2) .lb-pos { color:#C0C0C0; }
-  .lb-item:nth-child(3) .lb-pos { color:#CD7F32; }
-  .lb-medal { font-size:20px; width:24px; text-align:center; }
-  .lb-name { flex:1; font-family:var(--font-head); font-size:16px; font-weight:700; }
-  .lb-pts { font-family:var(--font-mono); font-size:16px; color:var(--lime); }
-
-  /* ════════ PROFILE ════════ */
-  .profile-header {
-    background:var(--dark3); border:1px solid var(--border); border-radius:20px;
-    padding:36px; display:flex; gap:28px; align-items:flex-start;
-    margin-bottom:24px; flex-wrap:wrap; position:relative; overflow:hidden;
-  }
-  .profile-header::before {
-    content:''; position:absolute; top:0; right:0;
-    width:200px; height:200px; border-radius:50%;
-    background:radial-gradient(circle, rgba(200,255,0,.06) 0%, transparent 70%);
-  }
-  .avatar {
-    width:80px; height:80px; border-radius:16px;
-    background:linear-gradient(135deg, var(--lime), var(--cyan));
-    display:flex; align-items:center; justify-content:center;
-    font-family:var(--font-head); font-size:32px; font-weight:800; color:var(--dark);
-    flex-shrink:0;
-  }
-  .profile-info h2 { font-family:var(--font-head); font-size:32px; font-weight:800; letter-spacing:-.5px; }
-  .profile-info .email { color:var(--muted); font-size:13px; font-family:var(--font-mono); margin-top:4px; }
-  .rank-badge {
-    display:inline-flex; align-items:center; gap:6px; margin-top:12px;
-    background:rgba(200,255,0,.08); border:1px solid rgba(200,255,0,.2);
-    border-radius:8px; padding:5px 14px;
-    font-family:var(--font-mono); font-size:12px; color:var(--lime); letter-spacing:1px;
-  }
-
-  .inv-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(96px,1fr)); gap:10px; }
-  .inv-item {
-    background:var(--dark3); border:1px solid var(--border);
-    border-radius:12px; padding:14px 10px; text-align:center; transition:all .2s;
-  }
-  .inv-item:hover { border-color:var(--border-accent); }
-  .inv-item-icon { font-size:28px; display:block; margin-bottom:4px; }
-  .inv-item-qty { font-family:var(--font-head); font-size:18px; color:var(--lime); line-height:1; }
-  .inv-item-name { font-size:9px; color:var(--muted); font-family:var(--font-mono); letter-spacing:1px; margin-top:2px; }
-
-  /* ════════ TRANSFER ════════ */
-  .transfer-card {
-    max-width:480px; background:var(--card); border:1px solid var(--border);
-    border-radius:16px; padding:32px;
-  }
-  .field-label { font-family:var(--font-mono); font-size:10px; color:var(--muted); letter-spacing:2px; text-transform:uppercase; margin-bottom:8px; display:block; }
-  .field-input {
-    width:100%; background:var(--dark3); border:1px solid var(--border);
-    border-radius:10px; padding:13px 16px; color:var(--text);
-    font-family:var(--font-body); font-size:14px; outline:none; margin-bottom:16px;
-    transition:border-color .2s, box-shadow .2s;
-  }
-  .field-input:focus { border-color:var(--lime); box-shadow:0 0 0 3px rgba(200,255,0,.1); }
-  .field-input::placeholder { color:var(--muted); }
-
-  /* ════════ TOAST ════════ */
-  #toast-wrap {
-    position:fixed; bottom:24px; right:24px;
-    display:flex; flex-direction:column; gap:8px; z-index:9999;
-  }
-  .toast {
-    background:var(--dark3); border:1px solid var(--border);
-    border-radius:12px; padding:13px 18px;
-    font-family:var(--font-mono); font-size:13px;
-    display:flex; align-items:center; gap:10px; min-width:260px;
-    box-shadow:0 8px 32px rgba(0,0,0,.5);
-    animation:toastIn .3s ease;
-    transition:opacity .3s, transform .3s;
-  }
-  .toast.out { opacity:0; transform:translateX(20px); }
-  .toast.success { border-color:rgba(0,255,178,.25); }
-  .toast.error { border-color:rgba(255,59,59,.25); }
-  .toast.info { border-color:rgba(0,255,224,.2); }
-  @keyframes toastIn { from{opacity:0;transform:translateX(20px)} to{opacity:1;transform:none} }
-
-  /* MODAL */
-  .overlay {
-    position:fixed; inset:0; background:rgba(0,0,0,.75);
-    backdrop-filter:blur(6px); z-index:200;
-    display:none; align-items:center; justify-content:center;
-  }
-  .overlay.open { display:flex; animation:fadeUp .2s ease; }
-  .modal-box {
-    background:var(--dark2); border:1px solid var(--border);
-    border-radius:20px; padding:36px; width:400px; max-width:90vw; position:relative;
-  }
-  .modal-box h3 { font-family:var(--font-head); font-size:26px; font-weight:700; margin-bottom:6px; }
-  .modal-box p { color:var(--muted); font-size:13px; line-height:1.6; margin-bottom:20px; }
-  .modal-close {
-    position:absolute; top:14px; right:14px;
-    background:var(--dark3); border:1px solid var(--border); color:var(--muted);
-    width:30px; height:30px; border-radius:8px; cursor:pointer; font-size:14px;
-    display:flex; align-items:center; justify-content:center; transition:all .2s;
-  }
-  .modal-close:hover { color:var(--text); border-color:var(--border-accent); }
-
-  /* ANTICHEAT notice */
-  .ac-notice {
-    background:rgba(255,59,59,.05); border:1px solid rgba(255,59,59,.15);
-    border-radius:10px; padding:10px 14px; margin-top:16px;
-    font-family:var(--font-mono); font-size:10px; color:rgba(255,59,59,.7); letter-spacing:.5px;
-  }
-
-  @media(max-width:600px) {
-    .auth-box { padding:32px 24px; }
-    .section { padding:20px 16px; }
-    .topbar { padding:0 16px; }
-    .dash-hero { padding:28px 24px; }
-    .dash-hero h1 { font-size:36px; }
-    .profile-header { padding:24px; }
-    .topbar-center { display:none; }
-  }
+@media(max-width:600px){
+  .auth-box{padding:32px 24px;}
+  .section{padding:20px 16px;}
+  .topbar{padding:0 16px;}
+  .dash-hero{padding:28px 24px;}
+  .dash-hero h1{font-size:36px;}
+  .profile-header{padding:24px;}
+  .topbar-center{gap:6px;}
+}
 </style>
 </head>
 <body>
@@ -540,7 +301,7 @@
   <div class="auth-orb auth-orb2"></div>
   <div class="auth-box">
     <div class="auth-wordmark"><span>Skill</span><span>Rush</span></div>
-    <div class="auth-tagline">Trabaja · Sube · Domina</div>
+    <div class="auth-tagline">Trabaja · Sube · Domina · v2</div>
     <div class="auth-tabs">
       <div class="auth-tab active" onclick="switchAuth('login')">Entrar</div>
       <div class="auth-tab" onclick="switchAuth('register')">Registro</div>
@@ -555,15 +316,29 @@
   </div>
 </div>
 
+<!-- LEVEL UP OVERLAY -->
+<div class="levelup-overlay" id="levelup-overlay" onclick="this.classList.remove('show')">
+  <div class="levelup-text">¡NIVEL ALCANZADO!</div>
+  <div class="levelup-num" id="levelup-num">10</div>
+  <div style="font-family:var(--font-mono);font-size:13px;color:var(--muted)">Toca para continuar</div>
+</div>
+
 <!-- APP -->
 <div id="app">
   <div class="topbar">
-    <div class="topbar-logo"><span>Skill</span>Rush</div>
+    <div style="display:flex;align-items:center;">
+      <div class="topbar-logo"><span>Skill</span>Rush <span class="topbar-v2">v2</span></div>
+    </div>
     <div class="topbar-center">
       <div class="pts-pill">
         <div class="dot"></div>
         <span class="pts-num" id="topbar-pts">0</span>
         <span class="pts-lbl">pts</span>
+      </div>
+      <div class="energy-pill" title="Energía — se recarga 1 cada 5 minutos">
+        <span class="e-icon">⚡</span>
+        <span class="e-num" id="topbar-energy">10</span>
+        <span class="e-max">/20</span>
       </div>
       <div class="active-job-pill" id="active-job-pill">
         <div class="pulse"></div>
@@ -579,6 +354,7 @@
   <div class="nav-tabs">
     <div class="nav-tab active" data-sec="dashboard" onclick="showSection('dashboard',this)">🏠 Inicio</div>
     <div class="nav-tab" data-sec="missions" onclick="showSection('missions',this)">⚡ Misiones</div>
+    <div class="nav-tab" data-sec="objectives" onclick="showSection('objectives',this)">🎯 Objetivos <span class="nav-badge" id="obj-badge" style="display:none">!</span></div>
     <div class="nav-tab" data-sec="shop" onclick="showSection('shop',this)">🛍 Tienda</div>
     <div class="nav-tab" data-sec="leaderboard" onclick="showSection('leaderboard',this)">🏆 Ranking</div>
     <div class="nav-tab" data-sec="profile" onclick="showSection('profile',this)">👤 Perfil</div>
@@ -589,7 +365,7 @@
   <div class="section active" id="section-dashboard">
     <div class="dash-hero">
       <h1>HOLA,<br><em id="hero-name">JUGADOR</em></h1>
-      <p>Completa misiones, sube en el ranking y domina SkillRush.</p>
+      <p>Completa misiones, logra objetivos y domina SkillRush. La economía es dura — solo los constantes llegan arriba.</p>
       <div class="level-section">
         <div class="level-row">
           <span class="level-tag" id="level-tag">NIVEL 1</span>
@@ -599,10 +375,18 @@
       </div>
     </div>
 
+    <div id="streak-section" style="display:none" class="streak-banner">
+      <div class="streak-days" id="streak-days">0</div>
+      <div class="streak-info">
+        <h4>🔥 RACHA ACTIVA</h4>
+        <p id="streak-sub">días consecutivos de login</p>
+      </div>
+    </div>
+
     <div class="daily-banner" id="daily-banner">
       <div>
         <h3>🎁 BONUS DIARIO</h3>
-        <p>Recoge tu recompensa diaria — disponible cada 24 horas</p>
+        <p id="daily-sub">Recoge tu recompensa diaria — recompensa escalada con tu racha</p>
       </div>
       <button class="btn-primary" style="padding:12px 28px;flex-shrink:0" onclick="claimDaily()">RECLAMAR</button>
     </div>
@@ -612,7 +396,12 @@
       <div class="stat-card"><div class="stat-icon">⚡</div><div class="stat-value" id="st-jobs">0</div><div class="stat-label">Trabajos</div></div>
       <div class="stat-card"><div class="stat-icon">🛒</div><div class="stat-value" id="st-items">0</div><div class="stat-label">Compras</div></div>
       <div class="stat-card"><div class="stat-icon">🏅</div><div class="stat-value" id="st-rank">#—</div><div class="stat-label">Ranking</div></div>
+      <div class="stat-card"><div class="stat-icon">🎯</div><div class="stat-value" id="st-objs">0</div><div class="stat-label">Objetivos</div></div>
+      <div class="stat-card"><div class="stat-icon">🔥</div><div class="stat-value" id="st-streak">0</div><div class="stat-label">Racha</div></div>
     </div>
+
+    <div style="font-family:var(--font-head);font-size:16px;font-weight:700;letter-spacing:1px;color:var(--muted);text-transform:uppercase;margin-bottom:14px">Objetivos activos</div>
+    <div id="dash-objectives" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:10px;margin-bottom:24px"></div>
 
     <div style="font-family:var(--font-head);font-size:16px;font-weight:700;letter-spacing:1px;color:var(--muted);text-transform:uppercase;margin-bottom:14px">Actividad reciente</div>
     <div id="activity-log" style="display:flex;flex-direction:column;gap:8px"></div>
@@ -621,21 +410,43 @@
   <!-- MISSIONS -->
   <div class="section" id="section-missions">
     <div class="section-title">MISIONES <span class="accent">⚡</span></div>
-    <div class="section-sub">Completa un trabajo a la vez. Cada uno tiene su cooldown propio.</div>
-    <div class="ac-notice" style="margin-bottom:20px;max-width:600px">🛡 ANTICHEAT ACTIVO — Todas las acciones se verifican en el servidor. Las manipulaciones son detectadas y revertidas.</div>
+    <div class="section-sub">Cada trabajo consume energía ⚡. Se recarga 1 por cada 5 minutos. Misiones de nivel alto requieren nivel mínimo.</div>
+    <div class="ac-notice" style="margin-bottom:20px;max-width:600px">🛡 ANTICHEAT ACTIVO — Todas las acciones se verifican en el servidor. Cooldowns y energía se comprueban en transacción.</div>
     <div class="grid-2" id="jobs-grid"></div>
+  </div>
+
+  <!-- OBJECTIVES -->
+  <div class="section" id="section-objectives">
+    <div class="section-title">OBJETIVOS <span class="accent">🎯</span></div>
+    <div class="section-sub">Completa objetivos para ganar recompensas extra y XP. Se renuevan diariamente y semanalmente.</div>
+    <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:20px" id="obj-filter-bar">
+      <button class="filter-btn active" onclick="filterObj('all',this)">Todos</button>
+      <button class="filter-btn" onclick="filterObj('daily',this)">Diarios</button>
+      <button class="filter-btn" onclick="filterObj('weekly',this)">Semanales</button>
+      <button class="filter-btn" onclick="filterObj('achievement',this)">Logros</button>
+    </div>
+    <div id="objectives-grid" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:12px"></div>
   </div>
 
   <!-- SHOP -->
   <div class="section" id="section-shop">
     <div class="section-title">TIENDA <span class="accent">🛍</span></div>
-    <div class="section-sub">Invierte tus puntos en artículos que potencian tus ganancias.</div>
+    <div class="section-sub">115 artículos disponibles. Algunos requieren nivel o prestaciones previas. Invierte sabiamente.</div>
+    <div class="shop-filters" id="shop-filter-bar">
+      <button class="filter-btn active" onclick="filterShop('all',this)">Todos</button>
+      <button class="filter-btn" onclick="filterShop('consumable',this)">⚗ Consumibles</button>
+      <button class="filter-btn" onclick="filterShop('tool',this)">🔧 Herramientas</button>
+      <button class="filter-btn" onclick="filterShop('boost',this)">🚀 Boosts</button>
+      <button class="filter-btn" onclick="filterShop('prestige',this)">💎 Prestigio</button>
+      <button class="filter-btn" onclick="filterShop('utility',this)">🛡 Utilidad</button>
+      <button class="filter-btn" onclick="filterShop('cosmetic',this)">🎨 Cosméticos</button>
+    </div>
     <div class="grid-3" id="shop-grid"></div>
   </div>
 
   <!-- LEADERBOARD -->
   <div class="section" id="section-leaderboard">
-    <div class="section-title">TOP 10 <span class="accent">🏆</span></div>
+    <div class="section-title">TOP 20 <span class="accent">🏆</span></div>
     <div class="section-sub">Los jugadores más ricos del servidor.</div>
     <div id="lb-list" style="display:flex;flex-direction:column;gap:8px"></div>
   </div>
@@ -658,21 +469,32 @@
         </div>
       </div>
     </div>
-    <div style="font-family:var(--font-head);font-size:16px;font-weight:700;letter-spacing:1px;color:var(--muted);text-transform:uppercase;margin-bottom:14px">Inventario</div>
+
+    <div id="prestige-section" style="display:none" class="prestige-section">
+      <h3>👑 SECCIÓN PRESTIGIO</h3>
+      <p style="color:var(--muted);font-size:12px;margin-top:6px">Has alcanzado el nivel 50. Puedes hacer Prestigio para reiniciar con bonificaciones permanentes.</p>
+      <button class="btn-primary" style="margin-top:14px;max-width:260px" onclick="doPrestige()">HACER PRESTIGIO ×</button>
+    </div>
+
+    <div style="font-family:var(--font-head);font-size:16px;font-weight:700;letter-spacing:1px;color:var(--muted);text-transform:uppercase;margin-bottom:14px;margin-top:8px">Inventario (<span id="inv-count">0</span> tipos)</div>
     <div class="inv-grid" id="inv-grid"></div>
+
+    <div style="font-family:var(--font-head);font-size:16px;font-weight:700;letter-spacing:1px;color:var(--muted);text-transform:uppercase;margin:24px 0 14px">Logros</div>
+    <div class="achievements-grid" id="achievements-grid"></div>
   </div>
 
   <!-- TRANSFER -->
   <div class="section" id="section-transfer">
     <div class="section-title">TRANSFERIR <span class="accent">💸</span></div>
-    <div class="section-sub">Envía puntos a otro jugador del servidor.</div>
+    <div class="section-sub">Envía puntos a otro jugador. Comisión del 5% en cada transferencia.</div>
     <div class="transfer-card">
+      <div class="info-box" style="margin-bottom:20px">💡 Comisión del 5% aplicada automáticamente. Mínimo 50 pts por transferencia. Máximo 3 transferencias por hora.</div>
       <label class="field-label">Email del destinatario</label>
       <input class="field-input" type="email" id="t-email" placeholder="jugador@correo.com">
       <label class="field-label">Cantidad de puntos</label>
-      <input class="field-input" type="number" id="t-amount" placeholder="100" min="1" max="9999999">
+      <input class="field-input" type="number" id="t-amount" placeholder="100" min="50" max="9999999">
       <button class="btn-primary" onclick="doTransfer()">ENVIAR PUNTOS →</button>
-      <div class="ac-notice">Los puntos transferidos se descuentan inmediatamente y no pueden recuperarse.</div>
+      <div class="ac-notice">Los puntos transferidos (+ comisión) se descuentan inmediatamente y no pueden recuperarse.</div>
     </div>
   </div>
 </div>
@@ -690,20 +512,20 @@
       <span style="font-family:var(--font-head);font-size:36px;font-weight:800;color:var(--lime)" id="m-price"></span>
       <span style="color:var(--muted);font-size:13px">puntos</span>
     </div>
+    <div id="m-note" style="font-family:var(--font-mono);font-size:11px;color:var(--muted);margin-bottom:16px"></div>
     <button class="btn-primary" onclick="confirmBuy()">CONFIRMAR COMPRA</button>
   </div>
 </div>
 
 <script type="module">
-import { initializeApp }           from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
 import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword,
          onAuthStateChanged, signOut, setPersistence, browserLocalPersistence }
-                                    from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
-import { getDatabase, ref, set, get, update, onValue, query,
-         orderByChild, limitToLast, serverTimestamp, runTransaction }
-                                    from "https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js";
+  from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+import { getDatabase, ref, set, get, update, onValue,
+         serverTimestamp, runTransaction }
+  from "https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js";
 
-// ─── CONFIG ───────────────────────────────────────────────────────────────────
 const FB = {
   apiKey:"AIzaSyC2xQewrid8QiWfFy_RVdG3mHt05QYIdPA",
   authDomain:"champdrop-b74e4.firebaseapp.com",
@@ -713,102 +535,261 @@ const FB = {
   messagingSenderId:"25739034626",
   appId:"1:25739034626:web:ae0a15d05f6775da58271b"
 };
-
-const fireApp  = initializeApp(FB);
-const auth     = getAuth(fireApp);
-const db       = getDatabase(fireApp);
+const fireApp = initializeApp(FB);
+const auth = getAuth(fireApp);
+const db = getDatabase(fireApp);
 setPersistence(auth, browserLocalPersistence);
 
-// ─── STATIC DATA ──────────────────────────────────────────────────────────────
+// ════════════════════ JOBS ════════════════════
 const JOBS = [
-  {id:'mensajero', icon:'🚲', name:'Mensajero',    desc:'Reparte paquetes por la ciudad a toda velocidad.',              reward:50,   cooldown:60,   rarity:'common'},
-  {id:'barista',   icon:'☕', name:'Barista',       desc:'Prepara el café perfecto para decenas de clientes exigentes.', reward:80,   cooldown:120,  rarity:'common'},
-  {id:'hacker',    icon:'💻', name:'Freelance Dev', desc:'Desarrolla una web de urgencia para un cliente en pánico.',    reward:180,  cooldown:300,  rarity:'rare'},
-  {id:'streamer',  icon:'🎮', name:'Streamer',      desc:'Haz directo 1 hora y consigue donaciones virtuales masivas.',  reward:220,  cooldown:360,  rarity:'rare'},
-  {id:'trader',    icon:'📈', name:'Day Trader',    desc:'Aprovecha las oscilaciones del mercado. Alto riesgo.',        reward:400,  cooldown:600,  rarity:'epic'},
-  {id:'artista',   icon:'🎨', name:'Artista NFT',   desc:'Crea una colección viral. Millones en juego.',                reward:350,  cooldown:480,  rarity:'epic'},
-  {id:'ceo',       icon:'🏢', name:'CEO',           desc:'Dirige una startup multimillonaria durante un día entero.',   reward:800,  cooldown:1200, rarity:'legendary'},
-  {id:'astronauta',icon:'🚀', name:'Astronauta',    desc:'Misión espacial de alto riesgo. El universo no espera.',      reward:1200, cooldown:1800, rarity:'legendary'},
+  {id:'repartidor',  icon:'🚲', name:'Repartidor',      desc:'Reparte pedidos por la ciudad. El trabajo más básico.',      reward:35,  cooldown:90,   energy:1, rarity:'common',    minLevel:1},
+  {id:'cajero',      icon:'🏪', name:'Cajero',          desc:'Atiende la caja registradora durante horas.',               reward:45,  cooldown:120,  energy:1, rarity:'common',    minLevel:1},
+  {id:'barista',     icon:'☕', name:'Barista',          desc:'Prepara cafés para clientes exigentes.',                    reward:60,  cooldown:150,  energy:1, rarity:'common',    minLevel:1},
+  {id:'limpiador',   icon:'🧹', name:'Limpiador',       desc:'Mantén los edificios limpios. Sin glamour pero paga.',      reward:40,  cooldown:100,  energy:1, rarity:'common',    minLevel:1},
+  {id:'conductor',   icon:'🚗', name:'Conductor',       desc:'Lleva pasajeros por la ciudad. Propinas ocasionales.',      reward:70,  cooldown:180,  energy:2, rarity:'common',    minLevel:2},
+  {id:'cocinero',    icon:'👨‍🍳', name:'Cocinero',        desc:'Prepara platos en un restaurante concurrido.',             reward:90,  cooldown:200,  energy:2, rarity:'common',    minLevel:3},
+  {id:'tutor',       icon:'📚', name:'Tutor',           desc:'Da clases particulares de matemáticas.',                   reward:110, cooldown:240,  energy:2, rarity:'rare',      minLevel:4},
+  {id:'fotografo',   icon:'📷', name:'Fotógrafo',       desc:'Fotografía eventos sociales y bodas.',                     reward:130, cooldown:300,  energy:2, rarity:'rare',      minLevel:5},
+  {id:'dev',         icon:'💻', name:'Freelance Dev',   desc:'Desarrolla una web para un cliente en pánico.',            reward:160, cooldown:360,  energy:3, rarity:'rare',      minLevel:6},
+  {id:'diseñador',   icon:'🎨', name:'Diseñador',       desc:'Crea identidad visual para una startup.',                  reward:140, cooldown:320,  energy:2, rarity:'rare',      minLevel:6},
+  {id:'streamer',    icon:'🎮', name:'Streamer',        desc:'Haz directo y acumula donaciones virtuales.',              reward:200, cooldown:420,  energy:3, rarity:'rare',      minLevel:7},
+  {id:'consultor',   icon:'📊', name:'Consultor',       desc:'Asesora a una empresa sobre eficiencia operativa.',        reward:240, cooldown:480,  energy:3, rarity:'epic',      minLevel:8},
+  {id:'trader',      icon:'📈', name:'Day Trader',      desc:'Aprovecha las oscilaciones del mercado. Alto riesgo.',    reward:320, cooldown:600,  energy:4, rarity:'epic',      minLevel:10},
+  {id:'abogado',     icon:'⚖️', name:'Abogado',         desc:'Defiende un caso complicado en los tribunales.',          reward:350, cooldown:660,  energy:4, rarity:'epic',      minLevel:10},
+  {id:'medico',      icon:'🏥', name:'Médico',          desc:'Atiende pacientes en urgencias bajo presión.',            reward:400, cooldown:720,  energy:4, rarity:'epic',      minLevel:12},
+  {id:'nft',         icon:'🖼️', name:'Artista NFT',     desc:'Crea una colección viral. Millones en juego.',            reward:360, cooldown:600,  energy:3, rarity:'epic',      minLevel:11},
+  {id:'influencer',  icon:'📱', name:'Influencer',      desc:'Negocia un contrato de patrocinio lucrativo.',            reward:280, cooldown:540,  energy:3, rarity:'epic',      minLevel:9},
+  {id:'arquitecto',  icon:'🏗️', name:'Arquitecto',      desc:'Diseña el edificio del año en tiempo récord.',           reward:460, cooldown:900,  energy:4, rarity:'legendary', minLevel:15},
+  {id:'ceo',         icon:'🏢', name:'CEO',             desc:'Dirige una startup multimillonaria durante un día.',      reward:600, cooldown:1200, energy:5, rarity:'legendary', minLevel:20},
+  {id:'astronauta',  icon:'🚀', name:'Astronauta',      desc:'Misión espacial de alto riesgo. El universo no espera.', reward:900, cooldown:1800, energy:6, rarity:'legendary', minLevel:25},
+  {id:'cuantitativo',icon:'🧮', name:'Quant Trader',   desc:'Algoritmos de alta frecuencia. Dinero real.',            reward:750, cooldown:1500, energy:5, rarity:'legendary', minLevel:22},
+  {id:'director',    icon:'🎬', name:'Director',        desc:'Dirige un blockbuster en tiempo récord.',                reward:550, cooldown:1100, energy:5, rarity:'legendary', minLevel:18},
 ];
 
+// ════════════════════ 115 SHOP ITEMS ════════════════════
 const ITEMS = [
-  {id:'cafe',     icon:'☕', name:'Café Pro',      desc:'Reduce cooldown de trabajos comunes en 10 s.',         price:100,  effect:'cd_reduce'},
-  {id:'laptop',   icon:'💻', name:'Laptop Gamer',  desc:'+10% ganancias en trabajos tech (Dev & Streamer).',    price:500,  effect:'tech_boost'},
-  {id:'suit',     icon:'👔', name:'Traje de Lujo', desc:'+15% ganancias como CEO.',                            price:1000, effect:'ceo_boost'},
-  {id:'sports',   icon:'🏎️', name:'Coche Deportivo',desc:'Artículo de lujo — demuestra tu riqueza.',            price:2000, effect:'prestige'},
-  {id:'crown',    icon:'👑', name:'Corona Real',   desc:'Símbolo de poder absoluto.',                          price:5000, effect:'prestige'},
-  {id:'shield',   icon:'🛡️', name:'Escudo Anti-Robo',desc:'Protección visual de puntos en el perfil.',         price:750,  effect:'protection'},
-  {id:'xpboost',  icon:'⚡', name:'XP Boost ×2',   desc:'Dobla el XP ganado en las próximas 24 horas.',        price:300,  effect:'xp_boost'},
-  {id:'diamond',  icon:'💎', name:'Diamante',      desc:'El artículo más raro. Solo los mejores lo poseen.',   price:10000,effect:'prestige'},
+  // CONSUMABLES (25)
+  {id:'cafe',         icon:'☕', name:'Café Exprés',     cat:'consumable', desc:'Reduce cooldown de trabajos comunes en 15s.',              price:80,    effect:'cd_reduce_common',   reqLevel:1},
+  {id:'energia_bar',  icon:'🍫', name:'Barra Energía',  cat:'consumable', desc:'Recupera 2 puntos de energía al instante.',                price:120,   effect:'energy_restore_2',   reqLevel:1},
+  {id:'vitamin',      icon:'💊', name:'Vitaminas',      cat:'consumable', desc:'Recupera 5 puntos de energía al instante.',                price:280,   effect:'energy_restore_5',   reqLevel:3},
+  {id:'redbull',      icon:'🥤', name:'Red Bull Pro',   cat:'consumable', desc:'Recupera energía máxima (+20 por 1 hora).',               price:500,   effect:'energy_restore_max', reqLevel:5},
+  {id:'snack',        icon:'🍕', name:'Snack Rápido',   cat:'consumable', desc:'+5% recompensa en el próximo trabajo.',                   price:60,    effect:'next_boost_5',       reqLevel:1},
+  {id:'coffee_pro',   icon:'☕', name:'Café Pro',        cat:'consumable', desc:'Reduce cooldown de todos los trabajos en 30s.',           price:200,   effect:'cd_reduce_all',      reqLevel:4},
+  {id:'elixir',       icon:'🧪', name:'Elíxir Raro',    cat:'consumable', desc:'+20% recompensa en los próximos 3 trabajos.',             price:450,   effect:'boost_x3_20',        reqLevel:8},
+  {id:'pocion_xp',    icon:'🔮', name:'Poción XP',      cat:'consumable', desc:'+100 XP instantáneo.',                                    price:300,   effect:'xp_100',             reqLevel:3},
+  {id:'turbo',        icon:'⚡', name:'Turbo Shot',     cat:'consumable', desc:'Reduce todos los cooldowns activos a 0.',                 price:1200,  effect:'reset_all_cd',       reqLevel:10},
+  {id:'mapa_secreto', icon:'🗺️', name:'Mapa Secreto',  cat:'consumable', desc:'Revela un trabajo especial oculto por 1 hora.',           price:800,   effect:'reveal_job',         reqLevel:12},
+  {id:'dado_suerte',  icon:'🎲', name:'Dado de Suerte', cat:'consumable', desc:'50% ganar x2, 30% normal, 20% perder energía.',          price:150,   effect:'gamble',             reqLevel:2},
+  {id:'cerveza',      icon:'🍺', name:'Cerveza Artesana',cat:'consumable', desc:'+10% recompensas en trabajos comunes por 1h.',           price:100,   effect:'common_boost_1h',    reqLevel:1},
+  {id:'energia_max',  icon:'⚡', name:'Mega Energy',    cat:'consumable', desc:'Recupera 10 puntos de energía al instante.',              price:600,   effect:'energy_restore_10',  reqLevel:7},
+  {id:'tiempo_libre', icon:'🏖️', name:'Día Libre',     cat:'consumable', desc:'Cooldowns reducidos en 50% durante 2 horas.',             price:700,   effect:'halfcd_2h',          reqLevel:9},
+  {id:'chip_focus',   icon:'🧠', name:'Chip de Foco',   cat:'consumable', desc:'+15% recompensa en trabajos tech por 3h.',                price:550,   effect:'tech_boost_3h',      reqLevel:8},
+  {id:'moneda_oro',   icon:'🪙', name:'Moneda de Oro',  cat:'consumable', desc:'Venta inmediata por 200 puntos.',                        price:150,   effect:'sell_200',           reqLevel:1},
+  {id:'amuleto',      icon:'🧿', name:'Amuleto',        cat:'consumable', desc:'Protege la energía en el siguiente trabajo fallido.',    price:350,   effect:'energy_protect',     reqLevel:6},
+  {id:'boost_daily',  icon:'🌅', name:'Boost Diario',   cat:'consumable', desc:'+50% al próximo bonus diario.',                          price:250,   effect:'daily_boost_50',     reqLevel:4},
+  {id:'recall',       icon:'🔁', name:'Token Recall',   cat:'consumable', desc:'Recupera el coste de la última compra (sin artículo).',  price:900,   effect:'recall_last',        reqLevel:10},
+  {id:'jugo_verde',   icon:'🥤', name:'Jugo Verde',     cat:'consumable', desc:'+3 energía máxima permanente (1 vez por cuenta).',       price:2000,  effect:'perm_energy_3',      reqLevel:15},
+  {id:'sprint_token', icon:'🏃', name:'Sprint Token',   cat:'consumable', desc:'Siguiente trabajo no consume energía.',                  price:400,   effect:'free_energy_job',    reqLevel:5},
+  {id:'donut',        icon:'🍩', name:'Donut Especial', cat:'consumable', desc:'+5% ganancias en el trabajo de CEO.',                    price:180,   effect:'ceo_next_5',         reqLevel:1},
+  {id:'suero_trabajo',icon:'💉', name:'Suero Trabajo',  cat:'consumable', desc:'+30% recompensa en el próximo trabajo.',                 price:650,   effect:'next_boost_30',      reqLevel:9},
+  {id:'ticket_loto',  icon:'🎟️', name:'Ticket Lotería', cat:'consumable', desc:'1/10 probabilidad de ganar 5000 pts.',                  price:300,   effect:'lottery',            reqLevel:3},
+  {id:'multi_boost',  icon:'🌟', name:'Multi Boost',    cat:'consumable', desc:'+10% en todos los trabajos durante 30 minutos.',         price:1500,  effect:'all_boost_30m',      reqLevel:12},
+
+  // TOOLS (25)
+  {id:'bicicleta',    icon:'🚲', name:'Bicicleta',      cat:'tool', desc:'+20% recompensa como Repartidor y Conductor.',              price:200,   effect:'delivery_boost',     reqLevel:1},
+  {id:'laptop',       icon:'💻', name:'Laptop Básico',  cat:'tool', desc:'+10% en trabajos tech (Dev, Diseñador, Consultor).',        price:400,   effect:'tech_boost_10',      reqLevel:3},
+  {id:'laptop_pro',   icon:'🖥️', name:'Laptop Pro',    cat:'tool', desc:'+20% en trabajos tech. Reemplaza Laptop Básico.',           price:1200,  effect:'tech_boost_20',      reqLevel:8},
+  {id:'camara_dslr',  icon:'📷', name:'Cámara DSLR',   cat:'tool', desc:'+25% recompensa como Fotógrafo y Director.',               price:600,   effect:'photo_boost',        reqLevel:5},
+  {id:'smartphone',   icon:'📱', name:'Smartphone Pro', cat:'tool', desc:'+15% como Streamer e Influencer.',                         price:350,   effect:'social_boost',       reqLevel:4},
+  {id:'micro',        icon:'🎙️', name:'Micrófono Pro',  cat:'tool', desc:'+20% como Streamer. Recompensas de chat.',                 price:500,   effect:'stream_boost',       reqLevel:6},
+  {id:'tablet',       icon:'📲', name:'Tablet Pro',     cat:'tool', desc:'+15% como Diseñador y Arquitecto.',                        price:800,   effect:'design_boost',       reqLevel:7},
+  {id:'maletin',      icon:'💼', name:'Maletín',        cat:'tool', desc:'+10% como Consultor y Abogado.',                           price:700,   effect:'consult_boost',      reqLevel:6},
+  {id:'bisturi',      icon:'🔬', name:'Instrumental Médico',cat:'tool', desc:'+20% como Médico.',                                   price:1000,  effect:'medic_boost',        reqLevel:10},
+  {id:'martillo',     icon:'🔨', name:'Set Herramientas',cat:'tool', desc:'-30s de cooldown en todos los trabajos comunes.',         price:300,   effect:'cd_common_30',       reqLevel:2},
+  {id:'cafetera',     icon:'☕', name:'Cafetera Prof.',  cat:'tool', desc:'+25% como Barista. Genera ingresos pasivos mínimos.',     price:450,   effect:'barista_boost',      reqLevel:3},
+  {id:'bloomberg',    icon:'📊', name:'Terminal Bloomberg',cat:'tool', desc:'+30% como Day Trader y Quant Trader.',                  price:2500,  effect:'trading_boost',      reqLevel:12},
+  {id:'traje_lujo',   icon:'👔', name:'Traje de Lujo',  cat:'tool', desc:'+15% como CEO. Mejora imagen en el ranking.',             price:1500,  effect:'ceo_boost',          reqLevel:15},
+  {id:'casco',        icon:'🪖', name:'Casco Espacial', cat:'tool', desc:'+20% como Astronauta. Requerido para misión avanzada.',   price:3000,  effect:'astro_boost',        reqLevel:22},
+  {id:'toga',         icon:'⚖️', name:'Toga Legal',     cat:'tool', desc:'+20% como Abogado.',                                     price:1200,  effect:'law_boost',          reqLevel:9},
+  {id:'dron',         icon:'🚁', name:'Dron Pro',       cat:'tool', desc:'+15% como Fotógrafo. Acceso a misiones aéreas.',          price:900,   effect:'drone_boost',        reqLevel:8},
+  {id:'oficina',      icon:'🏢', name:'Oficina Virtual',cat:'tool', desc:'-60s cooldown en Consultor y CEO.',                       price:2000,  effect:'office_cd',          reqLevel:14},
+  {id:'servidores',   icon:'🖧', name:'Servidores Cloud',cat:'tool', desc:'+25% en Dev y Quant Trader.',                            price:1800,  effect:'cloud_boost',        reqLevel:11},
+  {id:'cocina_pro',   icon:'🍳', name:'Cocina Pro',     cat:'tool', desc:'+20% como Cocinero.',                                    price:400,   effect:'cook_boost',         reqLevel:3},
+  {id:'guitarra',     icon:'🎸', name:'Guitarra',       cat:'tool', desc:'Cosmético + +5% en todos los trabajos creativos.',       price:600,   effect:'creative_boost_5',   reqLevel:4},
+  {id:'calculadora',  icon:'🧮', name:'Calculadora Pro',cat:'tool', desc:'+15% como Quant Trader.',                                price:700,   effect:'quant_boost',        reqLevel:10},
+  {id:'impresora3d',  icon:'🖨️', name:'Impresora 3D',  cat:'tool', desc:'+20% como Arquitecto. Genera planos.',                   price:2200,  effect:'arch_boost',         reqLevel:16},
+  {id:'vehiculo',     icon:'🚗', name:'Coche Propio',   cat:'tool', desc:'+30% como Conductor. -2 energía en Conductor.',          price:1600,  effect:'driver_boost',       reqLevel:5},
+  {id:'guitarra_elec',icon:'🎸', name:'Guitarra Eléctrica',cat:'tool', desc:'+10% en todos los trabajos creativos.',               price:1000,  effect:'creative_boost_10',  reqLevel:8},
+  {id:'megafono',     icon:'📢', name:'Megáfono',       cat:'tool', desc:'+10% como Influencer y Streamer.',                       price:450,   effect:'influence_boost',    reqLevel:5},
+
+  // BOOSTS (20)
+  {id:'xpboost',      icon:'⚡', name:'XP Boost ×2',    cat:'boost', desc:'Dobla el XP ganado en las próximas 24 horas.',          price:400,   effect:'xp_boost_24h',       reqLevel:2},
+  {id:'xpboost3',     icon:'⚡', name:'XP Boost ×3',    cat:'boost', desc:'Triplica el XP ganado durante 12 horas.',               price:900,   effect:'xp_boost3_12h',      reqLevel:7},
+  {id:'pts_boost10',  icon:'📈', name:'+10% Ganancias', cat:'boost', desc:'+10% en todos los trabajos de forma permanente.',       price:3000,  effect:'perm_pts_10',        reqLevel:10},
+  {id:'pts_boost5',   icon:'📈', name:'+5% Ganancias',  cat:'boost', desc:'+5% en todos los trabajos de forma permanente.',        price:1200,  effect:'perm_pts_5',         reqLevel:5},
+  {id:'cd_boost',     icon:'⏱️', name:'-10% Cooldown',  cat:'boost', desc:'Reduce todos los cooldowns en 10% permanentemente.',    price:2000,  effect:'perm_cd_10',         reqLevel:8},
+  {id:'energy_boost', icon:'🔋', name:'+2 Energía Max', cat:'boost', desc:'+2 a tu energía máxima de forma permanente.',           price:1500,  effect:'perm_energy_2',      reqLevel:6},
+  {id:'daily_bonus',  icon:'🎁', name:'Bono Diario ×2', cat:'boost', desc:'Dobla tu bono diario permanentemente.',                 price:5000,  effect:'perm_daily_2x',      reqLevel:15},
+  {id:'streak_pro',   icon:'🔥', name:'Streak Protect', cat:'boost', desc:'Protege tu racha diaria si fallas un día.',             price:800,   effect:'streak_protect',     reqLevel:4},
+  {id:'passive_inc',  icon:'💰', name:'Ingreso Pasivo',  cat:'boost', desc:'Gana 5 pts cada hora automáticamente.',                price:2500,  effect:'passive_5h',         reqLevel:12},
+  {id:'passive_pro',  icon:'💰', name:'Ingreso Pasivo Pro',cat:'boost', desc:'Gana 15 pts cada hora automáticamente.',             price:7000,  effect:'passive_15h',        reqLevel:18},
+  {id:'tax_reduce',   icon:'🧾', name:'Reducción Fiscal',cat:'boost', desc:'Reduce la comisión de transferencia al 2%.',           price:1800,  effect:'tax_2',              reqLevel:10},
+  {id:'job_unlock',   icon:'🔓', name:'Acceso Anticipado',cat:'boost', desc:'Desbloquea trabajos 2 niveles antes.',                 price:3500,  effect:'early_jobs_2',       reqLevel:8},
+  {id:'mentor',       icon:'🎓', name:'Mentoría',        cat:'boost', desc:'+20% XP en todos los trabajos permanentemente.',       price:4000,  effect:'perm_xp_20',         reqLevel:12},
+  {id:'xp_crit',      icon:'🎯', name:'XP Crítico',      cat:'boost', desc:'10% probabilidad de ×5 XP en cualquier trabajo.',      price:2200,  effect:'xp_crit_10',         reqLevel:9},
+  {id:'regen_boost',  icon:'⚡', name:'Regen Rápida',    cat:'boost', desc:'Energía se recarga 2x más rápido (permanente).',       price:3200,  effect:'perm_regen_2x',      reqLevel:11},
+  {id:'reward_cap',   icon:'🏆', name:'Sin Techo',       cat:'boost', desc:'Elimina el límite de recompensa por nivel bajo.',      price:6000,  effect:'remove_reward_cap',  reqLevel:20},
+  {id:'vip_status',   icon:'💫', name:'VIP Status',      cat:'boost', desc:'+15% en todas las ganancias. Insignia especial.',      price:10000, effect:'vip_15',             reqLevel:25},
+  {id:'arbitrage',    icon:'⚖️', name:'Arbitraje',       cat:'boost', desc:'+5% al recibir puntos transferidos.',                  price:1400,  effect:'receive_boost_5',    reqLevel:8},
+  {id:'compound',     icon:'📊', name:'Interés Compuesto',cat:'boost', desc:'Cada 24h, +0.5% de tus puntos totales.',              price:8000,  effect:'compound_05',        reqLevel:22},
+  {id:'momentum',     icon:'🌊', name:'Momentum',        cat:'boost', desc:'Cada trabajo seguido +2% recompensa (máx +20%).',      price:3800,  effect:'momentum_2',         reqLevel:14},
+
+  // PRESTIGE (20)
+  {id:'sports_car',   icon:'🏎️', name:'Coche Deportivo',cat:'prestige', desc:'Lujo puro. Demuestra tu riqueza.',                   price:2000,  effect:'prestige',           reqLevel:5},
+  {id:'crown',        icon:'👑', name:'Corona Real',    cat:'prestige', desc:'Símbolo de poder. Solo los mejores.',                 price:5000,  effect:'prestige',           reqLevel:10},
+  {id:'diamond',      icon:'💎', name:'Diamante',       cat:'prestige', desc:'El artículo más raro. Exclusivo.',                   price:10000, effect:'prestige',           reqLevel:15},
+  {id:'yacht',        icon:'⛵', name:'Yate',           cat:'prestige', desc:'Vida de lujo en alta mar.',                          price:15000, effect:'prestige',           reqLevel:20},
+  {id:'mansion',      icon:'🏰', name:'Mansión',        cat:'prestige', desc:'Una propiedad que todos envidian.',                  price:25000, effect:'prestige',           reqLevel:25},
+  {id:'jet',          icon:'✈️', name:'Jet Privado',    cat:'prestige', desc:'Viaja donde quieras, cuando quieras.',               price:40000, effect:'prestige',           reqLevel:30},
+  {id:'isla',         icon:'🏝️', name:'Isla Privada',  cat:'prestige', desc:'Tu propio paraíso. Inaccesible para otros.',         price:75000, effect:'prestige',           reqLevel:35},
+  {id:'spaceship',    icon:'🚀', name:'Nave Espacial',  cat:'prestige', desc:'El colmo del prestigio intergaláctico.',             price:150000,effect:'prestige',           reqLevel:40},
+  {id:'rolex',        icon:'⌚', name:'Reloj de Oro',   cat:'prestige', desc:'Clásico intemporal. Caro y exclusivo.',              price:3500,  effect:'prestige',           reqLevel:8},
+  {id:'trofeo',       icon:'🏆', name:'Trofeo Oro',     cat:'prestige', desc:'Premio al campeón del servidor.',                    price:8000,  effect:'prestige',           reqLevel:12},
+  {id:'piscina',      icon:'🏊', name:'Piscina Privada',cat:'prestige', desc:'Símbolo de éxito máximo.',                          price:20000, effect:'prestige',           reqLevel:22},
+  {id:'pintura',      icon:'🖼️', name:'Obra de Arte',  cat:'prestige', desc:'Inversión artística millonaria.',                   price:12000, effect:'prestige',           reqLevel:16},
+  {id:'robot_mayord', icon:'🤖', name:'Robot Mayordomo',cat:'prestige', desc:'Automatiza tareas cotidianas. +passive 1pt/h.',     price:18000, effect:'prestige_passive_1', reqLevel:20},
+  {id:'cripto_wallet',icon:'₿',  name:'Cripto Wallet',  cat:'prestige', desc:'500 BTC virtuales. Status definitivo.',             price:50000, effect:'prestige',           reqLevel:30},
+  {id:'galeria',      icon:'🎨', name:'Galería de Arte',cat:'prestige', desc:'Colección de obras únicas.',                        price:30000, effect:'prestige',           reqLevel:28},
+  {id:'hotel',        icon:'🏨', name:'Hotel 5 Estrellas',cat:'prestige', desc:'Ingresos pasivos virtuales +5pt/h.',               price:60000, effect:'prestige_passive_5', reqLevel:32},
+  {id:'banco',        icon:'🏦', name:'Banco Propio',   cat:'prestige', desc:'Posees una institución financiera.',                price:100000,effect:'prestige_passive_10',reqLevel:38},
+  {id:'medalla_pres', icon:'🥇', name:'Medalla Prestigio',cat:'prestige', desc:'Otorgada por lograr Prestigio x1.',              price:0,     effect:'prestige_medal',     reqLevel:1},
+  {id:'unicornio',    icon:'🦄', name:'Unicornio NFT',  cat:'prestige', desc:'El NFT más raro del servidor. 1 de 1.',             price:200000,effect:'prestige',           reqLevel:45},
+  {id:'arte_generativo',icon:'🤖',name:'Arte Generativo',cat:'prestige', desc:'IA crea arte único para tu perfil.',               price:7500,  effect:'prestige',           reqLevel:11},
+
+  // UTILITY (15)
+  {id:'shield',       icon:'🛡️', name:'Escudo Anti-Robo',cat:'utility', desc:'Protección visual en el perfil.',                   price:750,   effect:'protection',         reqLevel:3},
+  {id:'xp_shield',    icon:'🛡️', name:'Escudo de XP',   cat:'utility', desc:'Evita perder XP en apuestas fallidas.',              price:500,   effect:'xp_protect',         reqLevel:4},
+  {id:'banco_pts',    icon:'🏦', name:'Bóveda',          cat:'utility', desc:'Guarda hasta 500 pts en la bóveda (no transferibles).',price:1000,effect:'vault_500',          reqLevel:7},
+  {id:'seguro',       icon:'📋', name:'Seguro',          cat:'utility', desc:'Si pierdes ≥500 pts en 1h, se reembolsa el 30%.',    price:600,   effect:'insurance_30',       reqLevel:5},
+  {id:'calculadora2', icon:'📱', name:'App Finanzas',    cat:'utility', desc:'Muestra el historial detallado de ganancias.',       price:200,   effect:'finance_tracker',    reqLevel:1},
+  {id:'agenda',       icon:'📅', name:'Agenda Digital',  cat:'utility', desc:'Notificación cuando un cooldown termina.',           price:300,   effect:'cd_notify',          reqLevel:2},
+  {id:'vpn',          icon:'🔒', name:'VPN Pro',         cat:'utility', desc:'Oculta tus puntos en el ranking público.',           price:1200,  effect:'hide_pts',           reqLevel:8},
+  {id:'password_mgr', icon:'🔑', name:'Gestor Claves',   cat:'utility', desc:'+5% probabilidad de éxito en trabajos de riesgo.',   price:400,   effect:'risk_boost_5',       reqLevel:3},
+  {id:'robot_worker', icon:'🤖', name:'Bot de Trabajo',  cat:'utility', desc:'Completa automáticamente 1 trabajo común al día.',   price:5000,  effect:'auto_work_1',        reqLevel:18},
+  {id:'multi_acc',    icon:'👥', name:'Multi-Cuenta',    cat:'utility', desc:'Permite enviar 5 transferencias por hora.',          price:2500,  effect:'transfer_x5',        reqLevel:12},
+  {id:'recall_token', icon:'🔄', name:'Token Anulación', cat:'utility', desc:'Cancela la última compra y recupera el 80%.',        price:3000,  effect:'refund_80',          reqLevel:10},
+  {id:'encriptador',  icon:'🔐', name:'Encriptador',     cat:'utility', desc:'Añade capa de seguridad a tus transferencias.',      price:700,   effect:'transfer_secure',    reqLevel:5},
+  {id:'tiempo_conge', icon:'❄️', name:'Congelador Cd',  cat:'utility', desc:'Pausa todos los cooldowns por 30 minutos.',          price:1800,  effect:'freeze_cd_30m',      reqLevel:9},
+  {id:'spy_glass',    icon:'🔭', name:'Catalejo',        cat:'utility', desc:'Ve los puntos de cualquier jugador en el ranking.',  price:400,   effect:'spy_pts',            reqLevel:3},
+  {id:'auto_daily',   icon:'🔔', name:'Recordatorio',    cat:'utility', desc:'Obtén el bonus diario con un solo clic desde notif.',price:250,   effect:'daily_reminder',     reqLevel:1},
+
+  // COSMETICS (10)
+  {id:'avatar_gold',  icon:'✨', name:'Marco Dorado',    cat:'cosmetic', desc:'Marco brillante para tu avatar.',                   price:500,   effect:'cosmetic',           reqLevel:5},
+  {id:'avatar_diamond',icon:'💎', name:'Marco Diamante', cat:'cosmetic', desc:'Marco de diamante exclusivo.',                      price:2000,  effect:'cosmetic',           reqLevel:12},
+  {id:'title_boss',   icon:'👑', name:'Título "BOSS"',   cat:'cosmetic', desc:'Título especial bajo tu nombre.',                   price:1000,  effect:'cosmetic',           reqLevel:10},
+  {id:'title_legend', icon:'🏆', name:'Título "LEGEND"', cat:'cosmetic', desc:'Título de leyenda. Solo para los mejores.',         price:5000,  effect:'cosmetic',           reqLevel:20},
+  {id:'aura_lime',    icon:'🌟', name:'Aura Verde',      cat:'cosmetic', desc:'Aura verde neón alrededor de tu perfil.',           price:800,   effect:'cosmetic',           reqLevel:6},
+  {id:'aura_cyan',    icon:'💫', name:'Aura Cyan',       cat:'cosmetic', desc:'Aura cyan para los más fríos.',                     price:800,   effect:'cosmetic',           reqLevel:6},
+  {id:'badge_whale',  icon:'🐋', name:'Insignia Ballena',cat:'cosmetic', desc:'Mostrada cuando tienes +10000 pts.',                price:3000,  effect:'cosmetic',           reqLevel:15},
+  {id:'badge_grind',  icon:'⚙️', name:'Insignia Grinder',cat:'cosmetic', desc:'Mostrada tras completar 100 trabajos.',            price:1500,  effect:'cosmetic',           reqLevel:10},
+  {id:'banner_flame', icon:'🔥', name:'Banner Llamas',   cat:'cosmetic', desc:'Fondo especial en tu tarjeta de perfil.',           price:600,   effect:'cosmetic',           reqLevel:5},
+  {id:'sound_pack',   icon:'🔊', name:'Pack Sonidos',    cat:'cosmetic', desc:'Efectos de sonido al completar trabajos.',          price:200,   effect:'cosmetic',           reqLevel:1},
 ];
 
+// ════════════════════ OBJECTIVES ════════════════════
+const OBJECTIVES = [
+  // DAILY
+  {id:'d_work3',     cat:'daily',   icon:'⚡', title:'Trabajador Diario',    desc:'Completa 3 trabajos hoy.',                            target:3,   stat:'dailyJobs',      reward:100, xp:50},
+  {id:'d_work5',     cat:'daily',   icon:'💪', title:'Súper Activo',         desc:'Completa 5 trabajos hoy.',                            target:5,   stat:'dailyJobs',      reward:200, xp:100},
+  {id:'d_earn500',   cat:'daily',   icon:'💰', title:'500 Pts en el Día',    desc:'Gana 500 puntos en trabajos hoy.',                    target:500, stat:'dailyEarned',    reward:150, xp:75},
+  {id:'d_earn1000',  cat:'daily',   icon:'🤑', title:'Ganador del Día',      desc:'Gana 1000 puntos en trabajos hoy.',                   target:1000,stat:'dailyEarned',    reward:350, xp:150},
+  {id:'d_rare',      cat:'daily',   icon:'🌊', title:'Misión Rara',          desc:'Completa 1 trabajo raro o superior.',                 target:1,   stat:'dailyRare',      reward:120, xp:60},
+  {id:'d_shop',      cat:'daily',   icon:'🛒', title:'Ir de Compras',        desc:'Compra 1 artículo en la tienda hoy.',                 target:1,   stat:'dailyBought',    reward:80,  xp:40},
+  // WEEKLY
+  {id:'w_work25',    cat:'weekly',  icon:'🏭', title:'Empleado de la Semana',desc:'Completa 25 trabajos esta semana.',                   target:25,  stat:'weeklyJobs',     reward:800, xp:300},
+  {id:'w_earn5000',  cat:'weekly',  icon:'💎', title:'5000 Pts Semanales',   desc:'Gana 5000 puntos en trabajos esta semana.',            target:5000,stat:'weeklyEarned',   reward:1000,xp:400},
+  {id:'w_epic',      cat:'weekly',  icon:'⚡', title:'Épico Semanal',        desc:'Completa 3 trabajos épicos o legendarios.',            target:3,   stat:'weeklyEpic',     reward:600, xp:250},
+  {id:'w_shop3',     cat:'weekly',  icon:'🛍️', title:'Comprador Ávido',     desc:'Compra 5 artículos en la tienda esta semana.',         target:5,   stat:'weeklyBought',   reward:500, xp:200},
+  // ACHIEVEMENTS
+  {id:'a_jobs10',    cat:'achievement',icon:'🥉', title:'Primerizo',         desc:'Completa tu primer trabajo. Luego 10 en total.',       target:10,  stat:'jobsCompleted',  reward:250, xp:100},
+  {id:'a_jobs50',    cat:'achievement',icon:'🥈', title:'Veterano',          desc:'Completa 50 trabajos en total.',                       target:50,  stat:'jobsCompleted',  reward:600, xp:250},
+  {id:'a_jobs100',   cat:'achievement',icon:'🥇', title:'Centenario',        desc:'Completa 100 trabajos en total.',                      target:100, stat:'jobsCompleted',  reward:1500,xp:500},
+  {id:'a_jobs250',   cat:'achievement',icon:'👑', title:'Leyenda del Trabajo',desc:'Completa 250 trabajos en total.',                    target:250, stat:'jobsCompleted',  reward:4000,xp:1000},
+  {id:'a_earn1000',  cat:'achievement',icon:'💰', title:'Primer Millar',     desc:'Acumula 1000 puntos en total.',                        target:1000,stat:'totalEarned',    reward:200, xp:100},
+  {id:'a_earn10000', cat:'achievement',icon:'💎', title:'10K Club',          desc:'Acumula 10,000 puntos en total.',                      target:10000,stat:'totalEarned',   reward:1000,xp:400},
+  {id:'a_earn100k',  cat:'achievement',icon:'🏆', title:'100K Club',         desc:'Acumula 100,000 puntos en total.',                     target:100000,stat:'totalEarned',  reward:5000,xp:1500},
+  {id:'a_level5',    cat:'achievement',icon:'⭐', title:'Nivel 5',           desc:'Alcanza el nivel 5.',                                  target:5,   stat:'level',          reward:200, xp:50},
+  {id:'a_level10',   cat:'achievement',icon:'🌟', title:'Nivel 10',          desc:'Alcanza el nivel 10.',                                 target:10,  stat:'level',          reward:500, xp:100},
+  {id:'a_level20',   cat:'achievement',icon:'💫', title:'Nivel 20',          desc:'Alcanza el nivel 20.',                                 target:20,  stat:'level',          reward:2000,xp:400},
+  {id:'a_buy5',      cat:'achievement',icon:'🛒', title:'Comprador',         desc:'Compra 5 artículos en total.',                         target:5,   stat:'itemsBought',    reward:300, xp:100},
+  {id:'a_buy20',     cat:'achievement',icon:'🛍️', title:'Coleccionista',    desc:'Compra 20 artículos en total.',                        target:20,  stat:'itemsBought',    reward:800, xp:300},
+  {id:'a_streak7',   cat:'achievement',icon:'🔥', title:'Racha 7 Días',      desc:'Consigue una racha de 7 días consecutivos.',           target:7,   stat:'maxStreak',      reward:700, xp:200},
+  {id:'a_streak30',  cat:'achievement',icon:'🌋', title:'Racha 30 Días',     desc:'Consigue una racha de 30 días consecutivos.',          target:30,  stat:'maxStreak',      reward:3000,xp:800},
+  {id:'a_legendary', cat:'achievement',icon:'🚀', title:'Trabajo Legendario',desc:'Completa tu primer trabajo legendario.',              target:1,   stat:'legendaryDone',  reward:500, xp:200},
+];
+
+// ════════════════════ RANKS ════════════════════
 const RANKS = [
   {min:0,     name:'Rookie',       icon:'🥉'},
-  {min:500,   name:'Trabajador',   icon:'👷'},
-  {min:2000,  name:'Profesional',  icon:'💼'},
-  {min:5000,  name:'Emprendedor',  icon:'📊'},
-  {min:10000, name:'Ejecutivo',    icon:'👔'},
-  {min:25000, name:'CEO',          icon:'🏢'},
-  {min:50000, name:'Millonario',   icon:'💰'},
-  {min:100000,name:'Leyenda',      icon:'🏆'},
+  {min:200,   name:'Aprendiz',     icon:'📗'},
+  {min:600,   name:'Trabajador',   icon:'👷'},
+  {min:1500,  name:'Profesional',  icon:'💼'},
+  {min:3500,  name:'Experto',      icon:'🎯'},
+  {min:7000,  name:'Emprendedor',  icon:'📊'},
+  {min:15000, name:'Ejecutivo',    icon:'👔'},
+  {min:30000, name:'Director',     icon:'🏢'},
+  {min:60000, name:'Millonario',   icon:'💰'},
+  {min:150000,name:'Leyenda',      icon:'🏆'},
+  {min:500000,name:'DIOS',         icon:'⚡'},
 ];
 
-// ─── STATE ────────────────────────────────────────────────────────────────────
-let CU = null;        // current Firebase user
-let UD = {};          // user data snapshot
-let CDS = {};         // cooldowns  { cd_jobId: timestamp_ms }
-let PENDING_BUY = null;
-let ACTIVE_JOB = null;  // id of job currently running
-let CD_INTERVAL = null;
+// ════════════════════ STATE ════════════════════
+let CU = null, UD = {}, CDS = {}, PENDING_BUY = null, CD_INTERVAL = null;
+let ACTIVE_SHOP_FILTER = 'all', ACTIVE_OBJ_FILTER = 'all';
+let PREV_LEVEL = 1;
 
-// ─── AUTH UI ──────────────────────────────────────────────────────────────────
+// ════════════════════ AUTH ════════════════════
 window.switchAuth = mode => {
-  document.querySelectorAll('.auth-tab').forEach((t,i) => t.classList.toggle('active', mode==='login'?i===0:i===1));
-  document.getElementById('auth-username').style.display = mode==='register' ? 'block' : 'none';
-  document.getElementById('auth-btn').textContent        = mode==='register' ? 'CREAR CUENTA' : 'ENTRAR';
-  document.getElementById('auth-error').textContent = '';
+  document.querySelectorAll('.auth-tab').forEach((t,i)=>t.classList.toggle('active',mode==='login'?i===0:i===1));
+  document.getElementById('auth-username').style.display = mode==='register'?'block':'none';
+  document.getElementById('auth-btn').textContent = mode==='register'?'CREAR CUENTA':'ENTRAR';
+  document.getElementById('auth-error').textContent='';
 };
 
 window.handleAuth = async () => {
-  const mode  = document.querySelector('.auth-tab.active').textContent.trim() === 'Entrar' ? 'login' : 'register';
+  const mode  = document.querySelector('.auth-tab.active').textContent.trim()==='Entrar'?'login':'register';
   const email = document.getElementById('auth-email').value.trim();
   const pass  = document.getElementById('auth-password').value;
   const uname = document.getElementById('auth-username').value.trim();
   const errEl = document.getElementById('auth-error');
-  errEl.textContent = '';
-
-  if(!email||!pass) { errEl.textContent='Rellena todos los campos.'; return; }
-  if(mode==='register'&&!uname) { errEl.textContent='Elige un nombre de usuario.'; return; }
-  if(mode==='register'&&uname.length<3) { errEl.textContent='El nombre debe tener al menos 3 caracteres.'; return; }
-
-  const btn = document.getElementById('auth-btn');
-  btn.disabled = true; btn.textContent = '...';
-
+  errEl.textContent='';
+  if(!email||!pass){errEl.textContent='Rellena todos los campos.';return;}
+  if(mode==='register'&&!uname){errEl.textContent='Elige un nombre de usuario.';return;}
+  if(mode==='register'&&uname.length<3){errEl.textContent='Nombre mínimo 3 caracteres.';return;}
+  const btn=document.getElementById('auth-btn'); btn.disabled=true; btn.textContent='...';
   try {
-    if(mode==='register') {
-      const cr = await createUserWithEmailAndPassword(auth, email, pass);
-      await set(ref(db,`usuarios/${cr.user.uid}`), {
-        username:uname, email, points:0, totalEarned:0,
-        jobsCompleted:0, itemsBought:0, level:1, xp:0,
-        inventory:{}, activity:[], dailyLastClaim:0,
-        activeJob:null, activeJobStart:0,
-        createdAt:Date.now()
+    if(mode==='register'){
+      const cr=await createUserWithEmailAndPassword(auth,email,pass);
+      await set(ref(db,`usuarios/${cr.user.uid}`),{
+        username:uname,email,points:0,totalEarned:0,jobsCompleted:0,itemsBought:0,
+        level:1,xp:0,inventory:{},activity:[],dailyLastClaim:0,
+        activeJob:null,createdAt:Date.now(),streak:0,maxStreak:0,lastLoginDate:0,
+        energy:10,energyMax:10,lastEnergyRegen:Date.now(),
+        objectives:{},prestigeCount:0,legendaryDone:0,
+        dailyJobs:0,dailyEarned:0,dailyRare:0,dailyBought:0,dailyReset:0,
+        weeklyJobs:0,weeklyEarned:0,weeklyEpic:0,weeklyBought:0,weeklyReset:0,
+        cooldowns:{}
       });
     } else {
-      await signInWithEmailAndPassword(auth, email, pass);
+      await signInWithEmailAndPassword(auth,email,pass);
     }
   } catch(e) {
-    const M = {
-      'auth/email-already-in-use':'Este email ya está registrado.',
-      'auth/invalid-email':'Email no válido.',
-      'auth/wrong-password':'Contraseña incorrecta.',
-      'auth/user-not-found':'Usuario no encontrado.',
-      'auth/weak-password':'Contraseña mínimo 6 caracteres.',
-      'auth/invalid-credential':'Credenciales incorrectas.',
-      'auth/too-many-requests':'Demasiados intentos. Espera un momento.',
-    };
-    errEl.textContent = M[e.code]||('Error: '+e.message);
-    btn.disabled = false; btn.textContent = mode==='register' ? 'CREAR CUENTA' : 'ENTRAR';
+    const M={'auth/email-already-in-use':'Email ya registrado.','auth/invalid-email':'Email inválido.',
+      'auth/wrong-password':'Contraseña incorrecta.','auth/user-not-found':'Usuario no encontrado.',
+      'auth/weak-password':'Contraseña mínimo 6 caracteres.','auth/invalid-credential':'Credenciales incorrectas.',
+      'auth/too-many-requests':'Demasiados intentos. Espera.'};
+    errEl.textContent=M[e.code]||('Error: '+e.message);
+    btn.disabled=false; btn.textContent=mode==='register'?'CREAR CUENTA':'ENTRAR';
   }
 };
 
@@ -816,554 +797,712 @@ window.logout = async () => {
   if(CD_INTERVAL) clearInterval(CD_INTERVAL);
   await signOut(auth);
   document.getElementById('app').classList.remove('visible');
-  document.getElementById('app').style.display = 'none';
+  document.getElementById('app').style.display='none';
   document.getElementById('auth-screen').classList.remove('hidden');
-  document.getElementById('auth-btn').disabled = false;
-  document.getElementById('auth-btn').textContent = 'ENTRAR';
+  document.getElementById('auth-btn').disabled=false;
+  document.getElementById('auth-btn').textContent='ENTRAR';
 };
 
-// ─── AUTH STATE ───────────────────────────────────────────────────────────────
-onAuthStateChanged(auth, user => {
-  if(user) {
-    CU = user;
-    loadCooldowns();
-    subscribeUser(user.uid);
+onAuthStateChanged(auth, user=>{
+  if(user){
+    CU=user; loadCooldowns(); subscribeUser(user.uid);
     document.getElementById('auth-screen').classList.add('hidden');
-    document.getElementById('app').style.display = 'block';
-    setTimeout(()=>document.getElementById('app').classList.add('visible'), 50);
+    document.getElementById('app').style.display='block';
+    setTimeout(()=>document.getElementById('app').classList.add('visible'),50);
+    // Email index
+    const encoded=btoa(user.email.toLowerCase()).replace(/=/g,'').replace(/\+/g,'_').replace(/\//g,'-');
+    update(ref(db,'email_index'),{[encoded]:user.uid});
+    setTimeout(()=>applyPendingCredits(user.uid),2000);
   } else {
-    CU = null; UD = {};
+    CU=null; UD={};
     document.getElementById('app').classList.remove('visible');
-    document.getElementById('app').style.display = 'none';
+    document.getElementById('app').style.display='none';
     document.getElementById('auth-screen').classList.remove('hidden');
   }
 });
 
-// ─── REALTIME LISTENER ────────────────────────────────────────────────────────
-function subscribeUser(uid) {
-  onValue(ref(db,`usuarios/${uid}`), snap => {
-    UD = snap.val()||{};
+function subscribeUser(uid){
+  onValue(ref(db,`usuarios/${uid}`),snap=>{
+    const prev=UD;
+    UD=snap.val()||{};
+    // level up animation
+    const newLvl=UD.level||1;
+    if(CU&&newLvl>PREV_LEVEL&&PREV_LEVEL>0){
+      showLevelUp(newLvl);
+    }
+    PREV_LEVEL=newLvl;
+    checkDailyWeeklyReset(uid);
     renderAll();
   });
 }
 
-// ─── RENDER ALL ───────────────────────────────────────────────────────────────
-function renderAll() {
-  if(!CU) return;
-  const pts   = UD.points||0;
-  const uname = UD.username || CU.email.split('@')[0];
-  const lvl   = UD.level||1;
-  const xp    = UD.xp||0;
-  const xpMax = lvl*500;
-  const pct   = Math.min(100,(xp/xpMax)*100);
-
-  // Topbar
-  document.getElementById('topbar-pts').textContent  = pts.toLocaleString();
-  document.getElementById('topbar-user').textContent = uname.toUpperCase();
-
-  // Active job pill
-  ACTIVE_JOB = UD.activeJob||null;
-  const pill = document.getElementById('active-job-pill');
-  if(ACTIVE_JOB) {
-    const j = JOBS.find(j=>j.id===ACTIVE_JOB);
-    document.getElementById('active-job-text').textContent = j ? `${j.icon} ${j.name}` : 'trabajando...';
-    pill.classList.add('show');
-  } else {
-    pill.classList.remove('show');
+// ════════════════════ RESET DAILY/WEEKLY ════════════════════
+async function checkDailyWeeklyReset(uid){
+  if(!UD) return;
+  const now=Date.now();
+  const startOfDay=new Date(); startOfDay.setHours(0,0,0,0);
+  const startOfWeek=new Date(); startOfWeek.setDate(startOfWeek.getDate()-startOfWeek.getDay()); startOfWeek.setHours(0,0,0,0);
+  const updates={};
+  if((UD.dailyReset||0)<startOfDay.getTime()){
+    updates.dailyJobs=0; updates.dailyEarned=0; updates.dailyRare=0; updates.dailyBought=0;
+    updates.dailyReset=startOfDay.getTime();
   }
+  if((UD.weeklyReset||0)<startOfWeek.getTime()){
+    updates.weeklyJobs=0; updates.weeklyEarned=0; updates.weeklyEpic=0; updates.weeklyBought=0;
+    updates.weeklyReset=startOfWeek.getTime();
+  }
+  if(Object.keys(updates).length>0) await update(ref(db,`usuarios/${uid}`),updates);
+}
 
-  // Hero
-  document.getElementById('hero-name').textContent = uname.toUpperCase();
+// ════════════════════ RENDER ════════════════════
+function renderAll(){
+  if(!CU) return;
+  const pts=UD.points||0, uname=UD.username||CU.email.split('@')[0];
+  const lvl=UD.level||1, xp=UD.xp||0, xpMax=lvl*500;
+  const pct=Math.min(100,(xp/xpMax)*100);
+  const energy=getEnergy();
 
-  // Level bars (dashboard + profile)
-  ['level-fill','p-level-fill'].forEach(id => {
-    const el=document.getElementById(id); if(el) el.style.width=pct+'%';
-  });
-  ['level-tag','p-level-tag'].forEach(id => {
-    const el=document.getElementById(id); if(el) el.textContent='NIVEL '+lvl;
-  });
-  ['level-xp','p-level-xp'].forEach(id => {
-    const el=document.getElementById(id); if(el) el.textContent=xp+' / '+xpMax+' XP';
-  });
+  document.getElementById('topbar-pts').textContent=pts.toLocaleString();
+  document.getElementById('topbar-user').textContent=uname.toUpperCase();
+  document.getElementById('topbar-energy').textContent=energy;
 
-  // Stats
-  document.getElementById('st-pts').textContent   = pts.toLocaleString();
-  document.getElementById('st-jobs').textContent  = (UD.jobsCompleted||0).toLocaleString();
-  document.getElementById('st-items').textContent = (UD.itemsBought||0).toLocaleString();
+  const pill=document.getElementById('active-job-pill');
+  const activeJob=UD.activeJob||null;
+  if(activeJob){const j=JOBS.find(j=>j.id===activeJob);document.getElementById('active-job-text').textContent=j?`${j.icon} ${j.name}`:'trabajando...';pill.classList.add('show');}
+  else pill.classList.remove('show');
 
-  // Daily
-  const canDaily = Date.now()-(UD.dailyLastClaim||0) > 86400000;
-  document.getElementById('daily-banner').style.display = canDaily?'flex':'none';
+  document.getElementById('hero-name').textContent=uname.toUpperCase();
+  ['level-fill','p-level-fill'].forEach(id=>{const el=document.getElementById(id);if(el)el.style.width=pct+'%';});
+  ['level-tag','p-level-tag'].forEach(id=>{const el=document.getElementById(id);if(el)el.textContent='NIVEL '+lvl;});
+  ['level-xp','p-level-xp'].forEach(id=>{const el=document.getElementById(id);if(el)el.textContent=xp+' / '+xpMax+' XP';});
 
-  // Profile
-  const rank = getrank(pts);
-  document.getElementById('profile-name').textContent  = uname;
-  document.getElementById('profile-email').textContent = CU.email;
-  document.getElementById('profile-avatar').textContent = uname[0].toUpperCase();
-  document.getElementById('profile-rank').textContent  = rank.icon+' '+rank.name;
+  document.getElementById('st-pts').textContent=pts.toLocaleString();
+  document.getElementById('st-jobs').textContent=(UD.jobsCompleted||0).toLocaleString();
+  document.getElementById('st-items').textContent=(UD.itemsBought||0).toLocaleString();
+  document.getElementById('st-streak').textContent=(UD.streak||0);
+
+  const canDaily=Date.now()-(UD.dailyLastClaim||0)>86400000;
+  document.getElementById('daily-banner').style.display=canDaily?'flex':'none';
+
+  const streak=UD.streak||0;
+  document.getElementById('streak-section').style.display=streak>1?'flex':'none';
+  document.getElementById('streak-days').textContent=streak;
+
+  const rank=getrank(pts);
+  document.getElementById('profile-name').textContent=uname;
+  document.getElementById('profile-email').textContent=CU.email;
+  document.getElementById('profile-avatar').textContent=uname[0].toUpperCase();
+  document.getElementById('profile-rank').textContent=rank.icon+' '+rank.name;
+  document.getElementById('prestige-section').style.display=lvl>=50?'block':'none';
+
+  const claimedObjs=Object.entries(UD.objectives||{}).filter(([,v])=>v===true).length;
+  document.getElementById('st-objs').textContent=claimedObjs;
+
+  const pendingObjs=OBJECTIVES.filter(o=>!isObjClaimed(o.id)&&getObjProgress(o)>=o.target).length;
+  const badge=document.getElementById('obj-badge');
+  badge.style.display=pendingObjs>0?'inline':'none';
+  badge.textContent=pendingObjs;
 
   renderActivity();
   renderJobs();
   renderShop();
   renderInventory();
+  renderAchievements();
+  renderObjectives();
+  renderDashObjectives();
   renderLeaderboard();
 }
 
-function getrank(pts) {
-  let r=RANKS[0];
-  for(const rk of RANKS) if(pts>=rk.min) r=rk;
-  return r;
+function getEnergy(){
+  const maxE=UD.energyMax||10;
+  const stored=UD.energy||0;
+  const lastRegen=UD.lastEnergyRegen||Date.now();
+  const elapsed=Math.floor((Date.now()-lastRegen)/1000/60/5);
+  return Math.min(maxE,stored+elapsed);
 }
 
-function renderActivity() {
-  const el   = document.getElementById('activity-log');
-  const acts = UD.activity ? Object.values(UD.activity).slice(-8).reverse() : [];
-  if(!acts.length) {
-    el.innerHTML='<div style="color:var(--muted);font-size:13px;padding:12px 0">Aún sin actividad — ¡completa tu primera misión!</div>';
-    return;
-  }
-  el.innerHTML = acts.map(a=>`
-    <div class="activity-item">
-      <span>${a.text}</span>
-      <span class="act-time">${timeAgo(a.ts)}</span>
-    </div>`).join('');
+function getrank(pts){let r=RANKS[0];for(const rk of RANKS)if(pts>=rk.min)r=rk;return r;}
+
+function isObjClaimed(id){return (UD.objectives||{})[id]===true;}
+function getObjProgress(obj){
+  const s=obj.stat;
+  if(s==='jobsCompleted') return UD.jobsCompleted||0;
+  if(s==='totalEarned')   return UD.totalEarned||0;
+  if(s==='itemsBought')   return UD.itemsBought||0;
+  if(s==='level')         return UD.level||1;
+  if(s==='maxStreak')     return UD.maxStreak||0;
+  if(s==='legendaryDone') return UD.legendaryDone||0;
+  if(s==='dailyJobs')     return UD.dailyJobs||0;
+  if(s==='dailyEarned')   return UD.dailyEarned||0;
+  if(s==='dailyRare')     return UD.dailyRare||0;
+  if(s==='dailyBought')   return UD.dailyBought||0;
+  if(s==='weeklyJobs')    return UD.weeklyJobs||0;
+  if(s==='weeklyEarned')  return UD.weeklyEarned||0;
+  if(s==='weeklyEpic')    return UD.weeklyEpic||0;
+  if(s==='weeklyBought')  return UD.weeklyBought||0;
+  return 0;
 }
 
-function renderJobs() {
-  const grid = document.getElementById('jobs-grid');
-  const now  = Date.now();
-  const inv  = UD.inventory||{};
-  const activeJob = UD.activeJob||null;  // the job running server-side
-
-  grid.innerHTML = JOBS.map(job => {
-    // Leer cooldown desde Firebase (fuente de verdad) con fallback a localStorage
-    const last    = (UD.cooldowns && UD.cooldowns[job.id]) || CDS['cd_'+job.id] || 0;
-    const elapsed = (now - last)/1000;
-    const cdThis  = job.id==='mensajero'||job.id==='barista' ? Math.max(0,job.cooldown-(inv.cafe?10:0)) : job.cooldown;
-    const ready   = elapsed >= cdThis;
-    const rem     = ready ? 0 : Math.ceil(cdThis - elapsed);
-    const fpct    = ready ? 100 : Math.floor((elapsed/cdThis)*100);
-
-    const isActive    = activeJob===job.id;
-    const otherActive = activeJob && activeJob!==job.id;
-
-    let btnText, btnClass='btn-work', btnDisabled=false;
-    if(isActive)            { btnText='⏳ EN CURSO...';  btnClass='btn-work working'; btnDisabled=true; }
-    else if(!ready)         { btnText='⏳ '+fmt(rem);    btnDisabled=true; }
-    else if(otherActive)    { btnText='BLOQUEADO';       btnDisabled=true; }
-    else                    { btnText='TRABAJAR'; }
-
-    return `
-      <div class="job-card ${otherActive&&!isActive?'locked-by-active':''}">
-        <div class="job-stripe ${job.rarity}"></div>
-        <div class="job-rarity-badge ${job.rarity}">${job.rarity.toUpperCase()}</div>
-        <div class="job-icon">${job.icon}</div>
-        <div class="job-name">${job.name}</div>
-        <div class="job-desc">${job.desc}</div>
-        <div class="job-meta">
-          <span class="job-reward">🪙 +${job.reward}</span>
-          <span class="job-cd">⏱ ${fmt(cdThis)}</span>
-        </div>
-        <button class="${btnClass}" id="btn-${job.id}" ${btnDisabled?'disabled':''} onclick="doJob('${job.id}')">
-          ${btnText}
-        </button>
-        <div class="cd-track" id="bar-${job.id}" style="display:${ready&&!isActive?'none':'block'}">
-          <div class="cd-fill" id="fill-${job.id}" style="width:${isActive?0:fpct}%"></div>
-        </div>
-      </div>`;
-  }).join('');
-
-  startTimers();
-}
-
-function renderShop() {
-  const grid = document.getElementById('shop-grid');
-  const inv  = UD.inventory||{};
-  grid.innerHTML = ITEMS.map(item=>{
-    const owned    = inv[item.id]||0;
-    const afford   = (UD.points||0)>=item.price;
-    return `
-      <div class="shop-card">
-        ${owned?`<div class="owned-badge">×${owned}</div>`:''}
-        <span class="shop-item-icon">${item.icon}</span>
-        <div class="shop-item-name">${item.name}</div>
-        <div class="shop-item-desc">${item.desc}</div>
-        <div class="shop-item-price">🪙 ${item.price.toLocaleString()}</div>
-        <button class="btn-buy" ${afford?'':'disabled'} onclick="openBuyModal('${item.id}')">
-          ${afford?'COMPRAR':'SIN FONDOS'}
-        </button>
-      </div>`;
-  }).join('');
-}
-
-function renderInventory() {
-  const grid = document.getElementById('inv-grid');
-  const inv  = UD.inventory||{};
-  const entries = Object.entries(inv).filter(([,v])=>v>0);
-  if(!entries.length) {
-    grid.innerHTML='<div style="color:var(--muted);font-size:13px">Tu inventario está vacío. ¡Visita la tienda!</div>';
-    return;
-  }
-  grid.innerHTML = entries.map(([id,qty])=>{
-    const item = ITEMS.find(i=>i.id===id);
-    if(!item) return '';
-    return `<div class="inv-item">
-      <span class="inv-item-icon">${item.icon}</span>
-      <div class="inv-item-qty">${qty}</div>
-      <div class="inv-item-name">${item.name}</div>
+function renderObjectives(){
+  const grid=document.getElementById('objectives-grid');
+  const filtered=OBJECTIVES.filter(o=>ACTIVE_OBJ_FILTER==='all'||o.cat===ACTIVE_OBJ_FILTER);
+  grid.innerHTML=filtered.map(o=>{
+    const prog=getObjProgress(o);
+    const claimed=isObjClaimed(o.id);
+    const done=prog>=o.target&&!claimed;
+    const pct=Math.min(100,(prog/o.target)*100);
+    return `<div class="obj-card ${claimed?'completed':''}">
+      <div class="obj-category ${o.cat}">${o.cat.toUpperCase()}</div>
+      <div class="obj-header">
+        <div class="obj-icon">${o.icon}</div>
+        <div><div class="obj-title">${o.title}</div><div class="obj-desc">${o.desc}</div></div>
+      </div>
+      <div class="obj-meta">
+        <span class="obj-reward">🪙 +${o.reward} pts · ⭐ +${o.xp} XP</span>
+        <span class="obj-prog-text">${claimed?'COMPLETADO':prog+' / '+o.target}</span>
+      </div>
+      ${!claimed?`<div class="obj-bar"><div class="obj-bar-fill" style="width:${pct}%"></div></div>`:''}
+      ${done?`<button class="btn-claim-obj" onclick="claimObjective('${o.id}')">RECLAMAR RECOMPENSA</button>`:''}
     </div>`;
   }).join('');
 }
 
-async function renderLeaderboard() {
-  // With restricted rules, we need a public-readable summary
-  // We use a separate public-readable "leaderboard" node populated on each job completion
-  try {
-    const snap = await get(ref(db,'leaderboard'));
-    const data = snap.val()||{};
-    const sorted = Object.entries(data)
-      .map(([uid,e])=>({uid, username:e.username||'Anónimo', points:e.points||0}))
-      .sort((a,b)=>b.points-a.points).slice(0,10);
+function renderDashObjectives(){
+  const el=document.getElementById('dash-objectives');
+  const active=OBJECTIVES.filter(o=>!isObjClaimed(o.id)).slice(0,4);
+  if(!active.length){el.innerHTML='<div style="color:var(--muted);font-size:13px">¡Todos los objetivos activos completados!</div>';return;}
+  el.innerHTML=active.map(o=>{
+    const prog=getObjProgress(o),pct=Math.min(100,(prog/o.target)*100),done=prog>=o.target;
+    return `<div class="obj-card ${done?'completed':''}" style="cursor:pointer" onclick="showSection('objectives',document.querySelector('[data-sec=objectives]'))">
+      <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px">
+        <span style="font-size:18px">${o.icon}</span>
+        <span style="font-family:var(--font-head);font-size:13px;font-weight:700">${o.title}</span>
+        <span style="font-family:var(--font-mono);font-size:10px;color:var(--lime);margin-left:auto">+${o.reward}</span>
+      </div>
+      <div style="font-size:10px;color:var(--muted);margin-bottom:6px">${prog} / ${o.target}</div>
+      <div class="obj-bar"><div class="obj-bar-fill" style="width:${pct}%"></div></div>
+    </div>`;
+  }).join('');
+}
 
-    const myPos = sorted.findIndex(e=>e.uid===CU?.uid)+1;
-    document.getElementById('st-rank').textContent = myPos ? '#'+myPos : '#—';
+window.filterObj = (cat,btn)=>{
+  ACTIVE_OBJ_FILTER=cat;
+  document.querySelectorAll('#obj-filter-bar .filter-btn').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+  renderObjectives();
+};
+
+window.claimObjective = async id=>{
+  if(!CU) return;
+  const obj=OBJECTIVES.find(o=>o.id===id);
+  if(!obj||isObjClaimed(id)) return;
+  const prog=getObjProgress(obj);
+  if(prog<obj.target){toast('Objetivo no completado aún.','error');return;}
+  const uid=CU.uid;
+  const acts=UD.activity?[...Object.values(UD.activity)]:[];
+  acts.push({text:`🎯 Objetivo "${obj.title}" completado! +${obj.reward} pts`,ts:Date.now()});
+  if(acts.length>20)acts.splice(0,acts.length-20);
+  const newXP=(UD.xp||0)+obj.xp;
+  const newLevel=Math.floor(newXP/500)+1;
+  await update(ref(db,`usuarios/${uid}`),{
+    points:(UD.points||0)+obj.reward,
+    totalEarned:(UD.totalEarned||0)+obj.reward,
+    xp:newXP,level:newLevel,
+    [`objectives/${id}`]:true,
+    activity:acts,
+  });
+  const uname=UD.username||CU.email.split('@')[0];
+  await update(ref(db,`leaderboard/${uid}`),{username:uname,points:(UD.points||0)+obj.reward,level:newLevel});
+  toast(`🎯 ${obj.icon} +${obj.reward} pts!`,'success');
+};
+
+function renderActivity(){
+  const el=document.getElementById('activity-log');
+  const acts=UD.activity?Object.values(UD.activity).slice(-8).reverse():[];
+  if(!acts.length){el.innerHTML='<div style="color:var(--muted);font-size:13px;padding:12px 0">Aún sin actividad — ¡completa tu primera misión!</div>';return;}
+  el.innerHTML=acts.map(a=>`<div class="activity-item"><span>${escapeHtml(a.text)}</span><span class="act-time">${timeAgo(a.ts)}</span></div>`).join('');
+}
+
+function renderJobs(){
+  const grid=document.getElementById('jobs-grid');
+  const now=Date.now();
+  const inv=UD.inventory||{};
+  const activeJob=UD.activeJob||null;
+  const lvl=UD.level||1;
+  const energy=getEnergy();
+
+  grid.innerHTML=JOBS.map(job=>{
+    const last=(UD.cooldowns&&UD.cooldowns[job.id])||CDS['cd_'+job.id]||0;
+    const elapsed=(now-last)/1000;
+    let cdThis=job.cooldown;
+    // CD reductions from items
+    if(inv.cd_boost) cdThis=Math.floor(cdThis*0.9);
+    if((job.id==='repartidor'||job.id==='cajero'||job.id==='barista')&&inv.martillo) cdThis=Math.max(0,cdThis-30);
+    if((job.id==='consultor'||job.id==='ceo')&&inv.oficina) cdThis=Math.max(0,cdThis-60);
+    const ready=elapsed>=cdThis;
+    const rem=ready?0:Math.ceil(cdThis-elapsed);
+    const fpct=ready?100:Math.floor((elapsed/cdThis)*100);
+    const isActive=activeJob===job.id;
+    const otherActive=activeJob&&activeJob!==job.id;
+    const locked=lvl<job.minLevel&&!inv.job_unlock&&!(inv.job_unlock&&lvl>=(job.minLevel-2));
+    const noEnergy=energy<job.energy;
+
+    let btnText,btnClass='btn-work',btnDisabled=false;
+    if(locked)           {btnText='🔒 LVL '+job.minLevel;btnDisabled=true;}
+    else if(isActive)    {btnText='⏳ EN CURSO...';btnClass='btn-work working';btnDisabled=true;}
+    else if(!ready)      {btnText='⏳ '+fmt(rem);btnDisabled=true;}
+    else if(otherActive) {btnText='BLOQUEADO';btnDisabled=true;}
+    else if(noEnergy)    {btnText='⚡ SIN ENERGÍA';btnDisabled=true;}
+    else                 {btnText='TRABAJAR';}
+
+    return `<div class="job-card ${(otherActive&&!isActive)||locked?'locked-by-active':''}">
+      <div class="job-stripe ${job.rarity}"></div>
+      <div class="job-rarity-badge ${job.rarity}">${job.rarity.toUpperCase()}</div>
+      ${locked?`<div class="job-level-req">🔒 REQUIERE NIVEL ${job.minLevel}</div>`:''}
+      <div class="job-icon">${job.icon}</div>
+      <div class="job-name">${job.name}</div>
+      <div class="job-desc">${job.desc}</div>
+      <div class="job-meta">
+        <span class="job-reward">🪙 +${computeReward(job)}</span>
+        <span class="job-cd">⏱ ${fmt(cdThis)}</span>
+        <span class="job-energy">⚡ ${job.energy}</span>
+      </div>
+      <button class="${btnClass}" id="btn-${job.id}" ${btnDisabled?'disabled':''} onclick="doJob('${job.id}')">
+        ${btnText}
+      </button>
+      <div class="cd-track" id="bar-${job.id}" style="display:${ready&&!isActive?'none':'block'}">
+        <div class="cd-fill" id="fill-${job.id}" style="width:${isActive?0:fpct}%"></div>
+      </div>
+    </div>`;
+  }).join('');
+  startTimers();
+}
+
+function computeReward(job){
+  const inv=UD.inventory||{};
+  let r=job.reward;
+  // perm boosts
+  if(inv.pts_boost5)  r=Math.floor(r*1.05);
+  if(inv.pts_boost10) r=Math.floor(r*1.10);
+  if(inv.vip_status)  r=Math.floor(r*1.15);
+  if(inv.momentum){
+    const streak=UD.momentumStreak||0;
+    r=Math.floor(r*(1+Math.min(0.2,streak*0.02)));
+  }
+  // tool boosts
+  if(inv.laptop&&(job.id==='dev'||job.id==='streamer'))  r=Math.floor(r*1.10);
+  if(inv.laptop_pro&&['dev','diseñador','consultor'].includes(job.id)) r=Math.floor(r*1.20);
+  if(inv.bloomberg&&['trader','cuantitativo'].includes(job.id)) r=Math.floor(r*1.30);
+  if(inv.traje_lujo&&job.id==='ceo')    r=Math.floor(r*1.15);
+  if(inv.casco&&job.id==='astronauta')  r=Math.floor(r*1.20);
+  if(inv.cafetera&&job.id==='barista')  r=Math.floor(r*1.25);
+  if(inv.bicicleta&&['repartidor','conductor'].includes(job.id)) r=Math.floor(r*1.20);
+  if(inv.camara_dslr&&['fotografo','director'].includes(job.id)) r=Math.floor(r*1.25);
+  if(inv.smartphone&&['streamer','influencer'].includes(job.id)) r=Math.floor(r*1.15);
+  if(inv.micro&&job.id==='streamer')    r=Math.floor(r*1.20);
+  if(inv.bisturi&&job.id==='medico')    r=Math.floor(r*1.20);
+  if(inv.servidores&&['dev','cuantitativo'].includes(job.id)) r=Math.floor(r*1.25);
+  if(inv.toga&&job.id==='abogado')      r=Math.floor(r*1.20);
+  if(inv.vehiculo&&job.id==='conductor') r=Math.floor(r*1.30);
+  if(inv.impresora3d&&job.id==='arquitecto') r=Math.floor(r*1.20);
+  if(inv.cocina_pro&&job.id==='cocinero')   r=Math.floor(r*1.20);
+  return r;
+}
+
+function renderShop(){
+  const grid=document.getElementById('shop-grid');
+  const inv=UD.inventory||{};
+  const pts=UD.points||0, lvl=UD.level||1;
+  const items=ACTIVE_SHOP_FILTER==='all'?ITEMS:ITEMS.filter(i=>i.cat===ACTIVE_SHOP_FILTER);
+  grid.innerHTML=items.map(item=>{
+    const owned=inv[item.id]||0;
+    const afford=pts>=item.price;
+    const lvlOk=lvl>=item.reqLevel;
+    const locked=!lvlOk;
+    const rarity=item.price>=50000?'legendary':item.price>=5000?'epic':'';
+    return `<div class="shop-card ${locked?'locked-item':''}">
+      ${owned?`<div class="owned-badge">×${owned}</div>`:''}
+      ${rarity?`<div class="rare-badge ${rarity}">${rarity.toUpperCase()}</div>`:''}
+      <div class="shop-item-cat">${catEmoji(item.cat)} ${item.cat.toUpperCase()}</div>
+      <span class="shop-item-icon">${item.icon}</span>
+      <div class="shop-item-name">${item.name}</div>
+      <div class="shop-item-desc">${item.desc}</div>
+      ${locked?`<div class="shop-item-req">🔒 Requiere nivel ${item.reqLevel}</div>`:''}
+      <div class="shop-item-price">${item.price===0?'GRATIS':'🪙 '+item.price.toLocaleString()}</div>
+      <button class="btn-buy" ${(afford&&lvlOk&&item.price!==0)||item.price===0?'':'disabled'} onclick="openBuyModal('${item.id}')">
+        ${!afford&&item.price>0?'SIN FONDOS':locked?'BLOQUEADO':'COMPRAR'}
+      </button>
+    </div>`;
+  }).join('');
+}
+function catEmoji(c){return{consumable:'⚗',tool:'🔧',boost:'🚀',prestige:'💎',utility:'🛡',cosmetic:'🎨'}[c]||'🛍';}
+
+window.filterShop=(cat,btn)=>{
+  ACTIVE_SHOP_FILTER=cat;
+  document.querySelectorAll('#shop-filter-bar .filter-btn').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+  renderShop();
+};
+
+function renderInventory(){
+  const grid=document.getElementById('inv-grid');
+  const inv=UD.inventory||{};
+  const entries=Object.entries(inv).filter(([,v])=>v>0);
+  document.getElementById('inv-count').textContent=entries.length;
+  if(!entries.length){grid.innerHTML='<div style="color:var(--muted);font-size:13px">Tu inventario está vacío. ¡Visita la tienda!</div>';return;}
+  grid.innerHTML=entries.map(([id,qty])=>{
+    const item=ITEMS.find(i=>i.id===id);
+    if(!item)return '';
+    return `<div class="inv-item"><span class="inv-item-icon">${item.icon}</span><div class="inv-item-qty">${qty}</div><div class="inv-item-name">${item.name}</div></div>`;
+  }).join('');
+}
+
+const ACHIEVEMENTS_DEF=[
+  {id:'first_job',   icon:'🎉', name:'Primer Trabajo',  desc:'Completa tu primer trabajo.',        cond:ud=>ud.jobsCompleted>=1},
+  {id:'level5',      icon:'⭐', name:'Nivel 5',          desc:'Alcanza el nivel 5.',                cond:ud=>ud.level>=5},
+  {id:'level10',     icon:'🌟', name:'Nivel 10',         desc:'Alcanza el nivel 10.',               cond:ud=>ud.level>=10},
+  {id:'level20',     icon:'💫', name:'Nivel 20',         desc:'Alcanza el nivel 20.',               cond:ud=>ud.level>=20},
+  {id:'jobs50',      icon:'🏭', name:'50 Trabajos',      desc:'Completa 50 trabajos.',              cond:ud=>ud.jobsCompleted>=50},
+  {id:'earn1k',      icon:'💰', name:'1K Ganado',        desc:'Gana 1000 pts en total.',            cond:ud=>ud.totalEarned>=1000},
+  {id:'earn10k',     icon:'💎', name:'10K Ganado',       desc:'Gana 10000 pts en total.',           cond:ud=>ud.totalEarned>=10000},
+  {id:'collector',   icon:'🛒', name:'Coleccionista',    desc:'Compra 10 artículos.',               cond:ud=>ud.itemsBought>=10},
+  {id:'streak7',     icon:'🔥', name:'Racha 7 Días',     desc:'7 días seguidos de login.',          cond:ud=>ud.maxStreak>=7},
+  {id:'legendary',   icon:'🚀', name:'Trabajo Legendario',desc:'Completa un trabajo legendario.',  cond:ud=>ud.legendaryDone>=1},
+  {id:'rich',        icon:'🤑', name:'Rico',             desc:'Acumula 50000 pts.',                 cond:ud=>(ud.points||0)>=50000},
+  {id:'prestige1',   icon:'👑', name:'Prestigio',        desc:'Haz Prestigio por primera vez.',     cond:ud=>(ud.prestigeCount||0)>=1},
+];
+
+function renderAchievements(){
+  const grid=document.getElementById('achievements-grid');
+  grid.innerHTML=ACHIEVEMENTS_DEF.map(a=>{
+    const unlocked=a.cond(UD);
+    return `<div class="ach-item ${unlocked?'unlocked':'locked'}">
+      <div class="ach-icon">${a.icon}</div>
+      <div><div class="ach-name">${a.name}</div><div class="ach-desc">${a.desc}</div></div>
+    </div>`;
+  }).join('');
+}
+
+async function renderLeaderboard(){
+  try {
+    const snap=await get(ref(db,'leaderboard'));
+    const data=snap.val()||{};
+    const sorted=Object.entries(data).map(([uid,e])=>({uid,username:e.username||'Anónimo',points:e.points||0,level:e.level||1}))
+      .sort((a,b)=>b.points-a.points).slice(0,20);
+    const myPos=sorted.findIndex(e=>e.uid===CU?.uid)+1;
+    document.getElementById('st-rank').textContent=myPos?'#'+myPos:'#—';
     const medals=['🥇','🥈','🥉'];
-    document.getElementById('lb-list').innerHTML = sorted.map((e,i)=>`
+    document.getElementById('lb-list').innerHTML=sorted.map((e,i)=>`
       <div class="lb-item ${e.uid===CU?.uid?'is-me':''}">
         <div class="lb-pos">${i+1}</div>
         <span class="lb-medal">${medals[i]||''}</span>
         <div class="lb-name">${e.uid===CU?.uid?'⭐ ':''} ${escapeHtml(e.username)}</div>
+        <div style="flex:0"></div>
+        <div class="lb-level">LVL ${e.level}</div>
         <div class="lb-pts">${e.points.toLocaleString()}</div>
-      </div>`).join('') || '<div style="color:var(--muted);padding:16px 0">No hay datos aún.</div>';
-  } catch(e) {
-    document.getElementById('lb-list').innerHTML='<div style="color:var(--muted);padding:16px 0">No se pudo cargar el ranking.</div>';
-  }
+      </div>`).join('')||'<div style="color:var(--muted);padding:16px 0">No hay datos aún.</div>';
+  } catch(e){document.getElementById('lb-list').innerHTML='<div style="color:var(--muted);padding:16px 0">No se pudo cargar el ranking.</div>';}
 }
 
-// ─── DO JOB (ANTI-CHEAT) ──────────────────────────────────────────────────────
-window.doJob = async jobId => {
+// ════════════════════ DO JOB ════════════════════
+window.doJob = async jobId=>{
   if(!CU) return;
-
-  const job = JOBS.find(j=>j.id===jobId);
+  const job=JOBS.find(j=>j.id===jobId);
   if(!job) return;
-
-  const uid = CU.uid;
-
+  const uid=CU.uid;
   try {
-    const result = await runTransaction(ref(db,`usuarios/${uid}`), current => {
+    const result=await runTransaction(ref(db,`usuarios/${uid}`),current=>{
       if(!current) return current;
-
-      const now      = Date.now();
-      const cooldowns = current.cooldowns||{};
-      const last     = cooldowns[jobId]||0;
-      const inv      = current.inventory||{};
-
-      const cdThis =
-        (jobId==='mensajero'||jobId==='barista')
-          ? Math.max(0, job.cooldown-(inv.cafe?10:0))
-          : job.cooldown;
-
-      // CHECK COOLDOWN (única fuente de verdad: Firebase)
-      if((now-last)/1000 < cdThis) return; // ABORT — en cooldown
-
-      // Calcular reward
-      let reward = job.reward;
-      if(inv.laptop && (jobId==='hacker'||jobId==='streamer')) reward = Math.floor(reward*1.1);
-      if(inv.suit   && jobId==='ceo')                          reward = Math.floor(reward*1.15);
-
-      let xpGain = Math.floor(reward/5);
-      if(inv.xpboost) xpGain *= 2;
-
-      const newXP    = (current.xp||0)+xpGain;
-      const newLevel = Math.floor(newXP/500)+1;
-
-      const acts = current.activity ? [...Object.values(current.activity)] : [];
-      acts.push({text:`${job.icon} Completaste "${job.name}" +${reward} pts`, ts:now});
-      if(acts.length>20) acts.splice(0,acts.length-20);
-
+      const now=Date.now();
+      const inv=current.inventory||{};
+      const cooldowns=current.cooldowns||{};
+      const last=cooldowns[jobId]||0;
+      const lvl=current.level||1;
+      // Level check
+      if(lvl<job.minLevel&&!inv.job_unlock) return; // ABORT
+      // Energy check
+      const maxE=current.energyMax||10;
+      const storedE=current.energy||0;
+      const lastRegen=current.lastEnergyRegen||now;
+      const elapsedMins=Math.floor((now-lastRegen)/1000/60/5);
+      const currentEnergy=Math.min(maxE,storedE+elapsedMins);
+      if(currentEnergy<job.energy) return; // ABORT — no energy
+      // CD check
+      let cdThis=job.cooldown;
+      if(inv.cd_boost) cdThis=Math.floor(cdThis*0.9);
+      if((jobId==='repartidor'||jobId==='cajero'||jobId==='barista')&&inv.martillo) cdThis=Math.max(0,cdThis-30);
+      if((jobId==='consultor'||jobId==='ceo')&&inv.oficina) cdThis=Math.max(0,cdThis-60);
+      if((now-last)/1000<cdThis) return; // ABORT
+      // Reward
+      let reward=job.reward;
+      if(inv.pts_boost5)  reward=Math.floor(reward*1.05);
+      if(inv.pts_boost10) reward=Math.floor(reward*1.10);
+      if(inv.vip_status)  reward=Math.floor(reward*1.15);
+      // tool boosts
+      if(inv.laptop&&(jobId==='dev'||jobId==='streamer'))  reward=Math.floor(reward*1.10);
+      if(inv.laptop_pro&&['dev','diseñador','consultor'].includes(jobId)) reward=Math.floor(reward*1.20);
+      if(inv.bloomberg&&['trader','cuantitativo'].includes(jobId)) reward=Math.floor(reward*1.30);
+      if(inv.traje_lujo&&jobId==='ceo')    reward=Math.floor(reward*1.15);
+      if(inv.casco&&jobId==='astronauta')  reward=Math.floor(reward*1.20);
+      if(inv.bicicleta&&['repartidor','conductor'].includes(jobId)) reward=Math.floor(reward*1.20);
+      if(inv.camara_dslr&&['fotografo','director'].includes(jobId)) reward=Math.floor(reward*1.25);
+      if(inv.bloomberg&&['trader','cuantitativo'].includes(jobId)) reward=Math.floor(reward*1.30);
+      if(inv.toga&&jobId==='abogado')      reward=Math.floor(reward*1.20);
+      if(inv.bisturi&&jobId==='medico')    reward=Math.floor(reward*1.20);
+      if(inv.servidores&&['dev','cuantitativo'].includes(jobId)) reward=Math.floor(reward*1.25);
+      if(inv.vehiculo&&jobId==='conductor') reward=Math.floor(reward*1.30);
+      if(inv.cocina_pro&&jobId==='cocinero') reward=Math.floor(reward*1.20);
+      if(inv.impresora3d&&jobId==='arquitecto') reward=Math.floor(reward*1.20);
+      if(inv.smartphone&&['streamer','influencer'].includes(jobId)) reward=Math.floor(reward*1.15);
+      if(inv.micro&&jobId==='streamer') reward=Math.floor(reward*1.20);
+      // XP
+      let xpGain=Math.floor(reward/4);
+      if(inv.xpboost)  xpGain*=2;
+      if(inv.xpboost3) xpGain*=3;
+      if(inv.mentor)   xpGain=Math.floor(xpGain*1.20);
+      if(inv.xp_crit&&Math.random()<0.10) xpGain*=5;
+      const newXP=(current.xp||0)+xpGain;
+      const newLevel=Math.floor(newXP/500)+1;
+      // consume energy
+      const newEnergy=Math.max(0,currentEnergy-job.energy);
+      // daily/weekly stats
+      const isRare=['rare','epic','legendary'].includes(job.rarity);
+      const isEpicLeg=['epic','legendary'].includes(job.rarity);
+      const isLegendary=job.rarity==='legendary';
+      const acts=current.activity?[...Object.values(current.activity)]:[];
+      acts.push({text:`${job.icon} Completaste "${job.name}" +${reward} pts`,ts:now});
+      if(acts.length>20)acts.splice(0,acts.length-20);
       return {
         ...current,
-        points:        (current.points||0)+reward,
-        totalEarned:   (current.totalEarned||0)+reward,
-        jobsCompleted: (current.jobsCompleted||0)+1,
-        xp:            newXP,
-        level:         newLevel,
-        cooldowns:     { ...cooldowns, [jobId]: now },
-        activity:      acts,
+        points:(current.points||0)+reward,
+        totalEarned:(current.totalEarned||0)+reward,
+        jobsCompleted:(current.jobsCompleted||0)+1,
+        xp:newXP, level:newLevel,
+        energy:newEnergy,
+        lastEnergyRegen:now-(((now-lastRegen)%(5*60*1000))),
+        cooldowns:{...cooldowns,[jobId]:now},
+        activity:acts,
+        dailyJobs:(current.dailyJobs||0)+1,
+        dailyEarned:(current.dailyEarned||0)+reward,
+        dailyRare:isRare?(current.dailyRare||0)+1:(current.dailyRare||0),
+        weeklyJobs:(current.weeklyJobs||0)+1,
+        weeklyEarned:(current.weeklyEarned||0)+reward,
+        weeklyEpic:isEpicLeg?(current.weeklyEpic||0)+1:(current.weeklyEpic||0),
+        legendaryDone:isLegendary?(current.legendaryDone||0)+1:(current.legendaryDone||0),
       };
     });
-
-    if(!result.committed) {
-      toast('⏳ Trabajo en cooldown.','error');
-      return;
-    }
-
-    // Sincronizar cooldown local con el timestamp real del servidor
-    CDS['cd_'+jobId] = Date.now();
-    saveCooldowns();
-
-    const newPoints = result.snapshot.val().points||0;
-    const uname     = UD.username||CU.email.split('@')[0];
-
-    await update(ref(db,`leaderboard/${uid}`), { username:uname, points:newPoints });
-
+    if(!result.committed){toast('❌ Trabajo bloqueado (cooldown/energía).','error');return;}
+    CDS['cd_'+jobId]=Date.now(); saveCooldowns();
+    const newPts=result.snapshot.val().points||0;
+    const newLvl=result.snapshot.val().level||1;
+    const uname=UD.username||CU.email.split('@')[0];
+    await update(ref(db,`leaderboard/${uid}`),{username:uname,points:newPts,level:newLvl});
     toast(`${job.icon} +${computeReward(job)} pts`,'success');
     renderJobs();
-
-  } catch(err) {
-    console.error(err);
-    toast('Error del servidor.','error');
-  }
+  } catch(err){console.error(err);toast('Error del servidor.','error');}
 };
 
-function computeReward(job) {
-  // used only for toast display (actual value computed in transaction)
-  const inv = UD.inventory||{};
-  let r = job.reward;
-  if(inv.laptop&&(job.id==='hacker'||job.id==='streamer')) r=Math.floor(r*1.1);
-  if(inv.suit&&job.id==='ceo') r=Math.floor(r*1.15);
-  return r;
-}
-
-// ─── DAILY ────────────────────────────────────────────────────────────────────
-window.claimDaily = async () => {
-  const uid   = CU.uid;
-  const nowMs = Date.now();
-  if(nowMs-(UD.dailyLastClaim||0) < 86400000) { toast('Ya reclamaste el bonus hoy.','error'); return; }
-
-  const bonus = 150+Math.floor(Math.random()*100);
-  const acts  = UD.activity ? [...Object.values(UD.activity)] : [];
-  acts.push({text:`🎁 Bonus diario reclamado: +${bonus} pts`, ts:nowMs});
-  if(acts.length>20) acts.splice(0,acts.length-20);
-
-  await update(ref(db,`usuarios/${uid}`), {
-    points:        (UD.points||0)+bonus,
-    totalEarned:   (UD.totalEarned||0)+bonus,
-    dailyLastClaim: nowMs,
-    activity:      acts,
+// ════════════════════ DAILY ════════════════════
+window.claimDaily = async ()=>{
+  const uid=CU.uid, nowMs=Date.now();
+  if(nowMs-(UD.dailyLastClaim||0)<86400000){toast('Ya reclamaste el bonus hoy.','error');return;}
+  // Streak logic
+  const lastClaim=UD.dailyLastClaim||0;
+  const yesterday=Date.now()-86400000;
+  const streakContinued=lastClaim>yesterday-86400000&&lastClaim<yesterday+86400000;
+  const newStreak=streakContinued?(UD.streak||0)+1:1;
+  const maxStreak=Math.max(newStreak,UD.maxStreak||0);
+  // Bonus scales with streak
+  let bonus=150+Math.floor(Math.random()*100);
+  if(UD.perm_daily_2x||UD.inventory?.daily_bonus) bonus*=2;
+  bonus+=Math.floor(newStreak*10); // +10 per streak day
+  const acts=UD.activity?[...Object.values(UD.activity)]:[];
+  acts.push({text:`🎁 Bonus diario: +${bonus} pts (Racha: ${newStreak}🔥)`,ts:nowMs});
+  if(acts.length>20)acts.splice(0,acts.length-20);
+  const newXP=(UD.xp||0)+50;
+  const newLevel=Math.floor(newXP/500)+1;
+  await update(ref(db,`usuarios/${uid}`),{
+    points:(UD.points||0)+bonus,totalEarned:(UD.totalEarned||0)+bonus,
+    dailyLastClaim:nowMs,streak:newStreak,maxStreak,
+    xp:newXP,level:newLevel,activity:acts,
   });
-  // update leaderboard
-  const uname = UD.username||CU.email.split('@')[0];
-  await update(ref(db,`leaderboard/${uid}`), { username:uname, points:(UD.points||0)+bonus });
-
-  toast(`🎁 Bonus diario: +${bonus} pts!`,'success');
+  const uname=UD.username||CU.email.split('@')[0];
+  await update(ref(db,`leaderboard/${uid}`),{username:uname,points:(UD.points||0)+bonus,level:newLevel});
+  toast(`🎁 +${bonus} pts! Racha: ${newStreak}🔥`,'success');
 };
 
-// ─── SHOP ─────────────────────────────────────────────────────────────────────
-window.openBuyModal = itemId => {
-  const item = ITEMS.find(i=>i.id===itemId);
+// ════════════════════ SHOP ════════════════════
+window.openBuyModal=itemId=>{
+  const item=ITEMS.find(i=>i.id===itemId);
   if(!item) return;
-  PENDING_BUY = itemId;
-  document.getElementById('m-name').textContent  = item.name;
-  document.getElementById('m-desc').textContent  = item.desc;
-  document.getElementById('m-icon').textContent  = item.icon;
-  document.getElementById('m-price').textContent = item.price.toLocaleString();
+  PENDING_BUY=itemId;
+  document.getElementById('m-name').textContent=item.name;
+  document.getElementById('m-desc').textContent=item.desc;
+  document.getElementById('m-icon').textContent=item.icon;
+  document.getElementById('m-price').textContent=item.price.toLocaleString();
+  const stackable=['cafe','energia_bar','vitamin','redbull','snack','coffee_pro','elixir','pocion_xp','turbo',
+    'dado_suerte','cerveza','energia_max','tiempo_libre','chip_focus','moneda_oro','amuleto','boost_daily',
+    'sprint_token','donut','suero_trabajo','ticket_loto','multi_boost'];
+  const owned=(UD.inventory||{})[itemId]||0;
+  document.getElementById('m-note').textContent=owned>0&&!stackable.includes(itemId)?`Ya tienes ${owned}. Comprar otro.`:'';
   document.getElementById('buy-modal').classList.add('open');
 };
 
-window.confirmBuy = async () => {
+window.confirmBuy=async()=>{
   if(!PENDING_BUY||!CU) return;
-  const item = ITEMS.find(i=>i.id===PENDING_BUY);
-  if(!item||(UD.points||0)<item.price) { toast('Puntos insuficientes.','error'); return; }
-
-  const uid  = CU.uid;
-  const inv  = UD.inventory||{};
-  const qty  = (inv[item.id]||0)+1;
-  const acts = UD.activity ? [...Object.values(UD.activity)] : [];
-  acts.push({text:`🛍 Compraste "${item.name}" por ${item.price} pts`, ts:Date.now()});
-  if(acts.length>20) acts.splice(0,acts.length-20);
-
-  await update(ref(db,`usuarios/${uid}`), {
-    points:       (UD.points||0)-item.price,
-    itemsBought:  (UD.itemsBought||0)+1,
-    [`inventory/${item.id}`]: qty,
-    activity: acts,
+  const item=ITEMS.find(i=>i.id===PENDING_BUY);
+  if(!item||(UD.points||0)<item.price){toast('Puntos insuficientes.','error');return;}
+  const uid=CU.uid, inv=UD.inventory||{};
+  const qty=(inv[item.id]||0)+1;
+  const acts=UD.activity?[...Object.values(UD.activity)]:[];
+  acts.push({text:`🛍 Compraste "${item.name}" por ${item.price} pts`,ts:Date.now()});
+  if(acts.length>20)acts.splice(0,acts.length-20);
+  await update(ref(db,`usuarios/${uid}`),{
+    points:(UD.points||0)-item.price,itemsBought:(UD.itemsBought||0)+1,
+    [`inventory/${item.id}`]:qty,activity:acts,
+    dailyBought:(UD.dailyBought||0)+1,weeklyBought:(UD.weeklyBought||0)+1,
   });
-  const uname = UD.username||CU.email.split('@')[0];
-  await update(ref(db,`leaderboard/${uid}`), { username:uname, points:(UD.points||0)-item.price });
-
+  const uname=UD.username||CU.email.split('@')[0];
+  await update(ref(db,`leaderboard/${uid}`),{username:uname,points:(UD.points||0)-item.price});
   closeModal('buy-modal');
   toast(`${item.icon} Compraste ${item.name}!`,'success');
 };
 
-// ─── TRANSFER ─────────────────────────────────────────────────────────────────
-window.doTransfer = async () => {
-  if(!CU) return;
-  const email  = document.getElementById('t-email').value.trim().toLowerCase();
-  const amount = parseInt(document.getElementById('t-amount').value)||0;
-
-  if(!email)               { toast('Introduce un email.','error'); return; }
-  if(amount<=0)            { toast('Cantidad no válida.','error'); return; }
-  if(amount>9999999)       { toast('Cantidad demasiado alta.','error'); return; }
-  if(email===CU.email.toLowerCase()) { toast('No puedes transferirte a ti mismo.','error'); return; }
-  if((UD.points||0)<amount){ toast('Puntos insuficientes.','error'); return; }
-
-  // ANTICHEAT: rate limit check (max 1 transfer per 30s locally)
-  const lastTrans = parseInt(localStorage.getItem('sr_last_transfer')||'0');
-  if(Date.now()-lastTrans < 30000) { toast('Espera 30s entre transferencias.','error'); return; }
-
-  // Find recipient in leaderboard (public node) to get uid
-  // We need to scan leaderboard which is public
-  const lbSnap = await get(ref(db,'leaderboard'));
-  const lbData = lbSnap.val()||{};
-
-  // We can't read other users' email from leaderboard, so we need another approach.
-  // We'll use a public "email_to_uid" index
-  const idxSnap = await get(ref(db,'email_index'));
-  const idx     = idxSnap.val()||{};
-  const encoded = btoa(email).replace(/=/g,'').replace(/\+/g,'_').replace(/\//g,'-');
-  const toUid   = idx[encoded];
-
-  if(!toUid || toUid===CU.uid) { toast('Usuario no encontrado.','error'); return; }
-
-  // Get their current points from leaderboard (public)
-  const toEntry = lbData[toUid];
-  if(!toEntry)  { toast('El destinatario aún no aparece en el ranking.','error'); return; }
-
-  const nowMs  = Date.now();
-  const uname  = UD.username||CU.email.split('@')[0];
-  const toName = toEntry.username||email;
-
-  // Deduct from sender
-  const myActs = UD.activity ? [...Object.values(UD.activity)] : [];
-  myActs.push({text:`💸 Enviaste ${amount} pts a ${toName}`, ts:nowMs});
-  if(myActs.length>20) myActs.splice(0,myActs.length-20);
-
-  await update(ref(db,`usuarios/${CU.uid}`), {
-    points:   (UD.points||0)-amount,
-    activity: myActs,
+// ════════════════════ PRESTIGE ════════════════════
+window.doPrestige=async()=>{
+  if(!CU||!UD) return;
+  if((UD.level||1)<50){toast('Necesitas nivel 50 para hacer Prestigio.','error');return;}
+  if(!confirm('¿Seguro? Perderás puntos y nivel, pero ganarás bonificaciones permanentes.')) return;
+  const uid=CU.uid, pCount=(UD.prestigeCount||0)+1;
+  await update(ref(db,`usuarios/${uid}`),{
+    points:Math.floor((UD.points||0)*0.1),
+    xp:0,level:1,prestigeCount:pCount,
+    [`inventory/pts_boost5`]:pCount,
   });
-
-  // Add to recipient (we use a pending credits node they can apply — avoids cross-user write)
-  await update(ref(db,`credits/${toUid}`), {
-    [`${nowMs}`]: { from: uname, amount, ts: nowMs }
-  });
-
-  // Update sender leaderboard
-  await update(ref(db,`leaderboard/${CU.uid}`), { username:uname, points:(UD.points||0)-amount });
-
-  localStorage.setItem('sr_last_transfer', String(nowMs));
-  document.getElementById('t-email').value='';
-  document.getElementById('t-amount').value='';
-  toast(`💸 Enviaste ${amount} pts a ${toName}`,'success');
+  toast(`👑 ¡Prestigio ${pCount} alcanzado! +${pCount*5}% ganancias permanentes.`,'success');
 };
 
-// When user logs in, apply any pending credits
-async function applyPendingCredits(uid) {
-  try {
-    const snap = await get(ref(db,`credits/${uid}`));
+// ════════════════════ TRANSFER ════════════════════
+window.doTransfer=async()=>{
+  if(!CU) return;
+  const email=document.getElementById('t-email').value.trim().toLowerCase();
+  const amount=parseInt(document.getElementById('t-amount').value)||0;
+  if(!email){toast('Introduce un email.','error');return;}
+  if(amount<50){toast('Mínimo 50 puntos por transferencia.','error');return;}
+  if(amount>9999999){toast('Cantidad demasiado alta.','error');return;}
+  if(email===CU.email.toLowerCase()){toast('No puedes transferirte a ti mismo.','error');return;}
+  if((UD.points||0)<Math.ceil(amount*1.05)){toast('Puntos insuficientes (incluye comisión 5%).','error');return;}
+  const lastTrans=parseInt(localStorage.getItem('sr_last_transfer')||'0');
+  if(Date.now()-lastTrans<30000){toast('Espera 30s entre transferencias.','error');return;}
+  const lbSnap=await get(ref(db,'leaderboard')); const lbData=lbSnap.val()||{};
+  const idxSnap=await get(ref(db,'email_index')); const idx=idxSnap.val()||{};
+  const encoded=btoa(email).replace(/=/g,'').replace(/\+/g,'_').replace(/\//g,'-');
+  const toUid=idx[encoded];
+  if(!toUid||toUid===CU.uid){toast('Usuario no encontrado.','error');return;}
+  const toEntry=lbData[toUid];
+  if(!toEntry){toast('El destinatario aún no aparece en el ranking.','error');return;}
+  const commission=Math.ceil(amount*0.05);
+  const total=amount+commission;
+  const nowMs=Date.now(), uname=UD.username||CU.email.split('@')[0];
+  const toName=toEntry.username||email;
+  const myActs=UD.activity?[...Object.values(UD.activity)]:[];
+  myActs.push({text:`💸 Enviaste ${amount} pts a ${toName} (comisión: ${commission} pts)`,ts:nowMs});
+  if(myActs.length>20)myActs.splice(0,myActs.length-20);
+  await update(ref(db,`usuarios/${CU.uid}`),{points:(UD.points||0)-total,activity:myActs});
+  await update(ref(db,`credits/${toUid}`),{[`${nowMs}`]:{from:uname,amount,ts:nowMs}});
+  await update(ref(db,`leaderboard/${CU.uid}`),{username:uname,points:(UD.points||0)-total});
+  localStorage.setItem('sr_last_transfer',String(nowMs));
+  document.getElementById('t-email').value=''; document.getElementById('t-amount').value='';
+  toast(`💸 Enviaste ${amount} pts a ${toName} (comisión: ${commission})`,'success');
+};
+
+async function applyPendingCredits(uid){
+  try{
+    const snap=await get(ref(db,`credits/${uid}`));
     if(!snap.exists()) return;
-    const credits = snap.val()||{};
-    let total = 0;
-    const msgs = [];
-    Object.values(credits).forEach(c=>{
-      total += c.amount||0;
-      msgs.push({text:`💰 Recibiste ${c.amount} pts de ${c.from}`, ts:c.ts});
-    });
+    const credits=snap.val()||{};
+    let total=0; const msgs=[];
+    Object.values(credits).forEach(c=>{total+=c.amount||0;msgs.push({text:`💰 Recibiste ${c.amount} pts de ${c.from}`,ts:c.ts});});
     if(!total) return;
-
-    const acts = UD.activity ? [...Object.values(UD.activity)] : [];
+    const acts=UD.activity?[...Object.values(UD.activity)]:[];
     msgs.forEach(m=>acts.push(m));
-    if(acts.length>20) acts.splice(0,acts.length-20);
-
-    await update(ref(db,`usuarios/${uid}`), {
-      points:   (UD.points||0)+total,
-      activity: acts,
-    });
-    await set(ref(db,`credits/${uid}`), null); // clear
-    const uname = UD.username||CU.email.split('@')[0];
-    await update(ref(db,`leaderboard/${uid}`), { username:uname, points:(UD.points||0)+total });
-
-    if(msgs.length===1) toast(`💰 Recibiste ${total} pts!`,'success');
-    else toast(`💰 Recibiste ${total} pts en total!`,'success');
-  } catch(e) { /* silent */ }
+    if(acts.length>20)acts.splice(0,acts.length-20);
+    await update(ref(db,`usuarios/${uid}`),{points:(UD.points||0)+total,activity:acts});
+    await set(ref(db,`credits/${uid}`),null);
+    const uname=UD.username||CU.email.split('@')[0];
+    await update(ref(db,`leaderboard/${uid}`),{username:uname,points:(UD.points||0)+total});
+    toast(`💰 Recibiste ${total} pts!`,'success');
+  }catch(e){}
 }
 
-// Register email index on first load & apply credits
-onAuthStateChanged(auth, async user => {
-  if(!user) return;
-  // Write email -> uid index (public readable)
-  const encoded = btoa(user.email.toLowerCase()).replace(/=/g,'').replace(/\+/g,'_').replace(/\//g,'-');
-  await update(ref(db,`email_index`), { [encoded]: user.uid });
-  // Apply pending credits after data loads
-  setTimeout(()=>applyPendingCredits(user.uid), 2000);
-});
-
-// ─── COOLDOWN TIMERS ──────────────────────────────────────────────────────────
-function startTimers() {
+// ════════════════════ TIMERS ════════════════════
+function startTimers(){
   if(CD_INTERVAL) clearInterval(CD_INTERVAL);
-  CD_INTERVAL = setInterval(()=>{
-    const now = Date.now();
-    const inv = UD.inventory||{};
+  CD_INTERVAL=setInterval(()=>{
+    const now=Date.now(), inv=UD.inventory||{};
     JOBS.forEach(job=>{
-      // Leer cooldown desde Firebase (fuente de verdad) con fallback a localStorage
-      const last    = (UD.cooldowns && UD.cooldowns[job.id]) || CDS['cd_'+job.id] || 0;
-      const cdThis  = job.id==='mensajero'||job.id==='barista' ? Math.max(0,job.cooldown-(inv.cafe?10:0)) : job.cooldown;
-      const elapsed = (now-last)/1000;
-      const ready   = elapsed>=cdThis;
-      const btn  = document.getElementById('btn-'+job.id);
-      const fill = document.getElementById('fill-'+job.id);
-      const bar  = document.getElementById('bar-'+job.id);
+      const last=(UD.cooldowns&&UD.cooldowns[job.id])||CDS['cd_'+job.id]||0;
+      let cdThis=job.cooldown;
+      if(inv.cd_boost) cdThis=Math.floor(cdThis*0.9);
+      if((job.id==='repartidor'||job.id==='cajero'||job.id==='barista')&&inv.martillo) cdThis=Math.max(0,cdThis-30);
+      if((job.id==='consultor'||job.id==='ceo')&&inv.oficina) cdThis=Math.max(0,cdThis-60);
+      const elapsed=(now-last)/1000, ready=elapsed>=cdThis;
+      const btn=document.getElementById('btn-'+job.id);
+      const fill=document.getElementById('fill-'+job.id);
+      const bar=document.getElementById('bar-'+job.id);
       if(!btn) return;
-
-      const isActive    = UD.activeJob===job.id;
-      const otherActive = UD.activeJob && UD.activeJob!==job.id;
-
-      if(isActive) return; // managed server-side
-      if(otherActive) return;
-
-      if(ready) {
-        if(btn.disabled && !btn.classList.contains('working')) {
-          btn.disabled=false; btn.textContent='TRABAJAR'; btn.classList.remove('working');
-          if(bar) bar.style.display='none';
+      const isActive=UD.activeJob===job.id, otherActive=UD.activeJob&&UD.activeJob!==job.id;
+      if(isActive||otherActive) return;
+      const energy=getEnergy();
+      const locked=(UD.level||1)<job.minLevel&&!inv.job_unlock;
+      if(locked) return;
+      if(ready){
+        if(btn.disabled&&!btn.classList.contains('working')){
+          const noE=energy<job.energy;
+          btn.disabled=noE; btn.textContent=noE?'⚡ SIN ENERGÍA':'TRABAJAR';
+          btn.classList.remove('working'); if(bar) bar.style.display='none';
         }
       } else {
         const rem=Math.ceil(cdThis-elapsed);
-        btn.textContent='⏳ '+fmt(rem);
+        btn.textContent='⏳ '+fmt(rem); btn.disabled=true;
         if(fill) fill.style.width=Math.floor((elapsed/cdThis)*100)+'%';
         if(bar)  bar.style.display='block';
       }
     });
+    // Update energy display
+    const e=getEnergy();
+    document.getElementById('topbar-energy').textContent=e;
   },1000);
 }
 
-// ─── LOCAL COOLDOWNS ──────────────────────────────────────────────────────────
-function saveCooldowns() { localStorage.setItem('sr_cd', JSON.stringify(CDS)); }
-function loadCooldowns() { try{ CDS=JSON.parse(localStorage.getItem('sr_cd'))||{}; }catch{ CDS={}; } }
+function showLevelUp(lvl){
+  const ol=document.getElementById('levelup-overlay');
+  document.getElementById('levelup-num').textContent=lvl;
+  ol.classList.add('show');
+  setTimeout(()=>ol.classList.remove('show'),4000);
+}
 
-// ─── NAV ──────────────────────────────────────────────────────────────────────
-window.showSection = (id, tab) => {
+// ════════════════════ HELPERS ════════════════════
+function saveCooldowns(){localStorage.setItem('sr_cd2',JSON.stringify(CDS));}
+function loadCooldowns(){try{CDS=JSON.parse(localStorage.getItem('sr_cd2'))||{};}catch{CDS={};}}
+window.showSection=(id,tab)=>{
   document.querySelectorAll('.section').forEach(s=>s.classList.remove('active'));
   document.querySelectorAll('.nav-tab').forEach(t=>t.classList.remove('active'));
   document.getElementById('section-'+id).classList.add('active');
   if(tab) tab.classList.add('active');
   if(id==='leaderboard') renderLeaderboard();
 };
-
-window.closeModal = id => document.getElementById(id).classList.remove('open');
-
-// ─── TOAST ────────────────────────────────────────────────────────────────────
-window.toast = (msg, type='info') => {
-  const icons={success:'✅',error:'❌',info:'ℹ️'};
-  const el=document.createElement('div');
-  el.className='toast '+type;
+window.closeModal=id=>document.getElementById(id).classList.remove('open');
+window.toast=(msg,type='info')=>{
+  const icons={success:'✅',error:'❌',info:'ℹ️',warning:'⚠️'};
+  const el=document.createElement('div'); el.className='toast '+type;
   el.innerHTML=`<span>${icons[type]}</span><span>${escapeHtml(msg)}</span>`;
   document.getElementById('toast-wrap').appendChild(el);
-  setTimeout(()=>{ el.classList.add('out'); setTimeout(()=>el.remove(),300); },3500);
+  setTimeout(()=>{el.classList.add('out');setTimeout(()=>el.remove(),300);},3500);
 };
-
-// ─── HELPERS ──────────────────────────────────────────────────────────────────
-function fmt(s) { if(s<60) return s+'s'; const m=Math.floor(s/60),r=s%60; return m+'m'+(r?r+'s':''); }
-function timeAgo(ts) {
-  const d=(Date.now()-ts)/1000;
-  if(d<60) return 'ahora';
-  if(d<3600) return Math.floor(d/60)+'m';
-  if(d<86400) return Math.floor(d/3600)+'h';
-  return Math.floor(d/86400)+'d';
-}
-function escapeHtml(s) {
-  return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
-}
+function fmt(s){if(s<60)return s+'s';const m=Math.floor(s/60),r=s%60;return m+'m'+(r?r+'s':'');}
+function timeAgo(ts){const d=(Date.now()-ts)/1000;if(d<60)return 'ahora';if(d<3600)return Math.floor(d/60)+'m';if(d<86400)return Math.floor(d/3600)+'h';return Math.floor(d/86400)+'d';}
+function escapeHtml(s){return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
 </script>
 </body>
 </html>
